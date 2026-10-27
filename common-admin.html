@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알림장 관리자 시스템 — 공통관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-base:        #F4F5F7;
+  --bg-surface:     #FFFFFF;
+  --bg-sidebar:     #1A1D2E;
+  --bg-sidebar-hover:#252840;
+  --bg-sidebar-active:#2E3250;
+
+  --accent-primary:       #4361EE;
+  --accent-primary-light: #EEF1FD;
+  --accent-secondary:     #3A0CA3;
+  --accent-hover:         #3251D5;
+
+  --text-primary:   #1A1D2E;
+  --text-secondary: #6B7280;
+  --text-muted:     #9CA3AF;
+  --text-sidebar:   #C5C9D6;
+
+  --border-light:   #E5E7EB;
+  --border-medium:  #D1D5DB;
+
+  --green:   #10B981; --green-bg:  #D1FAE5; --green-text: #065F46;
+  --blue:    #3B82F6; --blue-bg:   #DBEAFE; --blue-text:  #1E40AF;
+  --amber:   #F59E0B; --amber-bg:  #FEF3C7; --amber-text: #92400E;
+  --red:     #EF4444; --red-bg:    #FEE2E2; --red-text:   #991B1B;
+  --purple:  #8B5CF6; --purple-bg: #EDE9FE; --purple-text:#5B21B6;
+  --cyan:    #06B6D4; --cyan-bg:   #CFFAFE; --cyan-text:  #164E63;
+
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:  0 8px 28px rgba(0,0,0,0.10);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.18);
+
+  --radius-sm: 6px;  --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px;
+
+  --sidebar-width: 240px;
+  --header-height: 60px;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ══════════════════════════════════
+   SIDEBAR
+══════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  height: var(--header-height);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-primary);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.logo-badge {
+  font-size: 10px; font-weight: 500;
+  color: var(--accent-primary); background: rgba(67,97,238,0.15);
+  padding: 2px 6px; border-radius: 4px; margin-left: auto;
+}
+.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section-title {
+  font-size: 10px; font-weight: 600;
+  color: rgba(197,201,214,0.4);
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 12px 20px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; color: var(--text-sidebar);
+  cursor: pointer; font-size: 13.5px;
+  transition: all 0.15s; position: relative;
+}
+.nav-item:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--bg-sidebar-active); color: #fff; font-weight: 600; }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--accent-primary);
+  border-radius: 0 2px 2px 0;
+}
+.nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.nav-item.active .nav-icon, .nav-item.open .nav-icon { opacity: 1; }
+.nav-badge {
+  margin-left: auto; background: var(--accent-primary); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+.nav-arrow {
+  margin-left: auto; width: 14px; height: 14px;
+  transition: transform 0.2s;
+}
+.nav-item.open .nav-arrow { transform: rotate(180deg); }
+.nav-sub { background: rgba(0,0,0,0.15); overflow: hidden; }
+.nav-sub .nav-item { padding-left: 44px; font-size: 13px; }
+.nav-sub .nav-item.active-sub { background: rgba(67,97,238,0.2); color: #fff; font-weight: 600; }
+.nav-sub .nav-item.active-sub::before { display: none; }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px; border-radius: var(--radius-md); cursor: pointer;
+  transition: background 0.15s;
+}
+.sidebar-user:hover { background: var(--bg-sidebar-hover); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg,#4361EE,#7C3AED);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; color: #fff; }
+.user-role { font-size: 11px; color: rgba(197,201,214,0.6); }
+
+/* ══════════════════════════════════
+   MAIN
+══════════════════════════════════ */
+.main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  height: var(--header-height);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 12px;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+.breadcrumb-sep { color: var(--text-muted); }
+.breadcrumb-cur { color: var(--text-primary); font-weight: 600; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px; border: none; background: transparent;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
+  position: relative;
+}
+.icon-btn:hover { background: var(--bg-base); color: var(--text-primary); }
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 7px; height: 7px; background: var(--red);
+  border-radius: 50%; border: 1.5px solid #fff;
+}
+.topbar-divider { width: 1px; height: 22px; background: var(--border-light); }
+.topbar-profile {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 10px; border-radius: var(--radius-md); cursor: pointer;
+  transition: background 0.15s;
+}
+.topbar-profile:hover { background: var(--bg-base); }
+.profile-av {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg,#4361EE,#7C3AED);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.profile-name { font-size: 13px; font-weight: 600; }
+
+/* ══════════════════════════════════
+   PAGE CONTENT WRAPPER
+══════════════════════════════════ */
+.content { flex: 1; padding: 24px; }
+
+.page-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 20px;
+}
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+/* ══════════════════════════════════
+   COMMON COMPONENTS
+══════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: var(--radius-md);
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer; border: none; transition: all 0.15s;
+  font-family: inherit; white-space: nowrap;
+}
+.btn-primary { background: var(--accent-primary); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-medium); }
+.btn-secondary:hover { background: var(--bg-base); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+.btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); }
+.btn-ghost:hover { background: var(--bg-base); }
+.btn-sm { padding: 4px 10px; font-size: 11.5px; }
+
+.filter-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter-row + .filter-row { margin-top: 10px; }
+.f-label {
+  font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
+  white-space: nowrap; width: 68px; flex-shrink: 0;
+}
+.f-select-wrap { position: relative; }
+.f-select-wrap::after {
+  content: ''; position: absolute; right: 9px; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+  width: 0; height: 0;
+  border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
+}
+.f-select {
+  height: 34px; padding: 0 28px 0 10px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit;
+  background: var(--bg-base); color: var(--text-primary);
+  appearance: none; cursor: pointer; transition: all 0.15s; min-width: 120px;
+}
+.f-select:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.f-input {
+  height: 34px; padding: 0 10px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit;
+  background: var(--bg-base); color: var(--text-primary); transition: all 0.15s;
+  min-width: 180px;
+}
+.f-input:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.f-input::placeholder { color: var(--text-muted); }
+
+.search-combo {
+  display: flex; border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-base);
+  transition: all 0.15s;
+}
+.search-combo:focus-within { border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.search-input {
+  height: 34px; padding: 0 10px; border: none; background: transparent;
+  font-size: 13px; font-family: inherit; color: var(--text-primary); outline: none; width: 200px;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-btn {
+  height: 34px; padding: 0 14px;
+  background: var(--accent-primary); border: none; color: #fff;
+  cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 4px; font-size: 12.5px; font-family: inherit;
+}
+.search-btn:hover { background: var(--accent-hover); }
+
+.table-card {
+  background: var(--bg-surface); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.table-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border-light);
+}
+.result-info { font-size: 13px; color: var(--text-secondary); }
+.result-info strong { color: var(--text-primary); font-weight: 700; }
+.toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: #F8F9FB; padding: 9px 12px; text-align: left;
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.4px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light); white-space: nowrap;
+}
+th:first-child, td:first-child { padding-left: 20px; }
+td {
+  padding: 12px 12px; font-size: 12.5px; color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFBFC; }
+tr.row-sel td { background: var(--accent-primary-light); }
+
+.chk {
+  width: 15px; height: 15px; border: 1.5px solid var(--border-medium);
+  border-radius: 3px; appearance: none; cursor: pointer; transition: all 0.15s; position: relative;
+}
+.chk:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+.chk:checked::after {
+  content: ''; position: absolute; left: 3px; top: 1px;
+  width: 5px; height: 8px; border: 2px solid #fff;
+  border-top: none; border-left: none; transform: rotate(45deg);
+}
+
+.sbadge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.sdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.s-active  { background: var(--green-bg);  color: var(--green-text); }
+.s-active  .sdot { background: var(--green); }
+.s-inactive { background: #F3F4F6; color: #374151; }
+.s-inactive .sdot { background: #9CA3AF; }
+.s-current { background: var(--blue-bg); color: var(--blue-text); }
+.s-current .sdot { background: var(--blue); }
+.s-draft   { background: var(--amber-bg); color: var(--amber-text); }
+.s-draft   .sdot { background: var(--amber); }
+.s-end     { background: var(--red-bg);   color: var(--red-text); }
+.s-end     .sdot { background: var(--red); }
+.s-done    { background: var(--green-bg); color: var(--green-text); }
+.s-done    .sdot { background: var(--green); }
+.s-partial { background: var(--amber-bg); color: var(--amber-text); }
+.s-partial .sdot { background: var(--amber); }
+
+.tbadge {
+  display: inline-flex; align-items: center;
+  padding: 2px 7px; border-radius: 4px;
+  font-size: 11px; font-weight: 600;
+}
+.t-blue   { background: var(--blue-bg); color: var(--blue-text); }
+.t-purple { background: var(--purple-bg); color: var(--purple-text); }
+.t-green  { background: var(--green-bg); color: var(--green-text); }
+.t-amber  { background: var(--amber-bg); color: var(--amber-text); }
+.t-gray   { background: #F3F4F6; color: #374151; }
+.t-cyan   { background: var(--cyan-bg); color: var(--cyan-text); }
+
+.view-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 4px 10px; font-size: 11.5px; font-weight: 600;
+  background: var(--bg-base); color: var(--text-secondary);
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.view-btn:hover { background: var(--accent-primary-light); color: var(--accent-primary); border-color: #b0bfee; }
+
+.pagination-area {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 20px; border-top: 1px solid var(--border-light);
+}
+.pg-info { font-size: 12.5px; color: var(--text-secondary); }
+.pagination { display: flex; gap: 3px; }
+.pg-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  font-size: 12.5px; cursor: pointer; color: var(--text-secondary);
+  background: var(--bg-surface); transition: all 0.15s; font-family: inherit;
+}
+.pg-btn:hover { background: var(--bg-base); }
+.pg-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: 700; }
+
+/* ══════════════════════════════════
+   DETAIL PANEL (SLIDE-IN)
+══════════════════════════════════ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,12,28,0.45); backdrop-filter: blur(3px);
+  z-index: 1000; align-items: flex-start; justify-content: flex-end;
+}
+.modal-overlay.show { display: flex; }
+.detail-panel {
+  width: 480px; height: 100vh;
+  background: var(--bg-surface);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
+  animation: slideLeft 0.25s cubic-bezier(0.34,1.1,0.64,1);
+  overflow-y: auto;
+}
+@keyframes slideLeft {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.dp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border-light);
+  position: sticky; top: 0; background: var(--bg-surface); z-index: 10;
+}
+.dp-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.dp-close {
+  width: 30px; height: 30px; border: none;
+  background: var(--bg-base); border-radius: var(--radius-sm);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); font-size: 16px; transition: all 0.15s;
+}
+.dp-close:hover { background: #fee2e2; color: #dc2626; }
+.dp-body { padding: 20px 24px; flex: 1; }
+.dp-section { margin-bottom: 20px; }
+.dp-sec-title {
+  font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+.dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dp-item .dp-key { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+.dp-item .dp-val { font-size: 13px; font-weight: 500; }
+.dp-footer {
+  padding: 16px 24px; border-top: 1px solid var(--border-light);
+  display: flex; gap: 8px; justify-content: flex-end;
+  position: sticky; bottom: 0; background: var(--bg-surface);
+}
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+.form-control {
+  width: 100%; height: 36px; padding: 0 10px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit; color: var(--text-primary);
+  background: var(--bg-base); transition: all 0.15s;
+}
+.form-control:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.form-textarea {
+  width: 100%; min-height: 100px; padding: 8px 10px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit; color: var(--text-primary);
+  background: var(--bg-base); resize: vertical; transition: all 0.15s;
+}
+.form-textarea:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+
+/* ══════════════════════════════════
+   2-COLUMN SPLIT LAYOUT
+══════════════════════════════════ */
+.split-layout {
+  display: grid; grid-template-columns: 280px 1fr; gap: 16px;
+  align-items: start;
+}
+.split-left {
+  background: var(--bg-surface); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.split-left-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--border-light);
+  background: #F8F9FB;
+}
+.split-left-title { font-size: 13px; font-weight: 700; }
+.split-item {
+  padding: 11px 16px; cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.12s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.split-item:last-child { border-bottom: none; }
+.split-item:hover { background: var(--bg-base); }
+.split-item.active { background: var(--accent-primary-light); border-left: 3px solid var(--accent-primary); }
+.split-item-name { font-size: 13px; font-weight: 500; }
+.split-item-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+.split-item-count {
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  background: var(--bg-base); border: 1px solid var(--border-light);
+  padding: 1px 7px; border-radius: 10px;
+}
+
+/* ══════════════════════════════════
+   TREE STRUCTURE (CATEGORY)
+══════════════════════════════════ */
+.tree-wrap { padding: 8px 0; }
+.tree-node { user-select: none; }
+.tree-row {
+  display: flex; align-items: center; gap: 4px;
+  padding: 7px 12px 7px 8px; cursor: pointer;
+  border-radius: var(--radius-sm); margin: 1px 4px;
+  transition: background 0.12s;
+}
+.tree-row:hover { background: var(--bg-base); }
+.tree-row.active { background: var(--accent-primary-light); color: var(--accent-primary); font-weight: 600; }
+.tree-toggle {
+  width: 16px; height: 16px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 10px;
+}
+.tree-icon { font-size: 13px; flex-shrink: 0; }
+.tree-label { font-size: 13px; flex: 1; }
+.tree-children { padding-left: 20px; }
+
+/* ══════════════════════════════════
+   MATRIX / PERMISSION TABLE
+══════════════════════════════════ */
+.matrix-table { width: 100%; border-collapse: collapse; }
+.matrix-table th { background: #F8F9FB; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-align: center; border: 1px solid var(--border-light); }
+.matrix-table th:first-child { text-align: left; }
+.matrix-table td { padding: 10px 14px; border: 1px solid var(--border-light); text-align: center; font-size: 13px; }
+.matrix-table td:first-child { text-align: left; font-weight: 500; font-size: 13px; }
+.matrix-table tr:hover td { background: #FAFBFC; }
+
+/* ══════════════════════════════════
+   TABS (version history etc.)
+══════════════════════════════════ */
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border-light);
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 10px 18px; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); border: none; background: transparent;
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.15s; font-family: inherit;
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); font-weight: 600; }
+
+/* ══════════════════════════════════
+   SUMMARY CARDS (small)
+══════════════════════════════════ */
+.sum-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.sum-card {
+  background: var(--bg-surface); border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.sum-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-accent, #E5E7EB);
+}
+.sum-card-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.sum-card-num { font-size: 24px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.8px; }
+.sum-card-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+/* ══════════════════════════════════
+   SCREEN PAGES
+══════════════════════════════════ */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; background: #1A1D2E; color: #fff;
+  border-radius: var(--radius-md); font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-lg); min-width: 240px;
+  animation: toastIn 0.25s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── ANIMATE ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.3s ease both; }
+
+/* ══════════════════════════════════
+   INLINE-EDITOR CELLS
+══════════════════════════════════ */
+.inline-input {
+  width: 100%; height: 28px; padding: 0 6px;
+  border: 1px solid var(--border-medium); border-radius: 4px;
+  font-size: 12.5px; font-family: inherit; background: #fff;
+}
+.inline-input:focus { outline: none; border-color: var(--accent-primary); }
+
+/* version badge */
+.ver-badge {
+  display: inline-flex; align-items: center;
+  padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 700;
+  background: var(--blue-bg); color: var(--blue-text);
+}
+.ver-current {
+  background: var(--green-bg); color: var(--green-text);
+}
+
+/* rich-text area */
+.rich-area {
+  width: 100%; min-height: 180px; padding: 10px 12px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit; resize: vertical; line-height: 1.6;
+  background: var(--bg-base);
+}
+.rich-area:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+
+/* Section divider with label */
+.sec-divider {
+  display: flex; align-items: center;
+  font-size: 14px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 14px; margin-top: 24px;
+}
+.sec-divider::before {
+  content: ''; width: 4px; height: 18px;
+  background: var(--accent-primary); border-radius: 2px;
+  margin-right: 10px; display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">📋</div>
+    <div class="logo-text">알림장 Admin</div>
+    <div class="logo-badge">v2.4</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      Home (대시보드)
+    </div>
+    <div class="nav-section-title">관리</div>
+
+    <!-- 공통관리 (현재 활성) -->
+  <div class="nav-item active open" id="navCommon" onclick="showScreen('code')">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+  공통관리
+  <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+</div>
+    <div class="nav-sub" id="subCommon">
+      <div class="nav-item active-sub" id="sub-code" onclick="showScreen('code')">코드 관리</div>
+      <div class="nav-item" id="sub-category" onclick="showScreen('category')">카테고리 관리</div>
+      <div class="nav-item" id="sub-terms" onclick="showScreen('terms')">약관/동의 관리</div>
+      <div class="nav-item" id="sub-i18n" onclick="showScreen('i18n')">다국어 관리</div>
+      <div class="nav-item" id="sub-permission" onclick="showScreen('permission')">권한/그룹 관리</div>
+      <div class="nav-item" id="sub-log" onclick="showScreen('log')">로그 관리</div>
+    </div>
+
+    <!-- 회원/승인관리 -->
+    <div class="nav-item" onclick="toggleSub('subMember','navMember')" id="navMember">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      회원/승인관리
+      <span class="nav-badge">2</span>
+    </div>
+    <div class="nav-sub" id="subMember" style="display:none">
+      <div class="nav-item" onclick="location.href='member-list-admin.html'">통합회원 조회</div>
+      <div class="nav-item" onclick="location.href='member-approval.html'">가입/승인 관리</div>
+      <div class="nav-item" onclick="location.href='invitation-admin__2_.html'">초대 관리</div>
+      <div class="nav-item" onclick="location.href='member-status-admin.html'">회원 상태관리</div>
+    </div>
+
+<div class="nav-item" onclick="document.getElementById('sub-org').style.display = document.getElementById('sub-org').style.display === 'block' ? 'none' : 'block'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+  기관관리
+  <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-org" style="display:none">
+  <div class="nav-item" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
+  <div class="nav-item" onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+</div>
+
+
+<div class="nav-item" style="cursor:default;opacity:0.5">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+  </svg>
+  운영관리 
+  <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+</div>
+
+<div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+  운영도구
+</div>
+
+<div class="nav-item" onclick="location.href='site-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+  사이트관리
+</div>
+
+<div class="nav-item" onclick="location.href='stats-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  통계관리
+</div>
+
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">관</div>
+      <div>
+        <div class="user-name">슈퍼 관리자</div>
+        <div class="user-role">admin@kidkids.com</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="main">
+  <header class="topbar" id="topbar">
+    <div class="breadcrumb">
+      <span>공통관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-cur" id="topbarCur">코드 관리</span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="notif-dot"></span></button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-profile">
+        <div class="profile-av">관</div>
+        <span class="profile-name">슈퍼 관리자</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════
+         1. 코드 관리
+    ══════════════════════════════════ -->
+    <div id="screen-code" class="screen active fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">코드 관리</div>
+          <div class="page-subtitle">시스템 공통 코드 그룹 및 코드값을 관리합니다.</div>
+        </div>
+      </div>
+
+      <!-- 요약 카드 -->
+      <div class="sum-grid">
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 코드 그룹</div><div class="sum-card-num">18</div><div class="sum-card-sub">개 그룹 등록</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">사용 중</div><div class="sum-card-num">15</div><div class="sum-card-sub">그룹 활성</div></div>
+        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">전체 코드 수</div><div class="sum-card-num">124</div><div class="sum-card-sub">개 코드값</div></div>
+        <div class="sum-card" style="--card-accent:#9CA3AF"><div class="sum-card-label">미사용</div><div class="sum-card-num">3</div><div class="sum-card-sub">그룹 비활성</div></div>
+      </div>
+
+      <!-- 2단 레이아웃 -->
+      <div class="split-layout">
+        <!-- 좌: 코드 그룹 리스트 -->
+        <div class="split-left">
+          <div class="split-left-header">
+            <span class="split-left-title">코드 그룹</span>
+            <button class="btn btn-primary btn-sm" onclick="showPanel('codeGroupPanel','새 코드 그룹')">+ 추가</button>
+          </div>
+          <div style="padding:10px 12px;border-bottom:1px solid var(--border-light)">
+            <div class="search-combo" style="width:100%">
+              <input class="search-input" style="width:100%" placeholder="그룹명 검색...">
+              <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="split-item active" onclick="selectCodeGroup(this,'기관유형')">
+              <div><div class="split-item-name">기관유형</div><div class="split-item-meta">ORG_TYPE</div></div>
+              <span class="split-item-count">5</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'회원상태')">
+              <div><div class="split-item-name">회원상태</div><div class="split-item-meta">MEMBER_STATUS</div></div>
+              <span class="split-item-count">6</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'승인상태')">
+              <div><div class="split-item-name">승인상태</div><div class="split-item-meta">APPROVAL_STATUS</div></div>
+              <span class="split-item-count">4</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'알림유형')">
+              <div><div class="split-item-name">알림유형</div><div class="split-item-meta">NOTI_TYPE</div></div>
+              <span class="split-item-count">8</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'반유형')">
+              <div><div class="split-item-name">반유형</div><div class="split-item-meta">CLASS_TYPE</div></div>
+              <span class="split-item-count">3</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'원아상태')">
+              <div><div class="split-item-name">원아상태</div><div class="split-item-meta">CHILD_STATUS</div></div>
+              <span class="split-item-count">5</span>
+            </div>
+            <div class="split-item" onclick="selectCodeGroup(this,'사용여부')">
+              <div><div class="split-item-name">사용여부</div><div class="split-item-meta">USE_YN</div></div>
+              <span class="split-item-count">2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 코드 상세 테이블 -->
+        <div>
+          <div class="table-card">
+            <div class="table-toolbar">
+              <div class="result-info"><strong id="codeGroupTitle">기관유형</strong> 코드 목록 · 총 <strong>5</strong>건</div>
+              <div class="toolbar-right">
+                <button class="btn btn-secondary btn-sm"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> 엑셀</button>
+                <button class="btn btn-primary btn-sm" onclick="showPanel('codeDetailPanel','코드 추가')">+ 코드 추가</button>
+              </div>
+            </div>
+            <div class="tbl-wrap">
+              <table style="min-width:auto">
+                <colgroup><col width="44"><col><col width="130"><col width="130"><col width="80"><col width="90"><col width="90"><col width="80"></colgroup>
+                <thead>
+                  <tr><th><input type="checkbox" class="chk"></th><th>코드명</th><th>코드값</th><th>상위코드</th><th>정렬순서</th><th>사용여부</th><th>수정일</th><th>관리</th></tr>
+                </thead>
+                <tbody>
+                  <tr onclick="showPanel('codeDetailPanel','코드 수정')">
+                    <td><input type="checkbox" class="chk"></td><td>어린이집</td><td><span style="font-family:monospace;font-size:12px">NURSERY</span></td><td><span class="tbadge t-gray">-</span></td><td style="text-align:center">1</td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td style="color:var(--text-muted)">25.03.10</td><td><button class="view-btn" onclick="event.stopPropagation();showPanel('codeDetailPanel','코드 수정')">수정</button></td>
+                  </tr>
+                  <tr onclick="showPanel('codeDetailPanel','코드 수정')">
+                    <td><input type="checkbox" class="chk"></td><td>유치원</td><td><span style="font-family:monospace;font-size:12px">KINDERGARTEN</span></td><td><span class="tbadge t-gray">-</span></td><td style="text-align:center">2</td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td style="color:var(--text-muted)">25.03.10</td><td><button class="view-btn" onclick="event.stopPropagation();showPanel('codeDetailPanel','코드 수정')">수정</button></td>
+                  </tr>
+                  <tr onclick="showPanel('codeDetailPanel','코드 수정')">
+                    <td><input type="checkbox" class="chk"></td><td>공립유치원</td><td><span style="font-family:monospace;font-size:12px">PUBLIC_KG</span></td><td><span class="tbadge t-blue">유치원</span></td><td style="text-align:center">1</td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td style="color:var(--text-muted)">25.03.10</td><td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+                  </tr>
+                  <tr onclick="showPanel('codeDetailPanel','코드 수정')">
+                    <td><input type="checkbox" class="chk"></td><td>사립유치원</td><td><span style="font-family:monospace;font-size:12px">PRIVATE_KG</span></td><td><span class="tbadge t-blue">유치원</span></td><td style="text-align:center">2</td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td style="color:var(--text-muted)">25.03.10</td><td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+                  </tr>
+                  <tr onclick="showPanel('codeDetailPanel','코드 수정')">
+                    <td><input type="checkbox" class="chk"></td><td>영어유치원</td><td><span style="font-family:monospace;font-size:12px">ENG_KG</span></td><td><span class="tbadge t-gray">-</span></td><td style="text-align:center">3</td><td><span class="sbadge s-inactive"><span class="sdot"></span>미사용</span></td><td style="color:var(--text-muted)">25.02.15</td><td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination-area">
+              <div class="pg-info">1 – 5 / 5건</div>
+              <div class="pagination">
+                <button class="pg-btn">‹</button>
+                <button class="pg-btn active">1</button>
+                <button class="pg-btn">›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. 카테고리 관리
+    ══════════════════════════════════ -->
+    <div id="screen-category" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">카테고리 관리</div>
+          <div class="page-subtitle">서비스 내 분류체계를 계층 구조로 관리합니다.</div>
+        </div>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">카테고리 유형</span>
+          <div class="f-select-wrap">
+            <select class="f-select"><option>전체</option><option>자료 카테고리</option><option>공지 카테고리</option><option>앨범 카테고리</option><option>연령 카테고리</option><option>주제/영역 분류</option></select>
+          </div>
+          <div class="f-select-wrap">
+            <select class="f-select"><option>사용여부 전체</option><option>사용</option><option>미사용</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- 좌: 트리 -->
+        <div class="split-left">
+          <div class="split-left-header">
+            <span class="split-left-title">카테고리 트리</span>
+            <button class="btn btn-primary btn-sm" onclick="showPanel('categoryPanel','카테고리 추가')">+ 추가</button>
+          </div>
+          <div class="tree-wrap">
+            <!-- 자료 카테고리 -->
+            <div class="tree-node">
+              <div class="tree-row active" onclick="selectTree(this,'자료 카테고리')">
+                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">▼</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">자료 카테고리</span>
+                <span class="tbadge t-blue" style="font-size:10px">루트</span>
+              </div>
+              <div class="tree-children">
+                <div class="tree-node">
+                  <div class="tree-row" onclick="selectTree(this,'교육 자료')">
+                    <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">▼</span>
+                    <span class="tree-icon">📂</span>
+                    <span class="tree-label">교육 자료</span>
+                  </div>
+                  <div class="tree-children">
+                    <div class="tree-row" onclick="selectTree(this,'수업 계획안')"><span class="tree-toggle"></span><span class="tree-icon">📄</span><span class="tree-label">수업 계획안</span></div>
+                    <div class="tree-row" onclick="selectTree(this,'활동지')"><span class="tree-toggle"></span><span class="tree-icon">📄</span><span class="tree-label">활동지</span></div>
+                  </div>
+                </div>
+                <div class="tree-row" onclick="selectTree(this,'생활 안내')"><span class="tree-toggle"></span><span class="tree-icon">📂</span><span class="tree-label">생활 안내</span></div>
+              </div>
+            </div>
+            <!-- 공지 카테고리 -->
+            <div class="tree-node">
+              <div class="tree-row" onclick="selectTree(this,'공지 카테고리')">
+                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">공지 카테고리</span>
+                <span class="tbadge t-blue" style="font-size:10px">루트</span>
+              </div>
+            </div>
+            <!-- 앨범 카테고리 -->
+            <div class="tree-node">
+              <div class="tree-row" onclick="selectTree(this,'앨범 카테고리')">
+                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">앨범 카테고리</span>
+                <span class="tbadge t-blue" style="font-size:10px">루트</span>
+              </div>
+            </div>
+            <!-- 연령 카테고리 -->
+            <div class="tree-node">
+              <div class="tree-row" onclick="selectTree(this,'연령 카테고리')">
+                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
+                <span class="tree-icon">📁</span>
+                <span class="tree-label">연령 카테고리</span>
+                <span class="tbadge t-blue" style="font-size:10px">루트</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 상세 편집 패널 -->
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="result-info">선택된 카테고리: <strong id="catTitle">자료 카테고리</strong></div>
+            <div class="toolbar-right">
+              <button class="btn btn-secondary btn-sm" onclick="showPanel('categoryPanel','하위 카테고리 추가')">+ 하위 추가</button>
+              <button class="btn btn-primary btn-sm" onclick="showPanel('categoryPanel','카테고리 수정')">수정</button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--red-text);border-color:var(--red-bg)" onclick="toast('삭제 기능은 하위 카테고리가 없을 때만 가능합니다.','⚠️')">삭제</button>
+            </div>
+          </div>
+          <div style="padding:20px 24px">
+            <div class="sec-divider">기본 정보</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+              <div class="form-group"><label class="form-label">카테고리명</label><input class="form-control" value="자료 카테고리"></div>
+              <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" value="MATERIAL_CAT"></div>
+              <div class="form-group"><label class="form-label">카테고리 유형</label>
+                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>자료 카테고리</option></select></div>
+              </div>
+              <div class="form-group"><label class="form-label">Depth</label><input class="form-control" value="1 (루트)" readonly style="background:#F3F4F6;color:var(--text-secondary)"></div>
+              <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" value="1" type="number"></div>
+              <div class="form-group"><label class="form-label">노출여부</label>
+                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div>
+              </div>
+              <div class="form-group"><label class="form-label">사용여부</label>
+                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div>
+              </div>
+            </div>
+            <div class="sec-divider">하위 카테고리 목록</div>
+            <table style="min-width:auto">
+              <thead><tr><th>카테고리명</th><th>코드</th><th>Depth</th><th>정렬</th><th>노출</th><th>사용</th><th>관리</th></tr></thead>
+              <tbody>
+                <tr><td>교육 자료</td><td><span style="font-family:monospace;font-size:12px">EDU_MATERIAL</span></td><td style="text-align:center">2</td><td style="text-align:center">1</td><td><span class="sbadge s-active"><span class="sdot"></span>노출</span></td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td><button class="view-btn">수정</button></td></tr>
+                <tr><td>생활 안내</td><td><span style="font-family:monospace;font-size:12px">LIFE_GUIDE</span></td><td style="text-align:center">2</td><td style="text-align:center">2</td><td><span class="sbadge s-active"><span class="sdot"></span>노출</span></td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td><button class="view-btn">수정</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         3. 약관/동의 관리
+    ══════════════════════════════════ -->
+    <div id="screen-terms" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">약관/동의 관리</div>
+          <div class="page-subtitle">서비스 이용 약관 및 동의 항목을 버전 단위로 관리합니다.</div>
+        </div>
+        <button class="btn btn-primary" onclick="showPanel('termsPanel','새 약관 등록')">+ 약관 추가</button>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">약관유형</span>
+          <div class="f-select-wrap"><select class="f-select"><option>전체</option><option>서비스 이용약관</option><option>개인정보 처리방침</option><option>마케팅 수신 동의</option><option>제3자 제공 동의</option><option>추가 동의</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>필수/선택 전체</option><option>필수</option><option>선택</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>상태 전체</option><option>적용중</option><option>종료</option><option>임시저장</option></select></div>
+          <div class="search-combo">
+            <input class="search-input" placeholder="약관명 검색...">
+            <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-info">총 <strong>8</strong>건</div>
+          <div class="toolbar-right">
+            <button class="btn btn-secondary btn-sm">엑셀 다운로드</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:auto">
+            <colgroup><col width="44"><col><col width="100"><col width="90"><col width="100"><col width="100"><col width="100"><col width="80"></colgroup>
+            <thead>
+              <tr><th><input type="checkbox" class="chk"></th><th>약관명</th><th>유형</th><th>필수여부</th><th>버전</th><th>시행일</th><th>상태</th><th>관리</th></tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPanel('termsPanel','약관 상세/수정')">
+                <td><input type="checkbox" class="chk"></td>
+                <td><div style="font-weight:600">서비스 이용약관</div><div style="font-size:11.5px;color:var(--text-muted)">최신: v1.3 · 2024.12.01 시행</div></td>
+                <td><span class="tbadge t-blue">이용약관</span></td>
+                <td><span class="tbadge t-amber">필수</span></td>
+                <td><span class="ver-badge ver-current">v1.3</span></td>
+                <td style="color:var(--text-secondary)">2024.12.01</td>
+                <td><span class="sbadge s-current"><span class="sdot"></span>적용중</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showPanel('termsPanel','약관 상세/수정')">관리</button></td>
+              </tr>
+              <tr onclick="showPanel('termsPanel','약관 상세/수정')">
+                <td><input type="checkbox" class="chk"></td>
+                <td><div style="font-weight:600">개인정보 처리방침</div><div style="font-size:11.5px;color:var(--text-muted)">최신: v2.1 · 2025.01.15 시행</div></td>
+                <td><span class="tbadge t-purple">개인정보</span></td>
+                <td><span class="tbadge t-amber">필수</span></td>
+                <td><span class="ver-badge ver-current">v2.1</span></td>
+                <td style="color:var(--text-secondary)">2025.01.15</td>
+                <td><span class="sbadge s-current"><span class="sdot"></span>적용중</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">관리</button></td>
+              </tr>
+              <tr onclick="showPanel('termsPanel','약관 상세/수정')">
+                <td><input type="checkbox" class="chk"></td>
+                <td><div style="font-weight:600">마케팅 수신 동의</div><div style="font-size:11.5px;color:var(--text-muted)">최신: v1.0 · 2024.06.01 시행</div></td>
+                <td><span class="tbadge t-green">마케팅</span></td>
+                <td><span class="tbadge t-gray">선택</span></td>
+                <td><span class="ver-badge">v1.0</span></td>
+                <td style="color:var(--text-secondary)">2024.06.01</td>
+                <td><span class="sbadge s-current"><span class="sdot"></span>적용중</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">관리</button></td>
+              </tr>
+              <tr onclick="showPanel('termsPanel','약관 상세/수정')">
+                <td><input type="checkbox" class="chk"></td>
+                <td><div style="font-weight:600">제3자 정보 제공 동의</div><div style="font-size:11.5px;color:var(--text-muted)">최신: v1.1 · 2024.09.01 시행</div></td>
+                <td><span class="tbadge t-cyan">제3자제공</span></td>
+                <td><span class="tbadge t-gray">선택</span></td>
+                <td><span class="ver-badge">v1.1</span></td>
+                <td style="color:var(--text-secondary)">2024.09.01</td>
+                <td><span class="sbadge s-current"><span class="sdot"></span>적용중</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">관리</button></td>
+              </tr>
+              <tr style="opacity:.7">
+                <td><input type="checkbox" class="chk"></td>
+                <td><div style="font-weight:600">서비스 이용약관 (구)</div><div style="font-size:11.5px;color:var(--text-muted)">v1.2 · 2024.06.01 – 2024.11.30</div></td>
+                <td><span class="tbadge t-blue">이용약관</span></td>
+                <td><span class="tbadge t-amber">필수</span></td>
+                <td><span class="ver-badge">v1.2</span></td>
+                <td style="color:var(--text-secondary)">2024.06.01</td>
+                <td><span class="sbadge s-end"><span class="sdot"></span>종료</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">이력</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-area">
+          <div class="pg-info">1 – 5 / 8건</div>
+          <div class="pagination">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         4. 다국어 관리
+    ══════════════════════════════════ -->
+    <div id="screen-i18n" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">다국어 관리</div>
+          <div class="page-subtitle">서비스 및 관리자 화면에서 사용하는 다국어 문구를 관리합니다.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary">엑셀 일괄 업로드</button>
+          <button class="btn btn-primary" onclick="showPanel('i18nPanel','다국어 키 추가')">+ 키 추가</button>
+        </div>
+      </div>
+
+      <!-- 요약 카드 -->
+      <div class="sum-grid">
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 키</div><div class="sum-card-num">342</div><div class="sum-card-sub">개 다국어 키</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">번역 완료</div><div class="sum-card-num">298</div><div class="sum-card-sub">모든 언어 완료</div></div>
+        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">미번역</div><div class="sum-card-num">44</div><div class="sum-card-sub">1개 이상 언어 미완료</div></div>
+        <div class="sum-card" style="--card-accent:#9CA3AF"><div class="sum-card-label">지원 언어</div><div class="sum-card-num">3</div><div class="sum-card-sub">KO · EN · ID</div></div>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">사용 위치</span>
+          <div class="f-select-wrap"><select class="f-select"><option>전체</option><option>메뉴명</option><option>버튼명</option><option>상태값</option><option>안내문구</option><option>시스템 메시지</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>번역 상태 전체</option><option>번역 완료</option><option>미번역</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>사용여부 전체</option><option>사용</option><option>미사용</option></select></div>
+          <div class="search-combo">
+            <input class="search-input" placeholder="키 또는 문구 검색...">
+            <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-info">총 <strong>342</strong>건</div>
+          <div class="toolbar-right">
+            <button class="btn btn-secondary btn-sm">엑셀 다운로드</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:auto">
+            <colgroup><col width="200"><col><col><col><col width="100"><col width="110"><col width="90"><col width="60"></colgroup>
+            <thead>
+              <tr>
+                <th>키 (KEY)</th>
+                <th>한국어 🇰🇷</th>
+                <th>영어 🇺🇸</th>
+                <th>인도네시아어 🇮🇩</th>
+                <th>사용 위치</th>
+                <th>번역 상태</th>
+                <th>수정일</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPanel('i18nPanel','다국어 키 수정')">
+                <td><span style="font-family:monospace;font-size:11.5px;color:var(--accent-primary)">menu.dashboard</span></td>
+                <td>대시보드</td>
+                <td>Dashboard</td>
+                <td>Dasbor</td>
+                <td><span class="tbadge t-blue">메뉴명</span></td>
+                <td><span class="sbadge s-done"><span class="sdot"></span>완료</span></td>
+                <td style="color:var(--text-muted)">25.03.15</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showPanel('i18nPanel','다국어 키 수정')">수정</button></td>
+              </tr>
+              <tr onclick="showPanel('i18nPanel','다국어 키 수정')">
+                <td><span style="font-family:monospace;font-size:11.5px;color:var(--accent-primary)">btn.save</span></td>
+                <td>저장</td>
+                <td>Save</td>
+                <td>Simpan</td>
+                <td><span class="tbadge t-green">버튼명</span></td>
+                <td><span class="sbadge s-done"><span class="sdot"></span>완료</span></td>
+                <td style="color:var(--text-muted)">25.03.15</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+              </tr>
+              <tr onclick="showPanel('i18nPanel','다국어 키 수정')">
+                <td><span style="font-family:monospace;font-size:11.5px;color:var(--accent-primary)">status.approved</span></td>
+                <td>승인완료</td>
+                <td>Approved</td>
+                <td style="color:var(--red-text);font-weight:600">— 미입력</td>
+                <td><span class="tbadge t-amber">상태값</span></td>
+                <td><span class="sbadge s-partial"><span class="sdot"></span>미번역</span></td>
+                <td style="color:var(--text-muted)">25.02.28</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+              </tr>
+              <tr onclick="showPanel('i18nPanel','다국어 키 수정')">
+                <td><span style="font-family:monospace;font-size:11.5px;color:var(--accent-primary)">msg.login.fail</span></td>
+                <td>로그인에 실패했습니다.</td>
+                <td>Login failed.</td>
+                <td style="color:var(--red-text);font-weight:600">— 미입력</td>
+                <td><span class="tbadge t-gray">시스템 메시지</span></td>
+                <td><span class="sbadge s-partial"><span class="sdot"></span>미번역</span></td>
+                <td style="color:var(--text-muted)">25.02.20</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+              </tr>
+              <tr onclick="showPanel('i18nPanel','다국어 키 수정')">
+                <td><span style="font-family:monospace;font-size:11.5px;color:var(--accent-primary)">label.member</span></td>
+                <td>회원</td>
+                <td>Member</td>
+                <td>Anggota</td>
+                <td><span class="tbadge t-blue">메뉴명</span></td>
+                <td><span class="sbadge s-done"><span class="sdot"></span>완료</span></td>
+                <td style="color:var(--text-muted)">25.01.10</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">수정</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-area">
+          <div class="pg-info">1 – 5 / 342건</div>
+          <div class="pagination">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         5. 권한/그룹 관리
+    ══════════════════════════════════ -->
+    <div id="screen-permission" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">권한/그룹 관리</div>
+          <div class="page-subtitle">관리자 계정별 메뉴 접근 및 작업 권한을 그룹 단위로 설정합니다.</div>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- 좌: 권한 그룹 목록 -->
+        <div class="split-left">
+          <div class="split-left-header">
+            <span class="split-left-title">권한 그룹</span>
+            <button class="btn btn-primary btn-sm" onclick="showPanel('permPanel','권한 그룹 추가')">+ 추가</button>
+          </div>
+          <div>
+            <div class="split-item active" onclick="selectPermGroup(this,'슈퍼관리자')">
+              <div>
+                <div class="split-item-name">슈퍼관리자</div>
+                <div class="split-item-meta">모든 권한</div>
+              </div>
+              <span class="split-item-count">2명</span>
+            </div>
+            <div class="split-item" onclick="selectPermGroup(this,'운영관리자')">
+              <div>
+                <div class="split-item-name">운영관리자</div>
+                <div class="split-item-meta">기본 운영 권한</div>
+              </div>
+              <span class="split-item-count">5명</span>
+            </div>
+            <div class="split-item" onclick="selectPermGroup(this,'CS관리자')">
+              <div>
+                <div class="split-item-name">CS관리자</div>
+                <div class="split-item-meta">회원 조회/처리</div>
+              </div>
+              <span class="split-item-count">3명</span>
+            </div>
+            <div class="split-item" onclick="selectPermGroup(this,'승인 담당자')">
+              <div>
+                <div class="split-item-name">승인 담당자</div>
+                <div class="split-item-meta">가입 승인 전담</div>
+              </div>
+              <span class="split-item-count">2명</span>
+            </div>
+            <div class="split-item" onclick="selectPermGroup(this,'읽기 전용')">
+              <div>
+                <div class="split-item-name">읽기 전용</div>
+                <div class="split-item-meta">조회만 가능</div>
+              </div>
+              <span class="split-item-count">1명</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 권한 매트릭스 -->
+        <div>
+          <div class="table-card">
+            <div class="table-toolbar">
+              <div class="result-info">그룹: <strong id="permGroupTitle">슈퍼관리자</strong> · 권한 매트릭스</div>
+              <div class="toolbar-right">
+                <button class="btn btn-secondary btn-sm" onclick="toast('권한 그룹이 복제되었습니다.','📋')">복제</button>
+                <button class="btn btn-primary btn-sm" onclick="toast('권한 설정이 저장되었습니다.','✅')">저장</button>
+                <button class="btn btn-ghost btn-sm" style="color:var(--red-text)" onclick="toast('사용 중인 그룹은 삭제할 수 없습니다.','⚠️')">삭제</button>
+              </div>
+            </div>
+            <div style="padding:16px 20px 8px;border-bottom:1px solid var(--border-light)">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                <div class="form-group" style="margin:0"><label class="form-label">그룹명</label><input class="form-control" value="슈퍼관리자"></div>
+                <div class="form-group" style="margin:0"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+                <div class="form-group" style="margin:0"><label class="form-label">설명</label><input class="form-control" value="모든 메뉴 전권 보유"></div>
+              </div>
+            </div>
+            <div class="tbl-wrap" style="padding:16px 20px">
+              <table class="matrix-table" style="min-width:auto">
+                <thead>
+                  <tr>
+                    <th style="width:180px">메뉴</th>
+                    <th>조회</th>
+                    <th>등록</th>
+                    <th>수정</th>
+                    <th>삭제</th>
+                    <th>승인</th>
+                  </tr>
+                </thead>
+                <tbody id="permMatrix">
+                  <!-- rows generated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         6. 로그 관리
+    ══════════════════════════════════ -->
+    <div id="screen-log" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">로그 관리</div>
+          <div class="page-subtitle">관리자 접속 및 주요 작업 이력을 조회합니다.</div>
+        </div>
+        <button class="btn btn-secondary">엑셀 다운로드</button>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">기간</span>
+          <input class="f-input" type="date" value="2025-03-01" style="min-width:140px">
+          <span style="color:var(--text-muted)">~</span>
+          <input class="f-input" type="date" value="2025-03-19" style="min-width:140px">
+          <div class="f-select-wrap"><select class="f-select"><option>로그 유형 전체</option><option>접속 로그</option><option>작업 로그</option><option>승인 처리 로그</option><option>상태 변경 로그</option><option>권한 변경 로그</option></select></div>
+        </div>
+        <div class="filter-row">
+          <span class="f-label">관리자</span>
+          <div class="search-combo">
+            <input class="search-input" placeholder="관리자명 또는 계정...">
+            <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+          </div>
+          <div class="f-select-wrap"><select class="f-select"><option>메뉴 전체</option><option>공통관리</option><option>회원/승인관리</option><option>기관관리</option><option>운영관리</option><option>사이트관리</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>작업유형 전체</option><option>로그인</option><option>등록</option><option>수정</option><option>삭제</option><option>승인</option><option>반려</option></select></div>
+          <button class="btn btn-secondary btn-sm">초기화</button>
+          <button class="btn btn-primary btn-sm">검색</button>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-info">총 <strong>1,284</strong>건</div>
+          <div class="toolbar-right">
+            <div class="f-select-wrap"><select class="f-select" style="min-width:90px"><option>20건</option><option>50건</option><option>100건</option></select></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:auto">
+            <colgroup><col width="150"><col width="100"><col width="120"><col width="110"><col width="140"><col><col width="120"><col width="60"></colgroup>
+            <thead>
+              <tr>
+                <th>일시</th>
+                <th>관리자명</th>
+                <th>메뉴</th>
+                <th>작업유형</th>
+                <th>대상</th>
+                <th>변경내용 요약</th>
+                <th>IP</th>
+                <th>상세</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPanel('logPanel','로그 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 14:32:10</td>
+                <td><div style="font-weight:600">슈퍼관리자</div><div style="font-size:11px;color:var(--text-muted)">admin@kidkids</div></td>
+                <td><span class="tbadge t-blue">공통관리</span></td>
+                <td><span class="tbadge t-green">수정</span></td>
+                <td style="font-size:12.5px">코드그룹 &gt; 기관유형</td>
+                <td style="font-size:12.5px;color:var(--text-secondary)">영어유치원 사용여부 Y→N 변경</td>
+                <td style="font-family:monospace;font-size:12px;color:var(--text-muted)">192.168.1.5</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showPanel('logPanel','로그 상세')">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('logPanel','로그 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 13:55:02</td>
+                <td><div style="font-weight:600">운영관리자</div><div style="font-size:11px;color:var(--text-muted)">op01@kidkids</div></td>
+                <td><span class="tbadge t-purple">회원관리</span></td>
+                <td><span class="tbadge t-green">승인</span></td>
+                <td>회원ID: 10032</td>
+                <td style="font-size:12.5px;color:var(--text-secondary)">가입 승인 처리 (햇살어린이집)</td>
+                <td style="font-family:monospace;font-size:12px;color:var(--text-muted)">10.0.2.14</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('logPanel','로그 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 11:20:44</td>
+                <td><div style="font-weight:600">CS관리자</div><div style="font-size:11px;color:var(--text-muted)">cs01@kidkids</div></td>
+                <td><span class="tbadge t-amber">기관관리</span></td>
+                <td><span class="tbadge t-amber">수정</span></td>
+                <td>기관ID: 220</td>
+                <td style="font-size:12.5px;color:var(--text-secondary)">기관 상태 정상→정지 변경</td>
+                <td style="font-family:monospace;font-size:12px;color:var(--text-muted)">10.0.2.22</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('logPanel','로그 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 10:08:33</td>
+                <td><div style="font-weight:600">슈퍼관리자</div><div style="font-size:11px;color:var(--text-muted)">admin@kidkids</div></td>
+                <td><span class="tbadge t-blue">공통관리</span></td>
+                <td><span class="tbadge t-blue">등록</span></td>
+                <td>약관 &gt; 서비스 이용약관</td>
+                <td style="font-size:12.5px;color:var(--text-secondary)">v1.3 신규 버전 등록 및 적용</td>
+                <td style="font-family:monospace;font-size:12px;color:var(--text-muted)">192.168.1.5</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('logPanel','로그 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.18 17:44:01</td>
+                <td><div style="font-weight:600">운영관리자</div><div style="font-size:11px;color:var(--text-muted)">op01@kidkids</div></td>
+                <td><span class="tbadge t-gray">접속</span></td>
+                <td><span class="tbadge t-gray">로그인</span></td>
+                <td>계정: op01</td>
+                <td style="font-size:12.5px;color:var(--text-secondary)">관리자 로그인 성공</td>
+                <td style="font-family:monospace;font-size:12px;color:var(--text-muted)">10.0.2.14</td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-area">
+          <div class="pg-info">1 – 20 / 1,284건</div>
+          <div class="pagination">
+            <button class="pg-btn">‹‹</button>
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">›</button>
+            <button class="pg-btn">››</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ══════════════════════════════════════════
+     DETAIL PANELS (SLIDE-IN)
+══════════════════════════════════════════ -->
+
+<!-- 공통 패널 overlay -->
+<div class="modal-overlay" id="panelOverlay" onclick="closePanel()">
+  <div class="detail-panel" onclick="event.stopPropagation()" id="detailPanel">
+    <div class="dp-header">
+      <div class="dp-title" id="panelTitle">패널 제목</div>
+      <button class="dp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="dp-body" id="panelBody"></div>
+    <div class="dp-footer" id="panelFooter"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ═══════════════════════════════════
+   SIDEBAR TOGGLE
+═══════════════════════════════════ */
+function toggleSub(id, navId) {
+  const sub = document.getElementById(id);
+  const nav = document.getElementById(navId);
+  if (!sub) return;
+  const isOpen = sub.style.display !== 'none';
+  sub.style.display = isOpen ? 'none' : 'block';
+  if (nav) nav.classList.toggle('open', !isOpen);
+}
+
+/* ═══════════════════════════════════
+   SCREEN SWITCH
+═══════════════════════════════════ */
+const screenNames = {
+  code: '코드 관리', category: '카테고리 관리',
+  terms: '약관/동의 관리', i18n: '다국어 관리',
+  permission: '권한/그룹 관리', log: '로그 관리'
+};
+
+function showScreen(key) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + key);
+  if (el) { el.classList.add('active'); el.classList.add('fade-up'); }
+  document.getElementById('topbarCur').textContent = screenNames[key] || key;
+  // highlight sidebar sub
+  document.querySelectorAll('.nav-sub .nav-item').forEach(i => i.classList.remove('active-sub'));
+  const subEl = document.getElementById('sub-' + key);
+  if (subEl) subEl.classList.add('active-sub');
+  // permission matrix init
+  if (key === 'permission') initPermMatrix();
+}
+
+/* ═══════════════════════════════════
+   CODE GROUP SELECT
+═══════════════════════════════════ */
+function selectCodeGroup(el, name) {
+  document.querySelectorAll('#screen-code .split-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('codeGroupTitle').textContent = name;
+  toast(name + ' 코드 목록을 불러왔습니다.', '📋');
+}
+
+/* ═══════════════════════════════════
+   CATEGORY TREE SELECT
+═══════════════════════════════════ */
+function selectTree(el, name) {
+  document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  if (document.getElementById('catTitle')) document.getElementById('catTitle').textContent = name;
+}
+function toggleTree(el) {
+  const node = el.closest('.tree-node');
+  const children = node.querySelector('.tree-children');
+  if (!children) return;
+  const open = children.style.display !== 'none';
+  children.style.display = open ? 'none' : 'block';
+  el.textContent = open ? '►' : '▼';
+}
+
+/* ═══════════════════════════════════
+   PERMISSION GROUP SELECT
+═══════════════════════════════════ */
+function selectPermGroup(el, name) {
+  document.querySelectorAll('#screen-permission .split-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('permGroupTitle').textContent = name;
+  initPermMatrix(name === '슈퍼관리자' || name === '운영관리자');
+}
+
+const MENUS = ['회원/승인관리','기관관리','공통관리','운영관리','사이트관리','통계관리'];
+const PERMS = ['조회','등록','수정','삭제','승인'];
+
+function initPermMatrix(allChecked = true) {
+  const tbody = document.getElementById('permMatrix');
+  if (!tbody) return;
+  tbody.innerHTML = MENUS.map(m => `
+    <tr>
+      <td style="font-weight:500">${m}</td>
+      ${PERMS.map((p,i) => `<td><input type="checkbox" class="chk" ${allChecked || (p==='조회') ? 'checked' : ''}></td>`).join('')}
+    </tr>
+  `).join('');
+}
+
+/* ═══════════════════════════════════
+   PANEL CONTENTS
+═══════════════════════════════════ */
+const PANEL_CONTENTS = {
+  '새 코드 그룹': `
+    <div class="form-group"><label class="form-label">그룹명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: 기관유형"></div>
+    <div class="form-group"><label class="form-label">그룹 코드 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: ORG_TYPE (영문대문자)"></div>
+    <div class="form-group"><label class="form-label">설명</label><textarea class="form-textarea" placeholder="코드 그룹 설명 입력"></textarea></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+  `,
+  '코드 추가': `
+    <div class="form-group"><label class="form-label">코드명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: 어린이집"></div>
+    <div class="form-group"><label class="form-label">코드값 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: NURSERY (영문대문자)"></div>
+    <div class="form-group"><label class="form-label">상위 코드</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>없음 (최상위)</option><option>어린이집</option><option>유치원</option></select></div></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+    <div class="form-group"><label class="form-label">비고</label><textarea class="form-textarea" style="min-height:60px" placeholder="코드 설명 (선택)"></textarea></div>
+  `,
+  '코드 수정': `
+    <div class="form-group"><label class="form-label">코드명</label><input class="form-control" value="어린이집"></div>
+    <div class="form-group"><label class="form-label">코드값</label><input class="form-control" value="NURSERY" readonly style="background:#F3F4F6;color:var(--text-secondary)"><div style="font-size:11px;color:var(--text-muted);margin-top:3px">코드값은 등록 후 변경 불가합니다.</div></div>
+    <div class="form-group"><label class="form-label">상위 코드</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option selected>없음 (최상위)</option><option>어린이집</option><option>유치원</option></select></div></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '카테고리 추가': `
+    <div class="form-group"><label class="form-label">카테고리 유형 <span style="color:var(--red)">*</span></label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>자료 카테고리</option><option>공지 카테고리</option><option>앨범 카테고리</option><option>연령 카테고리</option><option>주제/영역 분류</option></select></div></div>
+    <div class="form-group"><label class="form-label">상위 카테고리</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>없음 (루트)</option><option>자료 카테고리</option><option>교육 자료</option><option>생활 안내</option></select></div></div>
+    <div class="form-group"><label class="form-label">카테고리명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="카테고리명 입력"></div>
+    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" placeholder="예: EDU_MATERIAL (자동 생성 가능)"></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '하위 카테고리 추가': `
+    <div style="background:var(--accent-primary-light);padding:10px 12px;border-radius:6px;margin-bottom:14px;font-size:12.5px;color:var(--blue-text)">
+      상위 카테고리: <strong>자료 카테고리</strong> 하위에 추가됩니다.
+    </div>
+    <div class="form-group"><label class="form-label">카테고리명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="하위 카테고리명 입력"></div>
+    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" placeholder="예: SUB_CAT_001"></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '카테고리 수정': `
+    <div class="form-group"><label class="form-label">카테고리명</label><input class="form-control" value="자료 카테고리"></div>
+    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" value="MATERIAL_CAT" readonly style="background:#F3F4F6"></div>
+    <div class="form-group"><label class="form-label">Depth</label><input class="form-control" value="1 (루트)" readonly style="background:#F3F4F6;color:var(--text-secondary)"></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
+    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '새 약관 등록': `
+    <div class="form-group"><label class="form-label">약관명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: 서비스 이용약관"></div>
+    <div class="form-group"><label class="form-label">약관 유형 <span style="color:var(--red)">*</span></label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>서비스 이용약관</option><option>개인정보 처리방침</option><option>마케팅 수신 동의</option><option>제3자 제공 동의</option><option>추가 동의</option></select></div></div>
+    <div class="form-group"><label class="form-label">필수/선택 <span style="color:var(--red)">*</span></label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>필수</option><option>선택</option></select></div></div>
+    <div class="form-group"><label class="form-label">버전 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: v1.0"></div>
+    <div class="form-group"><label class="form-label">시행일 <span style="color:var(--red)">*</span></label><input class="form-control" type="date" value="2025-04-01"></div>
+    <div class="form-group"><label class="form-label">약관 내용 <span style="color:var(--red)">*</span></label><textarea class="rich-area" placeholder="약관 전문을 입력하세요..."></textarea></div>
+    <div style="background:var(--amber-bg);padding:10px 12px;border-radius:6px;font-size:12px;color:var(--amber-text)">
+      ⚠️ 기존 약관은 자동으로 종료 처리되며 새 버전이 등록됩니다.
+    </div>
+  `,
+  '약관 상세/수정': `
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="setTabActive(this)">현재 버전</button>
+      <button class="tab-btn" onclick="setTabActive(this)">버전 이력</button>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">기본 정보</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">약관명</div><div class="dp-val">서비스 이용약관</div></div>
+        <div class="dp-item"><div class="dp-key">유형</div><div class="dp-val"><span class="tbadge t-blue">이용약관</span></div></div>
+        <div class="dp-item"><div class="dp-key">필수여부</div><div class="dp-val"><span class="tbadge t-amber">필수</span></div></div>
+        <div class="dp-item"><div class="dp-key">현재 버전</div><div class="dp-val"><span class="ver-badge ver-current">v1.3</span></div></div>
+        <div class="dp-item"><div class="dp-key">시행일</div><div class="dp-val">2024.12.01</div></div>
+        <div class="dp-item"><div class="dp-key">상태</div><div class="dp-val"><span class="sbadge s-current"><span class="sdot"></span>적용중</span></div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">버전 이력</div>
+      <table style="min-width:auto;width:100%">
+        <thead><tr><th>버전</th><th>시행일</th><th>종료일</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ver-badge ver-current">v1.3</span></td><td>2024.12.01</td><td>-</td><td><span class="sbadge s-current"><span class="sdot"></span>적용중</span></td></tr>
+          <tr><td><span class="ver-badge">v1.2</span></td><td>2024.06.01</td><td>2024.11.30</td><td><span class="sbadge s-end"><span class="sdot"></span>종료</span></td></tr>
+          <tr><td><span class="ver-badge">v1.1</span></td><td>2024.01.15</td><td>2024.05.31</td><td><span class="sbadge s-end"><span class="sdot"></span>종료</span></td></tr>
+          <tr><td><span class="ver-badge">v1.0</span></td><td>2023.09.01</td><td>2024.01.14</td><td><span class="sbadge s-end"><span class="sdot"></span>종료</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `,
+  '다국어 키 추가': `
+    <div class="form-group"><label class="form-label">키 (KEY) <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: menu.dashboard (소문자, 점 구분)"></div>
+    <div class="form-group"><label class="form-label">사용 위치</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>메뉴명</option><option>버튼명</option><option>상태값</option><option>안내문구</option><option>시스템 메시지</option></select></div></div>
+    <div class="form-group"><label class="form-label">한국어 🇰🇷 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="한국어 번역값 입력"></div>
+    <div class="form-group"><label class="form-label">영어 🇺🇸</label><input class="form-control" placeholder="English translation"></div>
+    <div class="form-group"><label class="form-label">인도네시아어 🇮🇩</label><input class="form-control" placeholder="Terjemahan Bahasa Indonesia"></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '다국어 키 수정': `
+    <div class="form-group"><label class="form-label">키 (KEY)</label><input class="form-control" value="status.approved" readonly style="background:#F3F4F6;color:var(--text-secondary);font-family:monospace"></div>
+    <div class="form-group"><label class="form-label">사용 위치</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option selected>상태값</option><option>메뉴명</option><option>버튼명</option></select></div></div>
+    <div class="form-group"><label class="form-label">한국어 🇰🇷</label><input class="form-control" value="승인완료"></div>
+    <div class="form-group"><label class="form-label">영어 🇺🇸</label><input class="form-control" value="Approved"></div>
+    <div class="form-group"><label class="form-label">인도네시아어 🇮🇩</label><input class="form-control" placeholder="미입력 — 번역 필요" style="border-color:var(--red);background:#FFF5F5"></div>
+    <div style="background:var(--amber-bg);padding:9px 12px;border-radius:6px;font-size:12px;color:var(--amber-text);margin-bottom:12px">⚠️ 인도네시아어 번역이 입력되지 않았습니다.</div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+  `,
+  '권한 그룹 추가': `
+    <div class="form-group"><label class="form-label">그룹명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: 콘텐츠 관리자"></div>
+    <div class="form-group"><label class="form-label">그룹 설명</label><textarea class="form-textarea" style="min-height:60px" placeholder="권한 그룹 설명 입력"></textarea></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
+    <div style="margin-top:6px;padding:12px;background:var(--accent-primary-light);border-radius:8px;font-size:12.5px;color:var(--blue-text)">
+      ℹ️ 그룹 추가 후 권한 매트릭스에서 메뉴별 권한을 설정하세요.
+    </div>
+  `,
+  '로그 상세': `
+    <div class="dp-section">
+      <div class="dp-sec-title">로그 기본 정보</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">일시</div><div class="dp-val" style="font-family:monospace;font-size:12px">2025.03.19 14:32:10</div></div>
+        <div class="dp-item"><div class="dp-key">관리자</div><div class="dp-val">슈퍼관리자</div></div>
+        <div class="dp-item"><div class="dp-key">계정</div><div class="dp-val" style="font-family:monospace;font-size:12px">admin@kidkids.com</div></div>
+        <div class="dp-item"><div class="dp-key">IP</div><div class="dp-val" style="font-family:monospace;font-size:12px">192.168.1.5</div></div>
+        <div class="dp-item"><div class="dp-key">메뉴</div><div class="dp-val">공통관리 &gt; 코드 관리</div></div>
+        <div class="dp-item"><div class="dp-key">작업유형</div><div class="dp-val"><span class="tbadge t-green">수정</span></div></div>
+        <div class="dp-item"><div class="dp-key">대상</div><div class="dp-val">코드그룹: 기관유형 &gt; 영어유치원</div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">변경 내용 비교</div>
+      <table style="min-width:auto;width:100%;border:1px solid var(--border-light);border-radius:8px;overflow:hidden">
+        <thead><tr><th style="background:#F8F9FB;padding:8px 12px;font-size:11px;text-align:left">항목</th><th style="background:#FEE2E2;padding:8px 12px;font-size:11px;text-align:left;color:var(--red-text)">변경 전</th><th style="background:#D1FAE5;padding:8px 12px;font-size:11px;text-align:left;color:var(--green-text)">변경 후</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:9px 12px;font-size:12.5px;border-top:1px solid var(--border-light)">사용여부</td><td style="padding:9px 12px;font-size:12.5px;background:#FFF5F5;border-top:1px solid var(--border-light)"><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td style="padding:9px 12px;font-size:12.5px;background:#F0FFF4;border-top:1px solid var(--border-light)"><span class="sbadge s-inactive"><span class="sdot"></span>미사용</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `
+};
+
+function showPanel(panelId, title) {
+  const overlay = document.getElementById('panelOverlay');
+  const titleEl = document.getElementById('panelTitle');
+  const bodyEl  = document.getElementById('panelBody');
+  const footerEl = document.getElementById('panelFooter');
+  if (!overlay) return;
+  titleEl.textContent = title;
+  bodyEl.innerHTML = PANEL_CONTENTS[title] || `<p style="color:var(--text-secondary);font-size:13px">${title} 입력 폼이 여기에 표시됩니다.</p>`;
+  // footer buttons
+  if (title.includes('상세') || title.includes('이력') || title.includes('로그')) {
+    footerEl.innerHTML = `<button class="btn btn-secondary" onclick="closePanel()">닫기</button>`;
+  } else {
+    footerEl.innerHTML = `
+      <button class="btn btn-secondary" onclick="closePanel()">취소</button>
+      <button class="btn btn-primary" onclick="closePanel();toast('저장되었습니다.','✅')">저장</button>
+    `;
+  }
+  overlay.classList.add('show');
+}
+
+function closePanel() {
+  document.getElementById('panelOverlay').classList.remove('show');
+}
+
+function setTabActive(el) {
+  el.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function toast(msg, icon = '✅') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  initPermMatrix(true);
+  // open common sub
+  const sub = document.getElementById('subCommon');
+  if (sub) sub.style.display = 'block';
+});
+</script>
+</body>
+</html>

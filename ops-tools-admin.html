@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알림장 관리자 시스템 — 운영도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-base:        #F4F5F7;
+  --bg-surface:     #FFFFFF;
+  --bg-sidebar:     #1A1D2E;
+  --bg-sidebar-hover:#252840;
+  --bg-sidebar-active:#2E3250;
+
+  --accent-primary:       #4361EE;
+  --accent-primary-light: #EEF1FD;
+  --accent-secondary:     #3A0CA3;
+  --accent-hover:         #3251D5;
+
+  --text-primary:   #1A1D2E;
+  --text-secondary: #6B7280;
+  --text-muted:     #9CA3AF;
+  --text-sidebar:   #C5C9D6;
+
+  --border-light:   #E5E7EB;
+  --border-medium:  #D1D5DB;
+
+  --green:   #10B981; --green-bg:  #D1FAE5; --green-text: #065F46;
+  --blue:    #3B82F6; --blue-bg:   #DBEAFE; --blue-text:  #1E40AF;
+  --amber:   #F59E0B; --amber-bg:  #FEF3C7; --amber-text: #92400E;
+  --red:     #EF4444; --red-bg:    #FEE2E2; --red-text:   #991B1B;
+  --purple:  #8B5CF6; --purple-bg: #EDE9FE; --purple-text:#5B21B6;
+  --cyan:    #06B6D4; --cyan-bg:   #CFFAFE; --cyan-text:  #164E63;
+
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:  0 8px 28px rgba(0,0,0,0.10);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.18);
+
+  --radius-sm: 6px;  --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px;
+
+  --sidebar-width: 240px;
+  --header-height: 60px;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ══════════════════════════════════
+   SIDEBAR
+══════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-width); min-height: 100vh;
+  background: var(--bg-sidebar); display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+}
+.sidebar-logo {
+  height: var(--header-height); display: flex; align-items: center;
+  padding: 0 20px; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
+}
+.logo-icon { width: 32px; height: 32px; background: var(--accent-primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.logo-text { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.logo-badge { font-size: 10px; font-weight: 500; color: var(--accent-primary); background: rgba(67,97,238,0.15); padding: 2px 6px; border-radius: 4px; margin-left: auto; }
+.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section-title { font-size: 10px; font-weight: 600; color: rgba(197,201,214,0.4); letter-spacing: 1px; text-transform: uppercase; padding: 12px 20px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: var(--text-sidebar); cursor: pointer; font-size: 13.5px; transition: all 0.15s; position: relative; }
+.nav-item:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--bg-sidebar-active); color: #fff; font-weight: 600; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent-primary); border-radius: 0 2px 2px 0; }
+.nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.nav-item.active .nav-icon, .nav-item.open .nav-icon { opacity: 1; }
+.nav-badge { margin-left: auto; background: var(--accent-primary); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+.nav-arrow { margin-left: auto; width: 14px; height: 14px; transition: transform 0.2s; }
+.nav-item.open .nav-arrow { transform: rotate(180deg); }
+.nav-sub { background: rgba(0,0,0,0.15); overflow: hidden; }
+.nav-sub .nav-item { padding-left: 44px; font-size: 13px; }
+.nav-sub .nav-item.active-sub { background: rgba(67,97,238,0.2); color: #fff; font-weight: 600; }
+.nav-sub .nav-item.active-sub::before { display: none; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s; }
+.sidebar-user:hover { background: var(--bg-sidebar-hover); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#4361EE,#7C3AED); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: #fff; }
+.user-role { font-size: 11px; color: rgba(197,201,214,0.6); }
+
+/* ══════════════════════════════════
+   MAIN
+══════════════════════════════════ */
+.main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { height: var(--header-height); background: var(--bg-surface); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; padding: 0 24px; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow-sm); flex-shrink: 0; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+.breadcrumb-sep { color: var(--text-muted); }
+.breadcrumb-cur { color: var(--text-primary); font-weight: 600; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.icon-btn { width: 34px; height: 34px; border: none; background: transparent; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; position: relative; }
+.icon-btn:hover { background: var(--bg-base); color: var(--text-primary); }
+.notif-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; border: 1.5px solid #fff; }
+.topbar-divider { width: 1px; height: 22px; background: var(--border-light); }
+.topbar-profile { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s; }
+.topbar-profile:hover { background: var(--bg-base); }
+.profile-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#4361EE,#7C3AED); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+.profile-name { font-size: 13px; font-weight: 600; }
+.content { flex: 1; padding: 24px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+/* ══════════════════════════════════
+   COMMON COMPONENTS
+══════════════════════════════════ */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+.btn-primary { background: var(--accent-primary); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-medium); }
+.btn-secondary:hover { background: var(--bg-base); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+.btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); }
+.btn-ghost:hover { background: var(--bg-base); }
+.btn-sm { padding: 4px 10px; font-size: 11.5px; }
+.btn-lg { padding: 10px 22px; font-size: 13.5px; font-weight: 600; }
+/* send button — distinct action color (using existing accent) */
+.btn-send { background: #1A1D2E; color: #fff; }
+.btn-send:hover { background: #2E3250; }
+
+.filter-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter-row + .filter-row { margin-top: 10px; }
+.f-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; width: 68px; flex-shrink: 0; }
+.f-select-wrap { position: relative; }
+.f-select-wrap::after { content: ''; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); pointer-events: none; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--text-muted); }
+.f-select { height: 34px; padding: 0 28px 0 10px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--bg-base); color: var(--text-primary); appearance: none; cursor: pointer; transition: all 0.15s; min-width: 120px; }
+.f-select:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.f-input { height: 34px; padding: 0 10px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--bg-base); color: var(--text-primary); transition: all 0.15s; min-width: 160px; }
+.f-input:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.search-combo { display: flex; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-base); transition: all 0.15s; }
+.search-combo:focus-within { border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.search-input { height: 34px; padding: 0 10px; border: none; background: transparent; font-size: 13px; font-family: inherit; color: var(--text-primary); outline: none; width: 200px; }
+.search-input::placeholder { color: var(--text-muted); }
+.search-btn { height: 34px; padding: 0 14px; background: var(--accent-primary); border: none; color: #fff; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 4px; font-size: 12.5px; font-family: inherit; }
+.search-btn:hover { background: var(--accent-hover); }
+
+.table-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-light); }
+.result-info { font-size: 13px; color: var(--text-secondary); }
+.result-info strong { color: var(--text-primary); font-weight: 700; }
+.toolbar-right { display: flex; align-items: center; gap: 8px; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #F8F9FB; padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.4px; text-transform: uppercase; border-bottom: 1px solid var(--border-light); white-space: nowrap; }
+th:first-child, td:first-child { padding-left: 20px; }
+td { padding: 12px 12px; font-size: 12.5px; color: var(--text-primary); border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFBFC; }
+tr.row-sel td { background: var(--accent-primary-light); }
+
+.chk { width: 15px; height: 15px; border: 1.5px solid var(--border-medium); border-radius: 3px; appearance: none; cursor: pointer; transition: all 0.15s; position: relative; }
+.chk:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+.chk:checked::after { content: ''; position: absolute; left: 3px; top: 1px; width: 5px; height: 8px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
+
+.sbadge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.sdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.s-success { background: var(--green-bg); color: var(--green-text); }
+.s-success .sdot { background: var(--green); }
+.s-fail    { background: var(--red-bg);   color: var(--red-text); }
+.s-fail    .sdot { background: var(--red); }
+.s-pending { background: var(--amber-bg); color: var(--amber-text); }
+.s-pending .sdot { background: var(--amber); }
+.s-reserve { background: var(--blue-bg);  color: var(--blue-text); }
+.s-reserve .sdot { background: var(--blue); }
+.s-sending { background: var(--purple-bg); color: var(--purple-text); }
+.s-sending .sdot { background: var(--purple); }
+.s-active  { background: var(--green-bg); color: var(--green-text); }
+.s-active  .sdot { background: var(--green); }
+.s-inactive { background: #F3F4F6; color: #374151; }
+.s-inactive .sdot { background: #9CA3AF; }
+
+.tbadge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.t-blue   { background: var(--blue-bg);   color: var(--blue-text); }
+.t-purple { background: var(--purple-bg); color: var(--purple-text); }
+.t-green  { background: var(--green-bg);  color: var(--green-text); }
+.t-amber  { background: var(--amber-bg);  color: var(--amber-text); }
+.t-gray   { background: #F3F4F6; color: #374151; }
+.t-cyan   { background: var(--cyan-bg);   color: var(--cyan-text); }
+.t-red    { background: var(--red-bg);    color: var(--red-text); }
+.t-dark   { background: #1A1D2E; color: #fff; }
+
+.view-btn { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: var(--bg-base); color: var(--text-secondary); border: 1px solid var(--border-medium); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.view-btn:hover { background: var(--accent-primary-light); color: var(--accent-primary); border-color: #b0bfee; }
+
+.pagination-area { display: flex; align-items: center; justify-content: space-between; padding: 13px 20px; border-top: 1px solid var(--border-light); }
+.pg-info { font-size: 12.5px; color: var(--text-secondary); }
+.pagination { display: flex; gap: 3px; }
+.pg-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-size: 12.5px; cursor: pointer; color: var(--text-secondary); background: var(--bg-surface); transition: all 0.15s; font-family: inherit; }
+.pg-btn:hover { background: var(--bg-base); }
+.pg-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: 700; }
+
+/* summary cards */
+.sum-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.sum-grid-5 { grid-template-columns: repeat(5,1fr); }
+.sum-card { background: var(--bg-surface); border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+.sum-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--card-accent, #E5E7EB); }
+.sum-card-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.sum-card-num { font-size: 24px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.8px; }
+.sum-card-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+/* detail panel */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,12,28,0.45); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-start; justify-content: flex-end; }
+.modal-overlay.show { display: flex; }
+.detail-panel { width: 520px; height: 100vh; background: var(--bg-surface); box-shadow: -8px 0 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; animation: slideLeft 0.25s cubic-bezier(0.34,1.1,0.64,1); overflow-y: auto; }
+@keyframes slideLeft { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.dp-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; background: var(--bg-surface); z-index: 10; }
+.dp-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.dp-close { width: 30px; height: 30px; border: none; background: var(--bg-base); border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 16px; transition: all 0.15s; }
+.dp-close:hover { background: #fee2e2; color: #dc2626; }
+.dp-body { padding: 20px 24px; flex: 1; }
+.dp-section { margin-bottom: 20px; }
+.dp-sec-title { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border-light); }
+.dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dp-item .dp-key { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+.dp-item .dp-val { font-size: 13px; font-weight: 500; }
+.dp-footer { padding: 16px 24px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; justify-content: flex-end; position: sticky; bottom: 0; background: var(--bg-surface); }
+
+/* form */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+.form-required { color: var(--red); }
+.form-control { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text-primary); background: var(--bg-base); transition: all 0.15s; }
+.form-control:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.form-control[readonly] { background: #F3F4F6; color: var(--text-secondary); cursor: default; }
+.form-textarea { width: 100%; min-height: 90px; padding: 8px 10px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text-primary); background: var(--bg-base); resize: vertical; transition: all 0.15s; line-height: 1.6; }
+.form-textarea:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.form-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+/* section divider */
+.sec-divider { display: flex; align-items: center; font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; margin-top: 28px; }
+.sec-divider:first-child { margin-top: 0; }
+.sec-divider::before { content: ''; width: 4px; height: 18px; background: var(--accent-primary); border-radius: 2px; margin-right: 10px; display: inline-block; }
+
+/* compose card (push form) */
+.compose-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 24px 28px; margin-bottom: 16px; }
+
+/* phone mockup */
+.phone-mock { width: 200px; flex-shrink: 0; background: #1A1D2E; border-radius: 28px; padding: 14px 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); position: sticky; top: 84px; }
+.phone-screen { background: #fff; border-radius: 18px; overflow: hidden; min-height: 300px; }
+.phone-status { background: #1A1D2E; height: 20px; display: flex; align-items: center; justify-content: center; }
+.phone-notch { width: 50px; height: 12px; background: #0d0f1a; border-radius: 0 0 8px 8px; }
+.push-preview-wrap { padding: 12px 10px; }
+.push-preview-card { background: #F4F5F7; border-radius: 10px; padding: 10px 12px; }
+.push-preview-app { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.push-preview-appicon { width: 18px; height: 18px; background: var(--accent-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 700; }
+.push-preview-appname { font-size: 10px; font-weight: 600; color: #374151; }
+.push-preview-time { font-size: 9px; color: #9CA3AF; margin-left: auto; }
+.push-preview-title { font-size: 12px; font-weight: 700; color: #1A1D2E; margin-bottom: 3px; word-break: break-all; }
+.push-preview-body { font-size: 11px; color: #374151; line-height: 1.4; word-break: break-all; }
+.push-mock-label { text-align: center; font-size: 10px; color: rgba(197,201,214,0.6); margin-top: 10px; font-weight: 500; }
+
+/* target summary box */
+.target-box { background: var(--accent-primary-light); border: 1px solid #c7d3fb; border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px; }
+.target-box-row { display: flex; align-items: center; justify-content: space-between; }
+.target-count { font-size: 26px; font-weight: 800; color: var(--accent-primary); letter-spacing: -1px; }
+.target-label { font-size: 12px; color: var(--blue-text); font-weight: 500; margin-top: 2px; }
+.target-breakdown { display: flex; gap: 12px; font-size: 12px; color: var(--blue-text); margin-top: 8px; padding-top: 8px; border-top: 1px solid #c7d3fb; }
+
+/* tag chips */
+.chip-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; background: var(--accent-primary-light); color: var(--accent-primary); border-radius: 12px; font-size: 12px; font-weight: 500; cursor: pointer; }
+.chip:hover { background: #d9e1fc; }
+.chip-rm { border: none; background: transparent; color: var(--accent-primary); font-size: 12px; cursor: pointer; line-height: 1; padding: 0; }
+
+/* var tag */
+.var-tag { display: inline-flex; align-items: center; padding: 2px 8px; background: #FEF3C7; color: #92400E; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; cursor: pointer; }
+.var-tag:hover { background: #fde68a; }
+
+/* radio group */
+.radio-group { display: flex; gap: 16px; flex-wrap: wrap; }
+.radio-item { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.radio-item input { accent-color: var(--accent-primary); width: 15px; height: 15px; }
+
+/* progress bar (send rate) */
+.prog-wrap { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.prog-bar { height: 100%; border-radius: 3px; background: var(--green); transition: width 0.4s; }
+.prog-bar.fail { background: var(--red); }
+
+/* screen pages */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* toast */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: #1A1D2E; color: #fff; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); min-width: 240px; animation: toastIn 0.25s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.3s ease both; }
+
+/* confirm modal */
+.confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(10,12,28,0.5); backdrop-filter: blur(3px); z-index: 2000; align-items: center; justify-content: center; }
+.confirm-overlay.show { display: flex; }
+.confirm-box { background: #fff; border-radius: var(--radius-xl); padding: 28px 32px; width: 380px; box-shadow: var(--shadow-modal); animation: fadeUp 0.2s ease; }
+.confirm-icon { font-size: 32px; margin-bottom: 12px; }
+.confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.confirm-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+.confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">📋</div>
+    <div class="logo-text">알림장 Admin</div>
+    <div class="logo-badge">v2.4</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item" onclick="location.href='dashboard.html'">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      Home (대시보드)
+    </div>
+    <div class="nav-section-title">관리</div>
+
+    <div class="nav-item" onclick="toggleSub('subCommon','navCommon')" id="navCommon">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      공통관리
+      <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+    <div class="nav-sub" id="subCommon" style="display:none">
+      <div class="nav-item" onclick="location.href='common-admin.html'">코드 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html'">카테고리 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html'">약관/동의 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html'">다국어 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html'">권한/그룹 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html'">로그 관리</div>
+    </div>
+
+    <div class="nav-item" onclick="toggleSub('subMember','navMember')" id="navMember">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      회원/승인관리
+      <span class="nav-badge">2</span>
+    </div>
+    <div class="nav-sub" id="subMember" style="display:none">
+      <div class="nav-item" onclick="location.href='member-list-admin.html'">통합회원 조회</div>
+      <div class="nav-item" onclick="location.href='member-approval.html'">가입/승인 관리</div>
+      <div class="nav-item" onclick="location.href='invitation-admin__2_.html'">초대 관리</div>
+      <div class="nav-item" onclick="location.href='member-status-admin.html'">회원 상태관리</div>
+    </div>
+
+<div class="nav-item" onclick="toggleSub('subOrg','navOrg')" id="navOrg">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+  기관관리
+  <span class="nav-badge">5</span>
+  <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+</div>
+<div class="nav-sub" id="subOrg" style="display:none">
+  <div class="nav-item" onclick="location.href='org-admin.html'">기관 조회</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#approval'">기관 승인 관리 <span class="nav-badge">5</span></div>
+  <div class="nav-item" onclick="location.href='org-admin.html#status'">기관 상태 관리</div>
+</div>
+
+<div class="nav-item" style="cursor:default;opacity:0.5">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+</div>
+
+    <!-- 운영도구 (현재 활성) -->
+    <div class="nav-item active open" id="navOps" onclick="toggleSub('subOps','navOps')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      운영도구
+      <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+    <div class="nav-sub" id="subOps">
+      <div class="nav-item active-sub" id="sub-push"     onclick="showScreen('push')">푸시 발송 관리</div>
+      <div class="nav-item"            id="sub-template" onclick="showScreen('template')">푸시 템플릿 관리</div>
+      <div class="nav-item"            id="sub-history"  onclick="showScreen('history')">푸시 발송 이력</div>
+    </div>
+
+    <div class="nav-item" onclick="location.href='site-admin.html'">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+      사이트관리
+    </div>
+    <div class="nav-item" onclick="location.href='stats-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  통계관리
+</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">관</div>
+      <div>
+        <div class="user-name">슈퍼 관리자</div>
+        <div class="user-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6b7b2bbbfb896bdbfb2bdbfb2a5f8b5b9bb">[email&#160;protected]</a></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="main">
+  <header class="topbar">
+    <div class="breadcrumb">
+      <span>운영도구</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-cur" id="topbarCur">푸시 발송 관리</span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="notif-dot"></span></button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-profile">
+        <div class="profile-av">관</div>
+        <span class="profile-name">슈퍼 관리자</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════
+         1. 푸시 발송 관리
+    ══════════════════════════════════ -->
+    <div id="screen-push" class="screen active fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">푸시 발송 관리</div>
+          <div class="page-subtitle">특정 대상에게 푸시 알림을 직접 작성하여 즉시 또는 예약 발송합니다.</div>
+        </div>
+      </div>
+
+      <!-- 요약 카드 (오늘 기준) -->
+      <div class="sum-grid sum-grid-5">
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">오늘 발송 건수</div><div class="sum-card-num">3</div><div class="sum-card-sub">건 완료</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">총 발송 수신자</div><div class="sum-card-num">1,248</div><div class="sum-card-sub">명에게 발송</div></div>
+        <div class="sum-card" style="--card-accent:#EF4444"><div class="sum-card-label">실패 수</div><div class="sum-card-num">14</div><div class="sum-card-sub">건 발송 실패</div></div>
+        <div class="sum-card" style="--card-accent:#3B82F6"><div class="sum-card-label">예약 발송</div><div class="sum-card-num">2</div><div class="sum-card-sub">건 대기 중</div></div>
+        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">이번 달 총 발송</div><div class="sum-card-num">28</div><div class="sum-card-sub">건 / 월간</div></div>
+      </div>
+
+      <!-- 작성 영역 + 미리보기 -->
+      <div style="display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start">
+
+        <!-- 좌: 발송 폼 -->
+        <div>
+          <!-- ① 메시지 작성 -->
+          <div class="compose-card">
+            <div class="sec-divider">① 메시지 작성</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+              <div class="f-select-wrap" style="flex:1">
+                <select class="f-select" style="width:100%" id="templateSelect" onchange="applyTemplate(this)">
+                  <option value="">— 템플릿 불러오기 (선택) —</option>
+                  <option value="투약 알림">💊 투약 알림</option>
+                  <option value="출석 알림">✅ 출석 알림</option>
+                  <option value="공지 등록 알림">📢 공지 등록 알림</option>
+                  <option value="승인 완료 알림">🎉 승인 완료 알림</option>
+                  <option value="반려 알림">❌ 반려 알림</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="clearForm()">내용 초기화</button>
+            </div>
+            <div class="form-group">
+              <label class="form-label">푸시 제목 <span class="form-required">*</span></label>
+              <input class="form-control" id="pushTitle" placeholder="알림 제목 입력 (최대 50자)" oninput="updatePreview()" maxlength="50">
+              <div class="form-hint" id="titleCount">0 / 50자</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">푸시 내용 <span class="form-required">*</span></label>
+              <textarea class="form-textarea" id="pushBody" style="min-height:80px" placeholder="알림 내용 입력 (최대 200자)" oninput="updatePreview()" maxlength="200"></textarea>
+              <div class="form-hint" id="bodyCount">0 / 200자</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">링크 URL (선택)</label>
+              <input class="form-control" id="pushUrl" placeholder="알림 클릭 시 이동할 화면 경로 (예: /notice/123)">
+            </div>
+            <div>
+              <label class="form-label">치환 변수</label>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">클릭하면 커서 위치에 삽입됩니다.</div>
+              <div class="chip-wrap">
+                <span class="var-tag" onclick="insertVar('{원아명}')">&#123;원아명&#125;</span>
+                <span class="var-tag" onclick="insertVar('{기관명}')">&#123;기관명&#125;</span>
+                <span class="var-tag" onclick="insertVar('{반명}')">&#123;반명&#125;</span>
+                <span class="var-tag" onclick="insertVar('{교사명}')">&#123;교사명&#125;</span>
+                <span class="var-tag" onclick="insertVar('{날짜}')">&#123;날짜&#125;</span>
+                <span class="var-tag" onclick="insertVar('{서비스명}')">&#123;서비스명&#125;</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ② 발송 대상 -->
+          <div class="compose-card">
+            <div class="sec-divider">② 발송 대상 설정</div>
+            <div class="form-group">
+              <label class="form-label">회원 유형 <span class="form-required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="targetType" value="all" checked onchange="updateTarget()"> 전체 사용자</label>
+                <label class="radio-item"><input type="radio" name="targetType" value="parent" onchange="updateTarget()"> 학부모</label>
+                <label class="radio-item"><input type="radio" name="targetType" value="teacher" onchange="updateTarget()"> 교사</label>
+                <label class="radio-item"><input type="radio" name="targetType" value="director" onchange="updateTarget()"> 원장</label>
+                <label class="radio-item"><input type="radio" name="targetType" value="custom" onchange="updateTarget()"> 직접 지정</label>
+              </div>
+            </div>
+            <div id="targetOptions" style="display:none;margin-top:10px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                  <label class="form-label">기관 필터</label>
+                  <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>전체 기관</option><option>키드키즈 어린이집</option><option>ABC 유치원</option><option>사랑센터 어린이집</option></select></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">반 필터</label>
+                  <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>전체 반</option><option>토끼반</option><option>병아리반</option><option>곰돌이반</option></select></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">특정 사용자 추가</label>
+                <div style="display:flex;gap:8px">
+                  <input class="f-input" style="flex:1" placeholder="이름 또는 아이디 검색...">
+                  <button class="btn btn-secondary btn-sm">추가</button>
+                </div>
+                <div class="chip-wrap" id="customTargets" style="margin-top:8px">
+                  <span class="chip">김민지 (교사) <button class="chip-rm" onclick="this.closest('.chip').remove()">×</button></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 대상 요약 박스 -->
+            <div class="target-box" id="targetBox">
+              <div class="target-box-row">
+                <div>
+                  <div class="target-count" id="targetCount">1,843</div>
+                  <div class="target-label">명에게 발송 예정</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="toast('대상 목록을 상세 조회합니다.','👥')">목록 확인</button>
+              </div>
+              <div class="target-breakdown" id="targetBreakdown">
+                <span>📱 학부모 812명</span>
+                <span>👩‍🏫 교사 524명</span>
+                <span>🏫 원장 507명</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③ 발송 일정 -->
+          <div class="compose-card">
+            <div class="sec-divider">③ 발송 일정</div>
+            <div class="form-group">
+              <label class="form-label">발송 유형 <span class="form-required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="sendType" value="now" checked onchange="toggleSchedule(false)"> 즉시 발송</label>
+                <label class="radio-item"><input type="radio" name="sendType" value="reserve" onchange="toggleSchedule(true)"> 예약 발송</label>
+              </div>
+            </div>
+            <div id="scheduleArea" style="display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                  <label class="form-label">발송 날짜</label>
+                  <input class="form-control" type="date" id="schedDate">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">발송 시각</label>
+                  <input class="form-control" type="time" id="schedTime" value="09:00">
+                </div>
+              </div>
+            </div>
+
+            <!-- 발송 버튼 -->
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+              <button class="btn btn-secondary" onclick="clearForm()">초기화</button>
+              <button class="btn btn-send btn-lg" onclick="openConfirm()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                발송하기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 폰 미리보기 -->
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-align:center">푸시 미리보기</div>
+          <div class="phone-mock">
+            <div class="phone-screen">
+              <div class="phone-status"><div class="phone-notch"></div></div>
+              <div class="push-preview-wrap">
+                <div class="push-preview-card">
+                  <div class="push-preview-app">
+                    <div class="push-preview-appicon">A</div>
+                    <div class="push-preview-appname">알림장</div>
+                    <div class="push-preview-time">방금 전</div>
+                  </div>
+                  <div class="push-preview-title" id="previewTitle">제목을 입력해주세요</div>
+                  <div class="push-preview-body" id="previewBody">내용을 입력하면 여기에 미리보기가 표시됩니다.</div>
+                </div>
+              </div>
+            </div>
+            <div class="push-mock-label">실제 기기 알림 화면</div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.6">실제 노출 형태는<br>기기 및 OS 버전에<br>따라 다를 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         2. 푸시 템플릿 관리 (시스템 이벤트별 문구 관리)
+    ══════════════════════════════════ -->
+    <div id="screen-template" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">푸시 템플릿 관리</div>
+          <div class="page-subtitle">시스템 이벤트에 연결된 푸시 문구를 관리합니다. 수정한 문구는 이후 발송 건부터 반영됩니다.</div>
+        </div>
+      </div>
+
+      <!-- 요약 카드 -->
+      <div class="sum-grid">
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 이벤트</div><div class="sum-card-num">8</div><div class="sum-card-sub">시스템 자동 발송 이벤트</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">사용 중</div><div class="sum-card-num">7</div><div class="sum-card-sub">이벤트 활성화됨</div></div>
+        <div class="sum-card" style="--card-accent:#9CA3AF"><div class="sum-card-label">미사용</div><div class="sum-card-num">1</div><div class="sum-card-sub">비활성화 이벤트</div></div>
+        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">최근 문구 수정</div><div class="sum-card-num">3</div><div class="sum-card-sub">최근 30일 이내</div></div>
+      </div>
+
+      <!-- 안내 배너 -->
+      <div style="background:#EEF1FD;border:1px solid #C7D2FB;border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:#3730A3;line-height:1.6">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>이 화면에서는 시스템에 정의된 자동 발송 이벤트의 <strong>푸시 문구·랜딩 경로·사용 여부</strong>만 수정할 수 있습니다. 이벤트 자체의 추가·삭제는 불가합니다. 저장한 문구는 <strong>이후 발생하는 해당 이벤트 발송 건부터 반영</strong>됩니다.</span>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">서비스</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFService"><option value="">전체</option><option>알림장</option><option>앨범</option><option>투약</option><option>스케줄</option><option>식단표</option><option>초대장</option><option>공지사항</option><option>출석부</option><option>가입/승인</option></select></div>
+          <span class="f-label" style="width:auto">발송 대상</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFTarget"><option value="">전체</option><option>학부모</option><option>교사</option><option>원장</option></select></div>
+          <span class="f-label" style="width:auto">이벤트 유형</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFType"><option value="">전체</option><option>등록</option><option>수정</option><option>승인</option><option>반려</option><option>시간도래</option><option>초대</option><option>완료</option></select></div>
+          <span class="f-label" style="width:auto">사용여부</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFStatus"><option value="">전체</option><option>사용</option><option>미사용</option></select></div>
+        </div>
+        <div class="filter-row">
+          <span class="f-label">검색</span>
+          <div class="search-combo">
+            <input class="search-input" placeholder="이벤트명 또는 제목 검색...">
+            <button class="search-btn" onclick="toast('검색 완료','🔍')"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="toast('필터를 초기화했습니다.','🔄')">초기화</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-info">전체 <strong>8</strong>개 이벤트</div>
+          <div class="toolbar-right">
+            <span style="font-size:12px;color:var(--text-muted)">이벤트 자체는 시스템에서 관리됩니다. 문구와 사용 여부만 수정 가능합니다.</span>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:1100px">
+            <colgroup>
+              <col width="44"><col width="90"><col width="80"><col width="150">
+              <col width="80"><col><col width="90"><col width="100"><col width="80"><col width="60">
+            </colgroup>
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="chk"></th>
+                <th>서비스</th>
+                <th>이벤트 유형</th>
+                <th>이벤트명</th>
+                <th>발송 대상</th>
+                <th>푸시 제목</th>
+                <th>사용 여부</th>
+                <th>수정일</th>
+                <th>수정자</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="tmplTableBody">
+
+              <!-- 1. 알림장 등록 -->
+              <tr onclick="showEventPanel(0)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-blue">알림장</span></td>
+                <td><span class="tbadge t-green">등록</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">알림장 게시</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">교사가 알림장 게시 시</div>
+                </td>
+                <td><span class="tbadge t-purple">학부모</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 새 알림장이 도착했어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{반명} 반의 새로운 알림장이 등록되었습니다. 지금 확인해 보세요.</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">26.02.14</td>
+                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(0)">수정</button></td>
+              </tr>
+
+              <!-- 2. 앨범 등록 -->
+              <tr onclick="showEventPanel(1)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-cyan">앨범</span></td>
+                <td><span class="tbadge t-green">등록</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">앨범 게시</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">교사가 앨범 게시 시</div>
+                </td>
+                <td><span class="tbadge t-purple">학부모</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 새 앨범이 등록되었어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">오늘의 사진이 업로드되었습니다. 확인해보세요!</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">26.01.20</td>
+                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(1)">수정</button></td>
+              </tr>
+
+              <!-- 3. 투약 시간도래 -->
+              <tr onclick="showEventPanel(2)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-amber">투약</span></td>
+                <td><span class="tbadge" style="background:#FEF3C7;color:#92400E">시간도래</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">투약 시간 알림</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">예약된 투약 시간 도래 시</div>
+                </td>
+                <td><span class="tbadge t-green">교사</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] {원아명} 투약 시간입니다</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">{원아명} 어린이의 투약 시간입니다. 처방약을 확인해 주세요.</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">26.02.10</td>
+                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(2)">수정</button></td>
+              </tr>
+
+              <!-- 4. 스케줄 등록 -->
+              <tr onclick="showEventPanel(3)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-blue">스케줄</span></td>
+                <td><span class="tbadge t-green">등록</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">일정 등록</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">일정 등록 시</div>
+                </td>
+                <td><span class="tbadge t-purple">학부모</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 새로운 일정이 등록되었어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}에서 새 일정을 등록했습니다. 일정을 확인해 보세요.</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">25.12.05</td>
+                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(3)">수정</button></td>
+              </tr>
+
+              <!-- 5. 식단표 등록 -->
+              <tr onclick="showEventPanel(4)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-green">식단표</span></td>
+                <td><span class="tbadge t-green">등록</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">식단표 게시</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">식단표 게시 시</div>
+                </td>
+                <td><span class="tbadge t-purple">학부모</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 오늘의 식단표가 등록되었어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}의 {날짜} 식단표가 업데이트되었습니다.</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">25.11.18</td>
+                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(4)">수정</button></td>
+              </tr>
+
+              <!-- 6. 초대장 발송 -->
+              <tr onclick="showEventPanel(5)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-purple">초대장</span></td>
+                <td><span class="tbadge" style="background:#EDE9FE;color:#5B21B6">초대</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">초대장 발송</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">초대장 발송 시</div>
+                </td>
+                <td><span class="tbadge t-purple">학부모</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 초대장이 도착했어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}에서 초대장을 보냈습니다. 지금 확인해보세요.</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">25.10.30</td>
+                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(5)">수정</button></td>
+              </tr>
+
+              <!-- 7. 가입 승인 완료 -->
+              <tr onclick="showEventPanel(6)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-gray">가입/승인</span></td>
+                <td><span class="tbadge" style="background:#D1FAE5;color:#065F46">완료</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">가입 승인 완료</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">가입 승인 완료 시</div>
+                </td>
+                <td><span class="tbadge t-green">교사</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 가입 승인이 완료되었어요</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명} 가입 승인이 완료되었습니다. 지금 바로 이용해 보세요!</div>
+                </td>
+                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">25.09.12</td>
+                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(6)">수정</button></td>
+              </tr>
+
+              <!-- 8. 승인 반려 -->
+              <tr onclick="showEventPanel(7)" style="cursor:pointer">
+                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
+                <td><span class="tbadge t-gray">가입/승인</span></td>
+                <td><span class="tbadge t-red">반려</span></td>
+                <td>
+                  <div style="font-weight:600;font-size:13px">승인 반려</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">승인 반려 시</div>
+                </td>
+                <td><span class="tbadge t-gray" style="background:#FEF3C7;color:#92400E">원장/교사</span></td>
+                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <div style="font-size:13px">[알림장] 승인 요청이 반려되었습니다</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">가입 신청이 반려되었습니다. 사유를 확인하고 재신청해주세요.</div>
+                </td>
+                <td><span class="sbadge s-inactive"><span class="sdot"></span>미사용</span></td>
+                <td style="color:var(--text-muted);font-size:12px">25.08.01</td>
+                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(7)">수정</button></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-area">
+          <div class="pg-info">1 – 8 / 8건</div>
+          <div class="pagination">
+            <button class="pg-btn active">1</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         3. 푸시 발송 이력
+    ══════════════════════════════════ -->
+    <div id="screen-history" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">푸시 발송 이력</div>
+          <div class="page-subtitle">발송된 푸시 알림의 내역과 결과를 조회합니다.</div>
+        </div>
+        <button class="btn btn-secondary">엑셀 다운로드</button>
+      </div>
+
+      <!-- 요약 카드 -->
+      <div class="sum-grid">
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 발송 건수</div><div class="sum-card-num">186</div><div class="sum-card-sub">건 (이번 달)</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">발송 성공</div><div class="sum-card-num">174</div><div class="sum-card-sub">건 완료</div></div>
+        <div class="sum-card" style="--card-accent:#EF4444"><div class="sum-card-label">발송 실패</div><div class="sum-card-num">12</div><div class="sum-card-sub">건 실패</div></div>
+        <div class="sum-card" style="--card-accent:#3B82F6"><div class="sum-card-label">예약 대기</div><div class="sum-card-num">2</div><div class="sum-card-sub">건 예약됨</div></div>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <span class="f-label">기간</span>
+          <input class="f-input" type="date" value="2025-03-01" style="min-width:140px">
+          <span style="color:var(--text-muted)">~</span>
+          <input class="f-input" type="date" value="2025-03-19" style="min-width:140px">
+          <div class="f-select-wrap"><select class="f-select"><option>발송 대상 전체</option><option>전체 사용자</option><option>학부모</option><option>교사</option><option>원장</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>상태 전체</option><option>성공</option><option>실패</option><option>예약</option><option>발송 중</option></select></div>
+        </div>
+        <div class="filter-row">
+          <span class="f-label">검색</span>
+          <div class="search-combo">
+            <input class="search-input" placeholder="발송 제목 검색...">
+            <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+          </div>
+          <button class="btn btn-secondary btn-sm">초기화</button>
+          <button class="btn btn-primary btn-sm">검색</button>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-info">총 <strong>186</strong>건</div>
+          <div class="toolbar-right">
+            <div class="f-select-wrap"><select class="f-select" style="min-width:90px"><option>20건</option><option>50건</option></select></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:auto">
+            <colgroup><col width="150"><col><col width="120"><col width="90"><col width="80"><col width="80"><col width="90"><col width="60"></colgroup>
+            <thead>
+              <tr><th>발송 일시</th><th>제목</th><th>발송 대상</th><th>발송 수</th><th>성공 수</th><th>실패 수</th><th>상태</th><th>상세</th></tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 14:30</td>
+                <td>
+                  <div style="font-weight:600">[알림장] 오늘 투약 안내</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">💊 투약 알림 템플릿 · 즉시 발송</div>
+                </td>
+                <td><span class="tbadge t-amber">학부모</span></td>
+                <td style="text-align:right;font-family:monospace">812</td>
+                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">805</td>
+                <td style="text-align:right;font-family:monospace;color:var(--red-text)">7</td>
+                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation();showPanel('발송 상세')">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.19 09:00</td>
+                <td>
+                  <div style="font-weight:600">[알림장] 가입 승인이 완료되었습니다</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">🎉 승인 완료 알림 템플릿 · 즉시 발송</div>
+                </td>
+                <td><span class="tbadge t-blue">전체</span></td>
+                <td style="text-align:right;font-family:monospace">24</td>
+                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">24</td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
+                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.20 09:00</td>
+                <td>
+                  <div style="font-weight:600">3/20 시스템 점검 사전 안내</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">직접 작성 · 예약 발송</div>
+                </td>
+                <td><span class="tbadge t-blue">전체</span></td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
+                <td><span class="sbadge s-reserve"><span class="sdot"></span>예약</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.18 15:22</td>
+                <td>
+                  <div style="font-weight:600">[알림장] 출석 확인 알림</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">✅ 출석 알림 템플릿 · 즉시 발송</div>
+                </td>
+                <td><span class="tbadge t-amber">학부모</span></td>
+                <td style="text-align:right;font-family:monospace">398</td>
+                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">393</td>
+                <td style="text-align:right;font-family:monospace;color:var(--red-text)">5</td>
+                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.17 10:05</td>
+                <td>
+                  <div style="font-weight:600">봄학기 이벤트 참여 안내</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">직접 작성 · 즉시 발송</div>
+                </td>
+                <td><span class="tbadge t-blue">전체</span></td>
+                <td style="text-align:right;font-family:monospace">1,843</td>
+                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">1,843</td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
+                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+              <tr onclick="showPanel('발송 상세')">
+                <td style="font-family:monospace;font-size:12px">25.03.15 08:30</td>
+                <td>
+                  <div style="font-weight:600">[알림장] 새 공지 등록 알림</div>
+                  <div style="font-size:11.5px;color:var(--text-muted)">📢 공지 등록 알림 템플릿</div>
+                </td>
+                <td><span class="tbadge t-green">교사</span></td>
+                <td style="text-align:right;font-family:monospace">524</td>
+                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">524</td>
+                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
+                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
+                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-area">
+          <div class="pg-info">1 – 20 / 186건</div>
+          <div class="pagination">
+            <button class="pg-btn">‹‹</button>
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">›</button>
+            <button class="pg-btn">››</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ══════════════════════════════════
+     DETAIL PANEL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="panelOverlay" onclick="closePanel()">
+  <div class="detail-panel" onclick="event.stopPropagation()">
+    <div class="dp-header">
+      <div class="dp-title" id="panelTitle">상세</div>
+      <button class="dp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="dp-body" id="panelBody"></div>
+    <div class="dp-footer" id="panelFooter"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SEND CONFIRM MODAL
+══════════════════════════════════ -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">📨</div>
+    <div class="confirm-title" id="confirmTitle">푸시 발송 확인</div>
+    <div class="confirm-desc" id="confirmDesc">
+      <strong id="confirmTargetNum">1,843명</strong>에게 푸시 알림을 발송합니다.<br>
+      발송 후에는 취소할 수 없습니다. 계속하시겠습니까?
+    </div>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" onclick="closeConfirm()">취소</button>
+      <button class="btn btn-send" onclick="doSend()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        발송하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ─────────────────────────────────
+   SIDEBAR
+───────────────────────────────── */
+function toggleSub(id, navId) {
+  const sub = document.getElementById(id);
+  const nav = document.getElementById(navId);
+  if (!sub) return;
+  const isOpen = sub.style.display !== 'none';
+  sub.style.display = isOpen ? 'none' : 'block';
+  if (nav) nav.classList.toggle('open', !isOpen);
+}
+
+/* ─────────────────────────────────
+   SCREEN SWITCH
+───────────────────────────────── */
+const SCREEN_NAMES = { push:'푸시 발송 관리', template:'푸시 템플릿 관리', history:'푸시 발송 이력' };
+function showScreen(key) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + key).classList.add('active');
+  document.getElementById('topbarCur').textContent = SCREEN_NAMES[key];
+  document.querySelectorAll('.nav-sub .nav-item').forEach(i => i.classList.remove('active-sub'));
+  const sub = document.getElementById('sub-' + key);
+  if (sub) sub.classList.add('active-sub');
+  closePanel();
+}
+
+/* ─────────────────────────────────
+   PUSH FORM — PREVIEW
+───────────────────────────────── */
+function updatePreview() {
+  const t = document.getElementById('pushTitle');
+  const b = document.getElementById('pushBody');
+  document.getElementById('previewTitle').textContent = t.value || '제목을 입력해주세요';
+  document.getElementById('previewBody').textContent  = b.value || '내용을 입력하면 여기에 미리보기가 표시됩니다.';
+  document.getElementById('titleCount').textContent = (t.value.length) + ' / 50자';
+  document.getElementById('bodyCount').textContent  = (b.value.length) + ' / 200자';
+}
+
+/* ─────────────────────────────────
+   TEMPLATE APPLY
+───────────────────────────────── */
+const TMPL_DATA = {
+  '투약 알림':     { title:'💊 [알림장] {원아명} 투약 안내', body:'{원아명} 어린이의 투약 시간입니다. 오늘 {날짜} 처방약을 확인해 주세요. ({기관명})' },
+  '출석 알림':     { title:'✅ [알림장] {원아명} 출석 확인', body:'{원아명} 어린이가 오늘 {날짜} 등원하였습니다. ({기관명} {반명})' },
+  '공지 등록 알림':{ title:'📢 [알림장] 새 공지가 등록되었습니다', body:'{기관명}에서 새로운 공지사항을 등록했습니다. 확인해 주세요.' },
+  '승인 완료 알림':{ title:'🎉 [알림장] 가입 승인이 완료되었습니다', body:'안녕하세요! {기관명} 가입 승인이 완료되었습니다. 지금 바로 서비스를 이용해 보세요.' },
+  '반려 알림':     { title:'❌ [알림장] 가입 신청이 반려되었습니다', body:'가입 신청이 반려되었습니다. 사유를 확인하고 다시 신청해 주세요.' },
+};
+function applyTemplate(sel) {
+  const d = TMPL_DATA[sel.value];
+  if (!d) return;
+  document.getElementById('pushTitle').value = d.title;
+  document.getElementById('pushBody').value  = d.body;
+  updatePreview();
+  toast('템플릿 "' + sel.value + '"을 불러왔습니다.', '📋');
+}
+
+/* ─────────────────────────────────
+   INSERT VAR
+───────────────────────────────── */
+let lastFocus = null;
+document.addEventListener('focusin', e => {
+  if (e.target.id === 'pushTitle' || e.target.id === 'pushBody') lastFocus = e.target;
+});
+function insertVar(v) {
+  const el = lastFocus || document.getElementById('pushBody');
+  const s = el.selectionStart ?? el.value.length;
+  const e2 = el.selectionEnd ?? s;
+  el.value = el.value.slice(0, s) + v + el.value.slice(e2);
+  el.focus(); el.selectionStart = el.selectionEnd = s + v.length;
+  updatePreview();
+}
+
+/* ─────────────────────────────────
+   TARGET TYPE
+───────────────────────────────── */
+const TARGET_MAP = {
+  all:      { count:'1,843', breakdown:'📱 학부모 812명 · 👩‍🏫 교사 524명 · 🏫 원장 507명' },
+  parent:   { count:'812',   breakdown:'📱 학부모 전체' },
+  teacher:  { count:'524',   breakdown:'👩‍🏫 교사 전체' },
+  director: { count:'507',   breakdown:'🏫 원장 전체' },
+  custom:   { count:'1',     breakdown:'직접 지정 대상' },
+};
+function updateTarget() {
+  const v = document.querySelector('input[name="targetType"]:checked')?.value || 'all';
+  const d = TARGET_MAP[v];
+  document.getElementById('targetCount').textContent = d.count + '명';
+  document.getElementById('targetBreakdown').textContent = d.breakdown;
+  document.getElementById('targetOptions').style.display = v === 'custom' ? 'block' : 'none';
+  document.getElementById('confirmTargetNum').textContent = d.count + '명';
+}
+
+/* ─────────────────────────────────
+   SCHEDULE TOGGLE
+───────────────────────────────── */
+function toggleSchedule(show) {
+  document.getElementById('scheduleArea').style.display = show ? 'block' : 'none';
+}
+
+/* ─────────────────────────────────
+   CLEAR FORM
+───────────────────────────────── */
+function clearForm() {
+  document.getElementById('pushTitle').value = '';
+  document.getElementById('pushBody').value  = '';
+  document.getElementById('pushUrl').value   = '';
+  document.getElementById('templateSelect').value = '';
+  updatePreview();
+  toast('작성 내용을 초기화했습니다.', '🗑️');
+}
+
+/* ─────────────────────────────────
+   CONFIRM MODAL
+───────────────────────────────── */
+function openConfirm() {
+  const title = document.getElementById('pushTitle').value.trim();
+  if (!title) { toast('푸시 제목을 입력해주세요.', '⚠️'); return; }
+  const body = document.getElementById('pushBody').value.trim();
+  if (!body)  { toast('푸시 내용을 입력해주세요.', '⚠️'); return; }
+  const isReserve = document.querySelector('input[name="sendType"]:checked')?.value === 'reserve';
+  document.getElementById('confirmTitle').textContent = isReserve ? '예약 발송 확인' : '즉시 발송 확인';
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+}
+function doSend() {
+  const isReserve = document.querySelector('input[name="sendType"]:checked')?.value === 'reserve';
+  closeConfirm();
+  clearForm();
+  if (isReserve) toast('예약 발송이 등록되었습니다. 푸시 발송 이력에서 확인하세요.', '🕐');
+  else           toast('푸시 알림이 발송되었습니다. 결과는 발송 이력에서 확인하세요.', '✅');
+}
+
+/* ─────────────────────────────────
+   PANEL CONTENTS
+───────────────────────────────── */
+function buildTemplateForm(name, title, body) {
+  return `
+    <div class="form-group"><label class="form-label">템플릿명 <span style="color:var(--red)">*</span></label>
+      <input class="form-control" value="${name||''}"></div>
+    <div class="form-group"><label class="form-label">제목 <span style="color:var(--red)">*</span></label>
+      <input class="form-control" value="${title||''}" placeholder="푸시 제목 (치환 변수 사용 가능)"></div>
+    <div class="form-group"><label class="form-label">내용 <span style="color:var(--red)">*</span></label>
+      <textarea class="form-textarea" style="min-height:100px" placeholder="푸시 내용 (치환 변수 사용 가능)">${body||''}</textarea></div>
+    <div class="form-group"><label class="form-label">사용 가능한 치환 변수</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        <span class="var-tag">{원아명}</span><span class="var-tag">{기관명}</span><span class="var-tag">{반명}</span>
+        <span class="var-tag">{교사명}</span><span class="var-tag">{날짜}</span><span class="var-tag">{서비스명}</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px">발송 시 실제 값으로 치환됩니다.</div>
+    </div>
+    <div class="form-group"><label class="form-label">사용여부</label>
+      <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div>
+    </div>`;
+}
+
+/* ─────────────────────────────────
+   EVENT DATA (푸시 템플릿 관리용)
+───────────────────────────────── */
+const EVENT_DATA = [
+  {
+    idx: 0, service:'알림장', eventType:'등록', eventName:'알림장 게시', target:'학부모',
+    condition:'교사가 알림장을 게시할 때 자동 발송됩니다.',
+    title:'[알림장] 새 알림장이 도착했어요',
+    body:'{반명} 반의 새로운 알림장이 등록되었습니다. 지금 확인해 보세요.',
+    landing:'/notice/list', active:true, modifiedAt:'2026.02.14', modifiedBy:'김관리자'
+  },
+  {
+    idx: 1, service:'앨범', eventType:'등록', eventName:'앨범 게시', target:'학부모',
+    condition:'교사가 앨범을 게시할 때 자동 발송됩니다.',
+    title:'[알림장] 새 앨범이 등록되었어요',
+    body:'오늘의 사진이 업로드되었습니다. 확인해보세요!',
+    landing:'/album/list', active:true, modifiedAt:'2026.01.20', modifiedBy:'김관리자'
+  },
+  {
+    idx: 2, service:'투약', eventType:'시간도래', eventName:'투약 시간 알림', target:'교사',
+    condition:'예약된 투약 시간이 도래할 때 자동 발송됩니다.',
+    title:'[알림장] {원아명} 투약 시간입니다',
+    body:'{원아명} 어린이의 투약 시간입니다. 처방약을 확인해 주세요.',
+    landing:'/medicine/list', active:true, modifiedAt:'2026.02.10', modifiedBy:'슈퍼관리자'
+  },
+  {
+    idx: 3, service:'스케줄', eventType:'등록', eventName:'일정 등록', target:'학부모',
+    condition:'기관에서 새 일정을 등록할 때 자동 발송됩니다.',
+    title:'[알림장] 새로운 일정이 등록되었어요',
+    body:'{기관명}에서 새 일정을 등록했습니다. 일정을 확인해 보세요.',
+    landing:'/schedule/list', active:true, modifiedAt:'2025.12.05', modifiedBy:'김관리자'
+  },
+  {
+    idx: 4, service:'식단표', eventType:'등록', eventName:'식단표 게시', target:'학부모',
+    condition:'식단표가 게시될 때 자동 발송됩니다.',
+    title:'[알림장] 오늘의 식단표가 등록되었어요',
+    body:'{기관명}의 {날짜} 식단표가 업데이트되었습니다.',
+    landing:'/meal/list', active:true, modifiedAt:'2025.11.18', modifiedBy:'김관리자'
+  },
+  {
+    idx: 5, service:'초대장', eventType:'초대', eventName:'초대장 발송', target:'학부모',
+    condition:'초대장이 발송될 때 자동 발송됩니다.',
+    title:'[알림장] 초대장이 도착했어요',
+    body:'{기관명}에서 초대장을 보냈습니다. 지금 확인해보세요.',
+    landing:'/invite', active:true, modifiedAt:'2025.10.30', modifiedBy:'슈퍼관리자'
+  },
+  {
+    idx: 6, service:'가입/승인', eventType:'완료', eventName:'가입 승인 완료', target:'교사',
+    condition:'가입 승인이 완료될 때 자동 발송됩니다.',
+    title:'[알림장] 가입 승인이 완료되었어요',
+    body:'{기관명} 가입 승인이 완료되었습니다. 지금 바로 이용해 보세요!',
+    landing:'/home', active:true, modifiedAt:'2025.09.12', modifiedBy:'김관리자'
+  },
+  {
+    idx: 7, service:'가입/승인', eventType:'반려', eventName:'승인 반려', target:'원장/교사',
+    condition:'승인 요청이 반려될 때 자동 발송됩니다.',
+    title:'[알림장] 승인 요청이 반려되었습니다',
+    body:'가입 신청이 반려되었습니다. 사유를 확인하고 재신청해주세요.',
+    landing:'/approval', active:false, modifiedAt:'2025.08.01', modifiedBy:'슈퍼관리자'
+  },
+];
+
+function showEventPanel(idx) {
+  const ev = EVENT_DATA[idx];
+  if (!ev) return;
+  document.getElementById('panelTitle').textContent = ev.eventName + ' — 문구 수정';
+  document.getElementById('panelBody').innerHTML = `
+    <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#92400E;line-height:1.6">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      이벤트 정보(서비스·유형·대상·조건)는 시스템 정의값으로 수정할 수 없습니다.
+    </div>
+
+    <!-- 읽기전용: 이벤트 정보 -->
+    <div class="dp-section">
+      <div class="dp-sec-title">이벤트 정보 (읽기전용)</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">서비스 구분</div><div class="dp-val">${ev.service}</div></div>
+        <div class="dp-item"><div class="dp-key">이벤트 유형</div><div class="dp-val">${ev.eventType}</div></div>
+        <div class="dp-item"><div class="dp-key">이벤트명</div><div class="dp-val">${ev.eventName}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 대상</div><div class="dp-val">${ev.target}</div></div>
+      </div>
+      <div style="background:#F4F5F7;border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--text-secondary);border-left:3px solid var(--border-medium)">
+        <span style="font-weight:600;color:var(--text-secondary)">발송 조건:</span> ${ev.condition}
+      </div>
+    </div>
+
+    <!-- 수정 가능: 문구 -->
+    <div class="dp-section">
+      <div class="dp-sec-title">푸시 문구 수정</div>
+      <div class="form-group">
+        <label class="form-label">푸시 제목 <span class="form-required">*</span></label>
+        <input class="form-control" id="evTitle_${idx}" value="${ev.title}" oninput="updateEventPreview(${idx})">
+      </div>
+      <div class="form-group">
+        <label class="form-label">푸시 본문 <span class="form-required">*</span></label>
+        <textarea class="form-textarea" id="evBody_${idx}" style="min-height:80px" oninput="updateEventPreview(${idx})">${ev.body}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">치환 변수 안내</label>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">클릭하면 본문에 삽입됩니다.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="var-tag" onclick="insertEventVar(${idx},'{원아명}')">{원아명}</span>
+          <span class="var-tag" onclick="insertEventVar(${idx},'{기관명}')">{기관명}</span>
+          <span class="var-tag" onclick="insertEventVar(${idx},'{반명}')">{반명}</span>
+          <span class="var-tag" onclick="insertEventVar(${idx},'{교사명}')">{교사명}</span>
+          <span class="var-tag" onclick="insertEventVar(${idx},'{날짜}')">{날짜}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 수정 가능: 랜딩 및 사용 여부 -->
+    <div class="dp-section">
+      <div class="dp-sec-title">랜딩 및 설정</div>
+      <div class="form-group">
+        <label class="form-label">랜딩 경로</label>
+        <input class="form-control" id="evLanding_${idx}" value="${ev.landing}" placeholder="/notice/list">
+        <div class="form-hint">알림 클릭 시 이동할 앱 내 경로</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">사용 여부</label>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:6px">
+          <label class="radio-item"><input type="radio" name="evActive_${idx}" value="true" ${ev.active?'checked':''}> 사용</label>
+          <label class="radio-item"><input type="radio" name="evActive_${idx}" value="false" ${!ev.active?'checked':''}> 미사용</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 미리보기 -->
+    <div class="dp-section">
+      <div class="dp-sec-title">푸시 미리보기</div>
+      <div style="display:flex;justify-content:center">
+        <div class="phone-mock" style="width:180px">
+          <div class="phone-screen">
+            <div class="phone-status"><div class="phone-notch"></div></div>
+            <div class="push-preview-wrap">
+              <div class="push-preview-card">
+                <div class="push-preview-app">
+                  <div class="push-preview-appicon">A</div>
+                  <div class="push-preview-appname">알림장</div>
+                  <div class="push-preview-time">방금 전</div>
+                </div>
+                <div class="push-preview-title" id="evPreviewTitle_${idx}">${ev.title}</div>
+                <div class="push-preview-body" id="evPreviewBody_${idx}">${ev.body}</div>
+              </div>
+            </div>
+          </div>
+          <div class="push-mock-label">미리보기</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#EEF1FD;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#3730A3;margin-top:4px">
+      💡 저장 시 이후 발송 건부터 수정된 문구가 반영됩니다.
+    </div>
+  `;
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="btn btn-secondary" onclick="closePanel()">취소</button>
+    <button class="btn btn-primary" onclick="saveEventPanel(${idx})">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      문구 저장
+    </button>
+  `;
+  document.getElementById('panelOverlay').classList.add('show');
+}
+
+function updateEventPreview(idx) {
+  const t = document.getElementById('evTitle_' + idx);
+  const b = document.getElementById('evBody_' + idx);
+  if (t) document.getElementById('evPreviewTitle_' + idx).textContent = t.value || '제목을 입력해주세요';
+  if (b) document.getElementById('evPreviewBody_' + idx).textContent  = b.value || '내용을 입력해주세요';
+}
+
+function insertEventVar(idx, v) {
+  const el = document.getElementById('evBody_' + idx);
+  if (!el) return;
+  const s = el.selectionStart ?? el.value.length;
+  const e2 = el.selectionEnd ?? s;
+  el.value = el.value.slice(0, s) + v + el.value.slice(e2);
+  el.focus(); el.selectionStart = el.selectionEnd = s + v.length;
+  updateEventPreview(idx);
+}
+
+function saveEventPanel(idx) {
+  const t = document.getElementById('evTitle_' + idx)?.value;
+  const b = document.getElementById('evBody_' + idx)?.value;
+  if (!t || !b) { toast('제목과 본문을 모두 입력해주세요.','⚠️'); return; }
+  if (EVENT_DATA[idx]) {
+    EVENT_DATA[idx].title = t;
+    EVENT_DATA[idx].body = b;
+    EVENT_DATA[idx].landing = document.getElementById('evLanding_' + idx)?.value || EVENT_DATA[idx].landing;
+    EVENT_DATA[idx].modifiedAt = new Date().toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace('.','');
+  }
+  closePanel();
+  toast('이벤트 문구가 저장되었습니다. 이후 발송 건부터 반영됩니다.','✅');
+}
+
+const PANEL_CONTENTS = {
+  '발송 상세': () => `
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 기본 정보</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">발송 일시</div><div class="dp-val" style="font-family:monospace;font-size:12px">2025.03.19 14:30:05</div></div>
+        <div class="dp-item"><div class="dp-key">발송 유형</div><div class="dp-val">즉시 발송</div></div>
+        <div class="dp-item"><div class="dp-key">사용 템플릿</div><div class="dp-val">💊 투약 알림</div></div>
+        <div class="dp-item"><div class="dp-key">발송 관리자</div><div class="dp-val">슈퍼관리자</div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 내용</div>
+      <div style="background:var(--bg-base);border-radius:var(--radius-md);padding:14px;border:1px solid var(--border-light)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">제목</div>
+        <div style="font-size:13.5px;font-weight:700;margin-bottom:10px">[알림장] {원아명} 투약 안내</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">내용</div>
+        <div style="font-size:13px;line-height:1.6">{원아명} 어린이의 투약 시간입니다. 오늘 {날짜} 처방약을 확인해 주세요. ({기관명})</div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 대상 조건</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">회원 유형</div><div class="dp-val"><span class="tbadge t-amber">학부모</span></div></div>
+        <div class="dp-item"><div class="dp-key">기관 필터</div><div class="dp-val">전체 기관</div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 결과</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">전체 발송 수</div><div class="dp-val" style="font-size:18px;font-weight:800">812명</div></div>
+        <div class="dp-item"><div class="dp-key">상태</div><div class="dp-val"><span class="sbadge s-success"><span class="sdot"></span>성공</span></div></div>
+        <div class="dp-item"><div class="dp-key">성공</div><div class="dp-val" style="color:var(--green-text);font-weight:700">805명</div></div>
+        <div class="dp-item"><div class="dp-key">실패</div><div class="dp-val" style="color:var(--red-text);font-weight:700">7명</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:4px"><span>성공률</span><span style="font-weight:600;color:var(--green-text)">99.1%</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:99.1%"></div></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:11.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">실패 사유</div>
+        <div style="background:#FFF5F5;border-radius:6px;padding:10px 12px;border:1px solid var(--red-bg)">
+          <div style="font-size:12.5px;color:var(--red-text)">• 기기 토큰 만료: 5건</div>
+          <div style="font-size:12.5px;color:var(--red-text);margin-top:3px">• 푸시 수신 거부: 2건</div>
+        </div>
+      </div>
+    </div>`,
+};
+
+function showPanel(type, ...args) {
+  document.getElementById('panelTitle').textContent = type;
+  const fn = PANEL_CONTENTS[type];
+  document.getElementById('panelBody').innerHTML = fn ? fn(args) : `<p style="color:var(--text-secondary);font-size:13px">${type}</p>`;
+  const isView = type === '발송 상세';
+  document.getElementById('panelFooter').innerHTML = isView
+    ? `<button class="btn btn-secondary" onclick="closePanel()">닫기</button>`
+    : `<button class="btn btn-secondary" onclick="closePanel()">취소</button>
+       <button class="btn btn-danger btn-sm" style="margin-right:auto" onclick="closePanel();toast('삭제되었습니다.','🗑️')">삭제</button>
+       <button class="btn btn-primary" onclick="closePanel();toast('저장되었습니다.','✅')">저장</button>`;
+  document.getElementById('panelOverlay').classList.add('show');
+}
+
+function closePanel() {
+  document.getElementById('panelOverlay').classList.remove('show');
+}
+
+/* ─────────────────────────────────
+   TOAST
+───────────────────────────────── */
+function toast(msg, icon = '✅') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>

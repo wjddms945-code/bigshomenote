@@ -1,0 +1,3265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알림장 관리자 시스템 - 기관관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-base:        #F4F5F7;
+  --bg-surface:     #FFFFFF;
+  --bg-sidebar:     #1A1D2E;
+  --bg-sidebar-hover: #252840;
+  --bg-sidebar-active: #2E3250;
+
+  --accent-primary:       #4361EE;
+  --accent-primary-light: #EEF1FD;
+  --accent-secondary:     #3A0CA3;
+
+  --text-primary:   #1A1D2E;
+  --text-secondary: #6B7280;
+  --text-muted:     #9CA3AF;
+  --text-sidebar:   #C5C9D6;
+
+  --border-light:   #E5E7EB;
+  --border-medium:  #D1D5DB;
+
+  /* 기관 상태 */
+  --s-inuse-bg: #D1FAE5; --s-inuse-text: #065F46; --s-inuse-dot: #10B981;
+  --s-end-bg:   #FEE2E2; --s-end-text:   #991B1B; --s-end-dot:   #EF4444;
+
+  /* 멤버십 */
+  --m-multi-bg: #EDE9FE; --m-multi-text: #5B21B6; --m-multi-dot: #8B5CF6;
+  --m-regular-bg: #DBEAFE; --m-regular-text: #1E40AF; --m-regular-dot: #3B82F6;
+  --m-basic-bg: #F3F4F6; --m-basic-text: #374151; --m-basic-dot: #9CA3AF;
+  --m-none-bg:  #FEF9C3; --m-none-text:  #92400E; --m-none-dot:  #F59E0B;
+
+  /* 승인 상태 */
+  --s-wait-bg:  #EDE9FE; --s-wait-text:  #5B21B6; --s-wait-dot:  #8B5CF6;
+  --s-done-bg:  #D1FAE5; --s-done-text:  #065F46; --s-done-dot:  #10B981;
+  --s-reject-bg:#FEE2E2; --s-reject-text:#991B1B; --s-reject-dot:#EF4444;
+
+  /* 인증 상태 */
+  --s-cert-bg:  #DBEAFE; --s-cert-text:  #1E40AF; --s-cert-dot:  #3B82F6;
+  --s-cpend-bg: #FEF3C7; --s-cpend-text: #92400E; --s-cpend-dot: #F59E0B;
+  --s-cfail-bg: #FEE2E2; --s-cfail-text: #991B1B; --s-cfail-dot: #EF4444;
+
+  --shadow-sm:    0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 8px 32px rgba(0,0,0,0.12);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.18);
+
+  --radius-sm: 6px; --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px;
+
+  --sidebar-width: 240px;
+  --header-height: 60px;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ════ SIDEBAR ════ */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+}
+.sidebar-logo {
+  height: var(--header-height);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-primary);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.logo-text { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.logo-badge {
+  font-size: 10px; font-weight: 500; color: var(--accent-primary);
+  background: rgba(67,97,238,0.15); padding: 2px 6px; border-radius: 4px; margin-left: auto;
+}
+.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section-title {
+  font-size: 10px; font-weight: 600; color: rgba(197,201,214,0.4);
+  letter-spacing: 1px; text-transform: uppercase; padding: 12px 20px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; color: var(--text-sidebar);
+  cursor: pointer; font-size: 13.5px; font-weight: 400;
+  transition: all 0.15s; position: relative;
+}
+.nav-item:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--bg-sidebar-active); color: #fff; font-weight: 500; }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--accent-primary); border-radius: 0 2px 2px 0;
+}
+.nav-item .nav-icon { width: 18px; height: 18px; opacity: 0.75; flex-shrink: 0; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--accent-primary); color: #fff;
+  font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px;
+}
+.nav-sub { background: rgba(0,0,0,0.15); }
+.nav-sub .nav-item { padding-left: 44px; font-size: 13px; }
+.nav-sub .nav-item.active { background: rgba(67,97,238,0.2); color: #fff; }
+.nav-parent-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; color: var(--text-sidebar);
+  cursor: pointer; font-size: 13.5px; font-weight: 400;
+  transition: all 0.15s;
+}
+.nav-parent-item:hover { background: var(--bg-sidebar-hover); color: #fff; }
+.nav-parent-item .nav-icon { width: 18px; height: 18px; opacity: 0.75; flex-shrink: 0; }
+.nav-chevron { margin-left: auto; font-size: 10px; opacity: 0.5; transition: transform 0.2s; }
+.nav-parent-item.open .nav-chevron { transform: rotate(90deg); }
+
+.sidebar-footer {
+  padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s;
+}
+.sidebar-user:hover { background: var(--bg-sidebar-hover); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg,#4361EE,#7C3AED);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: #fff; }
+.user-role { font-size: 11px; color: rgba(197,201,214,0.6); }
+
+/* ════ MAIN ════ */
+.main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  height: var(--header-height); background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; padding: 0 24px; gap: 12px;
+  position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow-sm);
+}
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
+.breadcrumb-sep { color: var(--text-muted); }
+.breadcrumb-current { color: var(--text-primary); font-weight: 600; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px; border: none; background: transparent;
+  border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: all 0.15s; position: relative;
+}
+.icon-btn:hover { background: var(--bg-base); color: var(--text-primary); }
+.notif-dot {
+  position: absolute; top: 7px; right: 7px; width: 7px; height: 7px;
+  background: #EF4444; border-radius: 50%; border: 1.5px solid #fff;
+}
+.topbar-divider { width: 1px; height: 22px; background: var(--border-light); }
+.topbar-profile {
+  display: flex; align-items: center; gap: 8px; padding: 4px 10px;
+  border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s;
+}
+.topbar-profile:hover { background: var(--bg-base); }
+.profile-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg,#4361EE,#7C3AED);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.profile-name { font-size: 13px; font-weight: 600; }
+
+.content { flex: 1; padding: 24px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+/* ════ SUMMARY CARDS ════ */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.3fr 1fr 1fr;
+  gap: 12px; margin-bottom: 20px;
+}
+.sum-card {
+  background: var(--bg-surface); border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg); padding: 18px 20px 16px;
+  box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.18s;
+  position: relative; overflow: hidden;
+}
+.sum-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-accent, #E5E7EB);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.sum-card:hover { border-color: var(--card-accent, var(--border-medium)); box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-2px); }
+.sum-card.active-filter { border-color: var(--card-accent); box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+.sum-card-label {
+  font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
+  letter-spacing: 0.1px; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+}
+.dot-icon { width: 7px; height: 7px; border-radius: 50%; background: var(--card-accent, #9CA3AF); flex-shrink: 0; }
+.sum-card-num { font-size: 26px; font-weight: 800; color: var(--card-num, var(--text-primary)); letter-spacing: -1px; line-height: 1; margin-bottom: 10px; }
+.sum-card-footer { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+.sum-card-link { font-size: 11.5px; font-weight: 600; color: var(--accent-primary); display: flex; align-items: center; gap: 3px; cursor: pointer; }
+.sum-card-link:hover { text-decoration: underline; }
+
+.card-total  { --card-accent: #4361EE; --card-num: #1A1D2E; }
+.card-wait   { --card-accent: #8B5CF6; --card-num: #5B21B6; }
+.card-inuse  { --card-accent: #10B981; --card-num: #065F46; }
+.card-multi  { --card-accent: #8B5CF6; --card-num: #5B21B6; }
+.card-regular{ --card-accent: #3B82F6; --card-num: #1E40AF; }
+.card-basic  { --card-accent: #9CA3AF; --card-num: #374151; }
+.card-end    { --card-accent: #EF4444; --card-num: #991B1B; }
+.card-paid   { --card-accent: #6D28D9; --card-num: #4C1D95; }
+
+/* 유료회원 분기 바 */
+.paid-breakdown {
+  display: flex; gap: 0; margin-top: 10px;
+  border-radius: 6px; overflow: hidden; height: 4px;
+}
+.paid-bar-multi   { background: #8B5CF6; }
+.paid-bar-regular { background: #3B82F6; }
+.paid-sub-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px; gap: 0;
+}
+.paid-sub-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--text-secondary);
+}
+.paid-sub-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.paid-sub-num { font-weight: 700; color: var(--text-primary); }
+
+/* ════ FILTER CARD ════ */
+.filter-card {
+  background: var(--bg-surface); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+}
+.filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter-row + .filter-row { margin-top: 10px; }
+.f-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; width: 68px; flex-shrink: 0; }
+.f-select-wrap { position: relative; }
+.f-select-wrap::after {
+  content: ''; position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted); pointer-events: none;
+}
+.f-select {
+  height: 34px; padding: 0 28px 0 10px; border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm); font-size: 13px; font-family: inherit;
+  background: var(--bg-base); color: var(--text-primary); appearance: none; cursor: pointer; transition: all 0.15s; min-width: 120px;
+}
+.f-select:focus { outline: none; border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.search-combo {
+  display: flex; align-items: center; border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-base); transition: all 0.15s;
+}
+.search-combo:focus-within { border-color: var(--accent-primary); background: #fff; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+.search-type {
+  height: 34px; padding: 0 10px; border: none; border-right: 1px solid var(--border-medium);
+  background: transparent; font-size: 12.5px; font-family: inherit; color: var(--text-secondary);
+  cursor: pointer; appearance: none; min-width: 80px; outline: none;
+}
+.search-input {
+  height: 34px; padding: 0 10px; border: none; background: transparent;
+  font-size: 13px; font-family: inherit; color: var(--text-primary); outline: none; width: 220px;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-btn {
+  height: 34px; padding: 0 12px; background: var(--accent-primary); border: none;
+  color: #fff; cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.search-btn:hover { background: #3251D5; }
+.filter-divider { width: 1px; height: 20px; background: var(--border-light); }
+.active-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-light); }
+.chip {
+  display: flex; align-items: center; gap: 5px; padding: 3px 8px;
+  background: var(--accent-primary-light); color: var(--accent-primary);
+  border-radius: 12px; font-size: 12px; font-weight: 500;
+}
+.chip-rm {
+  width: 14px; height: 14px; border-radius: 50%; background: rgba(67,97,238,0.2); border: none;
+  cursor: pointer; font-size: 10px; line-height: 1; color: var(--accent-primary);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ════ TABLE ════ */
+.table-card {
+  background: var(--bg-surface); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.table-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border-light);
+}
+.result-info { font-size: 13px; color: var(--text-secondary); }
+.result-info strong { color: var(--text-primary); font-weight: 700; }
+.toolbar-right { display: flex; align-items: center; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px;
+  border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; white-space: nowrap;
+}
+#page-approval .btn:disabled { cursor: default; opacity: 0.5; pointer-events: none; }
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-medium); }
+.btn-secondary:hover { background: var(--bg-base); }
+.btn-primary { background: var(--accent-primary); color: #fff; }
+.btn-primary:hover { background: #3251D5; }
+.btn-danger { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+.btn-danger:hover { background: #FEF2F2; }
+.per-page-wrap { position: relative; }
+.per-page-wrap::after {
+  content: ''; position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  pointer-events: none; width: 0; height: 0;
+  border-left: 3px solid transparent; border-right: 3px solid transparent; border-top: 4px solid var(--text-muted);
+}
+.per-page {
+  height: 30px; padding: 0 20px 0 8px; border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm); font-size: 12px; background: var(--bg-base);
+  appearance: none; font-family: inherit; cursor: pointer; color: var(--text-primary);
+}
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1520px; }
+th {
+  background: #F8F9FB; padding: 9px 12px; text-align: left;
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.4px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light); white-space: nowrap;
+}
+th:first-child { padding-left: 20px; }
+td:first-child { padding-left: 20px; }
+td {
+  padding: 12px 12px; font-size: 12.5px; color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFBFC; }
+tr.row-sel td { background: #EEF1FD; }
+
+/* col widths */
+.c-chk  { width: 38px; }
+.c-org  { width: 160px; }
+.c-type { width: 80px; }
+.c-dir  { width: 80px; }
+.c-phone{ width: 116px; }
+.c-region{ width: 70px; }
+.c-cert { width: 88px; }
+.c-appr { width: 88px; }
+.c-cls  { width: 52px; text-align: center; }
+.c-tch  { width: 52px; text-align: center; }
+.c-kid  { width: 52px; text-align: center; }
+.c-usage{ width: 88px; }
+.c-join { width: 92px; }
+.c-last { width: 92px; }
+.c-view { width: 56px; text-align: center; }
+
+.sbadge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.sdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.mbadge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.mb-multi   { background: var(--m-multi-bg);   color: var(--m-multi-text); }
+.mb-regular { background: var(--m-regular-bg); color: var(--m-regular-text); }
+.mb-basic   { background: var(--m-basic-bg);   color: var(--m-basic-text); }
+.mb-none    { background: var(--m-none-bg);    color: var(--m-none-text); }
+
+.tag {
+  display: inline-flex; align-items: center; padding: 2px 7px;
+  border-radius: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap;
+}
+.tag-daycare  { background: #DBEAFE; color: #1E40AF; }
+.tag-kinder   { background: #F0FDF4; color: #166534; }
+.tag-etc      { background: #F3F4F6; color: #374151; }
+
+.count-cell { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+
+.view-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border-medium);
+  background: transparent; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; font-size: 13px;
+}
+.view-btn:hover { background: var(--accent-primary-light); border-color: var(--accent-primary); color: var(--accent-primary); }
+
+/* ════ PAGINATION ════ */
+.pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 4px; padding: 18px 0 6px;
+}
+.page-btn {
+  min-width: 32px; height: 32px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium); background: var(--bg-surface);
+  font-size: 12.5px; cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.page-btn:hover { background: var(--bg-base); border-color: var(--accent-primary); color: var(--accent-primary); }
+.page-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: 700; }
+.page-btn:disabled { cursor: default; color: var(--text-muted); background: var(--bg-base); border-color: var(--border-light); opacity: 0.55; }
+.page-btn:disabled:hover { color: var(--text-muted); background: var(--bg-base); border-color: var(--border-light); }
+.page-ellipsis { padding: 0 4px; color: var(--text-muted); font-size: 13px; }
+
+/* ════ MODAL ════ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,12,20,0.5); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-surface); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal); width: 560px; max-width: 95vw; max-height: 85vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close {
+  margin-left: auto; width: 28px; height: 28px; border: none; background: transparent;
+  border-radius: var(--radius-sm); cursor: pointer; font-size: 16px; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.modal-close:hover { background: var(--bg-base); color: var(--text-primary); }
+.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.modal-footer {
+  padding: 14px 24px; border-top: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+}
+
+/* 기관 승인 처리 모달: 목록 테이블의 전역 최소 너비 영향 차단 */
+#approvalModal .modal { min-width: 0; }
+#approvalModal .modal-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+#approvalModal .dp-info-table {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+#approvalModal .dp-info-table td {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+#approvalModal .dp-info-table td.label { width: 120px; }
+
+/* ════ DETAIL SLIDE ════ */
+.detail-page {
+  position: fixed; top: 0; right: -100%; bottom: 0; width: 820px; max-width: 95vw;
+  background: var(--bg-surface); z-index: 150; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; transition: right 0.3s ease;
+  overflow: hidden;
+}
+.detail-page.show { right: 0; }
+.detail-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,12,20,0.3); z-index: 149;
+}
+.detail-overlay.show { display: block; }
+.detail-header {
+  padding: 0 24px; height: 60px; border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.detail-title { font-size: 15px; font-weight: 700; }
+.detail-body { flex: 1; overflow-y: auto; padding: 24px; }
+.detail-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border-light); margin-bottom: 24px;
+}
+.dtab {
+  padding: 10px 18px; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap;
+}
+.dtab:hover { color: var(--text-primary); }
+.dtab.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); font-weight: 600; }
+
+/* Detail sections */
+.dp-sec {
+  font-size: 13px; font-weight: 700; color: var(--text-primary);
+  letter-spacing: -0.2px; margin-bottom: 12px; margin-top: 24px;
+  padding-bottom: 8px; border-bottom: 1.5px solid var(--border-light);
+  display: flex; align-items: center; gap: 8px;
+}
+.dp-sec:first-of-type { margin-top: 0; }
+.dp-info-table {
+  width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 4px;
+}
+.dp-info-table td { padding: 8px 12px; border: 1px solid var(--border-light); vertical-align: middle; }
+.dp-info-table td.label {
+  background: #F8F9FB; font-size: 11.5px; font-weight: 600;
+  color: var(--text-secondary); white-space: nowrap; width: 100px;
+}
+.dp-info-table td.val { color: var(--text-primary); }
+
+/* 상세 조회 탭: 목록용 table 규칙과 분리된 조회 전용 정보 Grid */
+.detail-info-tab {
+  width: 100%; max-width: 100%; min-width: 0;
+}
+.detail-info-tab .dp-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  width: 100%; max-width: 100%; min-width: 0;
+}
+.detail-info-tab .dp-info-item {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+.detail-info-tab .dp-info-item.full { grid-column: 1 / -1; }
+.detail-info-tab .dp-info-label {
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.detail-info-tab .dp-info-value {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.detail-info-tab .dp-info-value.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.cert-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.cert-file-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cert-data-anomaly {
+  color: #B45309;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .detail-info-tab .dp-info-grid { grid-template-columns: minmax(0, 1fr); }
+  .detail-info-tab .dp-info-item.full { grid-column: auto; }
+}
+.dp-notice {
+  font-size: 11.5px; color: var(--text-muted); margin-top: 8px; padding: 8px 12px;
+  background: var(--bg-base); border-radius: var(--radius-sm); border-left: 3px solid var(--border-medium);
+}
+
+/* Stats row */
+.dp-stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 4px;
+}
+.dp-stat-card {
+  background: var(--bg-base); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 14px 16px; text-align: center;
+}
+.dp-stat-num { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+.dp-stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+
+/* 구성현황 탭: 목록 테이블의 전역 min-width가 상세 패널에 적용되지 않도록 제한 */
+#tab-members {
+  width: 100%; max-width: 100%; min-width: 0;
+}
+#tab-members .dp-stats-row {
+  width: 100%; max-width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+#tab-members .dp-stat-card { min-width: 0; }
+#tab-members .dp-info-table {
+  width: 100%; max-width: 100%; min-width: 0;
+  table-layout: fixed;
+}
+#tab-members .dp-info-table td {
+  min-width: 0; white-space: normal; overflow-wrap: anywhere;
+}
+#tab-members .dp-info-table td.label { width: auto; }
+#tab-members .dp-info-table.class-summary-table {
+  width: 100%; max-width: 520px; min-width: 0;
+  margin-right: auto; table-layout: fixed;
+}
+#tab-members .class-summary-table td {
+  padding: 7px 12px; white-space: nowrap; overflow-wrap: normal;
+}
+#tab-members .class-summary-table td:first-child {
+  white-space: normal; overflow-wrap: anywhere;
+}
+#tab-members .class-summary-table .col-class { width: 150px; }
+#tab-members .class-summary-table .col-age,
+#tab-members .class-summary-table .col-teacher,
+#tab-members .class-summary-table .col-kid { width: 82px; }
+#tab-members .composition-toolbar {
+  display: flex; justify-content: flex-end; align-items: center;
+  width: 100%; max-width: 520px; margin: 0 0 12px;
+}
+#tab-members .composition-year-control {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700; color: var(--text-secondary);
+}
+#tab-members .composition-year-select {
+  height: 32px; min-width: 92px; padding: 0 28px 0 10px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  background: #fff; color: var(--text-primary); font: inherit; cursor: pointer;
+}
+#tab-members .composition-count-button {
+  appearance: none; border: 0; border-radius: 4px; padding: 3px 5px;
+  background: transparent; color: var(--accent-primary); font: inherit;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+#tab-members .composition-count-button:hover,
+#tab-members .composition-count-button:focus-visible { background: #EEF2FF; outline: none; }
+#tab-members .composition-count-button[aria-expanded="true"] { background: #E7EDFF; }
+#tab-members .composition-count-text { font-size: 12px; color: var(--text-secondary); }
+#tab-members .composition-detail-row td { padding: 0; border-top: 0; white-space: normal; }
+#tab-members .composition-detail-panel {
+  padding: 11px 14px; background: #F8F9FB;
+  border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);
+}
+#tab-members .composition-detail-title {
+  margin-bottom: 8px; font-size: 11.5px; font-weight: 700; color: var(--text-secondary);
+}
+#tab-members .composition-detail-list {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px;
+}
+#tab-members .composition-detail-person {
+  min-width: 0; font-size: 12px; color: var(--text-primary); overflow-wrap: anywhere;
+}
+#tab-members .composition-child-card {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 9px 10px; border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); background: #fff;
+}
+#tab-members .composition-child-avatar {
+  position: relative; flex: 0 0 34px; width: 34px; height: 34px;
+  overflow: hidden; border-radius: 50%; background: #EEF1F6;
+  color: var(--text-secondary); font-size: 12px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+#tab-members .composition-child-avatar img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+#tab-members .composition-child-info { min-width: 0; flex: 1; }
+#tab-members .composition-child-head {
+  display: flex; align-items: center; gap: 6px; min-width: 0; margin-bottom: 4px;
+}
+#tab-members .composition-child-name {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 12.5px; color: var(--text-primary);
+}
+#tab-members .composition-gender-chip,
+#tab-members .composition-account-label,
+#tab-members .composition-secondary-count {
+  flex: 0 0 auto; padding: 1px 5px; border-radius: 999px;
+  background: #F1F3F6; color: var(--text-secondary); font-size: 10px; font-weight: 600;
+}
+#tab-members .composition-guardian-line {
+  display: flex; align-items: center; gap: 5px; min-width: 0;
+  color: var(--text-secondary); font-size: 11px;
+}
+#tab-members .composition-guardian-name {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (max-width: 600px) {
+  #tab-members .dp-stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #tab-members .composition-detail-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Memo */
+.dp-memo-card {
+  background: var(--bg-base); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.dp-memo-textarea {
+  width: 100%; height: 100px; padding: 12px; border: none;
+  background: transparent; font-family: inherit; font-size: 13px; color: var(--text-primary);
+  resize: vertical; outline: none; line-height: 1.6;
+}
+.dp-memo-footer {
+  padding: 8px 12px; border-top: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dp-memo-count { font-size: 11.5px; color: var(--text-muted); }
+.dp-memo-save {
+  height: 28px; padding: 0 14px; background: var(--accent-primary); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.15s;
+}
+.dp-memo-save:hover { background: #3251D5; }
+.admin-memo-history { margin-top: 24px; }
+.admin-memo-history-list { border-top: 1px solid var(--border-light); }
+.admin-memo-history-item {
+  padding: 14px 2px; border-bottom: 1px solid var(--border-light);
+}
+.admin-memo-history-meta {
+  margin-bottom: 6px; color: var(--text-muted); font-size: 11.5px; line-height: 1.4;
+}
+.admin-memo-history-content {
+  color: var(--text-primary); font-size: 13px; line-height: 1.65;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.admin-memo-history-empty {
+  padding: 28px 12px; border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light); color: var(--text-muted);
+  font-size: 12.5px; text-align: center;
+}
+.admin-memo-more-wrap { padding-top: 12px; text-align: center; }
+.admin-memo-more {
+  height: 32px; padding: 0 16px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-surface);
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 600;
+}
+.admin-memo-more:hover { background: var(--bg-base); color: var(--text-primary); }
+
+/* History */
+.history-list { display: flex; flex-direction: column; gap: 0; }
+.history-item {
+  display: flex; align-items: flex-start; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid var(--border-light); position: relative;
+}
+.history-item:last-child { border-bottom: none; }
+.history-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent-primary);
+  flex-shrink: 0; margin-top: 5px;
+}
+.history-content { flex: 1; }
+.history-action { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+.history-meta { font-size: 11.5px; color: var(--text-muted); }
+
+/* Shortcut buttons */
+.shortcut-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.shortcut-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium); background: var(--bg-surface);
+  font-size: 12.5px; font-weight: 500; cursor: pointer; color: var(--text-primary);
+  transition: all 0.15s; font-family: inherit;
+}
+.shortcut-btn:hover { background: var(--accent-primary-light); border-color: var(--accent-primary); color: var(--accent-primary); }
+
+.reason-textarea {
+  width: 100%; min-height: 80px; padding: 10px 12px;
+  border: 1px solid var(--border-medium); border-radius: var(--radius-md);
+  font-family: inherit; font-size: 13px; color: var(--text-primary);
+  resize: vertical; outline: none; transition: border-color 0.15s;
+}
+.reason-textarea:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1A1D2E; color: #fff; padding: 10px 20px; border-radius: 24px;
+  font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg);
+  opacity: 0; transition: all 0.25s; z-index: 999; pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Alert box */
+.alert-box {
+  padding: 10px 14px; border-radius: var(--radius-md); font-size: 12.5px; margin-bottom: 14px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.alert-warn { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+.alert-info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; }
+
+/* ════ 멀티회원 구성원 관리 ════ */
+.member-mgmt-box {
+  border: 1.5px solid #DDD6FE;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 0;
+}
+.member-mgmt-header {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #DDD6FE;
+}
+.member-mgmt-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13.5px; font-weight: 700; color: #4C1D95;
+}
+.member-mgmt-cost-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #fff; border: 1px solid #DDD6FE;
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; font-weight: 600; color: #5B21B6;
+}
+.member-mgmt-cost-badge .cost-num {
+  font-size: 13px; font-weight: 800; color: #7C3AED;
+}
+.member-cost-summary {
+  background: #F5F3FF;
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 1px solid #EDE9FE;
+}
+.cost-summary-item {
+  flex: 1; text-align: center;
+  padding: 0 12px;
+}
+.cost-summary-item + .cost-summary-item {
+  border-left: 1px solid #DDD6FE;
+}
+.cost-summary-label { font-size: 11px; font-weight: 600; color: #7C3AED; margin-bottom: 3px; }
+.cost-summary-val   { font-size: 18px; font-weight: 800; color: #4C1D95; letter-spacing: -0.5px; }
+.cost-summary-sub   { font-size: 11px; color: #A78BFA; margin-top: 1px; }
+
+.teacher-list-area { padding: 0; }
+.teacher-list-head {
+  display: grid;
+  grid-template-columns: 28px 1fr 80px 90px 80px 72px;
+  gap: 0; padding: 8px 18px;
+  background: #F8F7FF;
+  border-bottom: 1px solid #EDE9FE;
+  font-size: 11px; font-weight: 700; color: #7C3AED;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.teacher-list-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 80px 90px 80px 72px;
+  gap: 0; padding: 11px 18px;
+  border-bottom: 1px solid #F3F4F6;
+  align-items: center; transition: background 0.12s;
+}
+.teacher-list-row:last-child { border-bottom: none; }
+.teacher-list-row:hover { background: #FAFAFF; }
+.teacher-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.teacher-name-cell { display: flex; align-items: center; gap: 10px; }
+.teacher-name      { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.teacher-email     { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.member-status-on  { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; background: #EDE9FE; color: #5B21B6; font-size: 11px; font-weight: 700; }
+.member-status-off { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; background: #F3F4F6; color: #9CA3AF; font-size: 11px; font-weight: 600; }
+.member-toggle-btn {
+  height: 26px; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; font-family: inherit; transition: all 0.15s;
+}
+.toggle-add    { background: #7C3AED; color: #fff; }
+.toggle-add:hover { background: #6D28D9; }
+.toggle-remove { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
+.toggle-remove:hover { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
+
+.member-add-row {
+  padding: 14px 18px;
+  background: #F8F7FF;
+  border-top: 1.5px dashed #DDD6FE;
+  display: flex; align-items: center; gap: 10px;
+}
+.member-add-input {
+  flex: 1; height: 34px; padding: 0 12px;
+  border: 1px solid #DDD6FE; border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit; color: var(--text-primary);
+  background: #fff; outline: none; transition: all 0.15s;
+}
+.member-add-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.member-add-input::placeholder { color: var(--text-muted); }
+.member-add-btn {
+  height: 34px; padding: 0 16px;
+  background: #7C3AED; color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.member-add-btn:hover { background: #6D28D9; }
+.not-multi-notice {
+  background: #F9FAFB; border: 1.5px dashed #E5E7EB;
+  border-radius: var(--radius-lg); padding: 28px 20px;
+  text-align: center; color: var(--text-muted);
+}
+.not-multi-notice .notice-icon { font-size: 28px; margin-bottom: 10px; }
+.not-multi-notice .notice-title { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.not-multi-notice .notice-desc  { font-size: 12.5px; line-height: 1.6; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏫</div>
+    <div class="logo-text">알림장 Admin</div>
+    <div class="logo-badge">v2.4</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item " onclick="location.href='dashboard.html'" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      Home (대시보드)
+    </div>
+
+    <div class="nav-section-title">관리</div>
+
+<div class="nav-item" onclick="location.href='common-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+  공통관리
+</div>
+
+    <div class="nav-item " onclick="toggleSubNav(this,'sub-member')" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      회원/승인관리
+      <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">3</span>
+      <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="nav-sub" id="sub-member" style="display:none">
+      <div class="nav-item " onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
+      <div class="nav-item " onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
+      <div class="nav-item " onclick="location.href='invitation-admin.html'" style="cursor:pointer">초대 관리</div>
+      <div class="nav-item " onclick="location.href='member-status-admin.html'" style="cursor:pointer">회원 상태 관리</div>
+    </div>
+
+    <div class="nav-item active" onclick="toggleSubNav(this,'sub-org')" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      기관관리
+      <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
+      <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="nav-sub" id="sub-org" style="block">
+      <div class="nav-item active" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
+      <div class="nav-item " onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
+      <div class="nav-item " onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+    </div>
+
+<div class="nav-item" style="cursor:default;opacity:0.5">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+</div>
+
+<div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+  운영도구
+</div>
+
+<div class="nav-item" onclick="location.href='site-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+  사이트관리
+</div>
+
+<div class="nav-item" onclick="location.href='stats-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  통계관리
+</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user" onclick="showToast('프로필 설정 화면으로 이동합니다.')" style="cursor:pointer">
+      <div class="user-avatar">관</div>
+      <div class="user-info" style="flex:1;min-width:0">
+        <div class="user-name">슈퍼 관리자</div>
+        <div class="user-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a2b2e2723240a21232e21232e39642138">[email&#160;protected]</a></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <span>기관관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current" id="breadcrumbCurrent">기관 조회</span>
+    </nav>
+    <div class="topbar-actions">
+      <button class="icon-btn" title="새로고침" onclick="showToast('데이터를 새로고침했습니다.')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      </button>
+      <button class="icon-btn" title="알림" style="position:relative">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-profile">
+        <div class="profile-avatar">김</div>
+        <span class="profile-name">김관리자</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── PAGE: 기관 조회 ─── -->
+  <div class="content" id="page-list">
+    <div class="page-header">
+      <div>
+        <div class="page-title">기관 조회</div>
+        <div class="page-subtitle">등록된 모든 기관을 조회하고 관리합니다.</div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+
+      <!-- 전체 기관 -->
+      <div class="sum-card card-total" onclick="filterByCard('all')">
+        <div class="sum-card-label"><span class="dot-icon"></span>전체 기관</div>
+        <div class="sum-card-num">248</div>
+        <div class="sum-card-footer">
+          <span>이번 달 신규</span>
+          <span style="color:#10B981;font-weight:600;margin-left:4px">+7</span>
+        </div>
+      </div>
+
+      <!-- 승인 대기 -->
+      <div class="sum-card card-wait" onclick="filterByCard('approval')">
+        <div class="sum-card-label"><span class="dot-icon"></span>승인 대기</div>
+        <div class="sum-card-num">5</div>
+        <div class="sum-card-footer"><span class="sum-card-link" onclick="event.stopPropagation();filterByCard('approval')">승인 관리 →</span></div>
+      </div>
+
+      <!-- 유료회원 (멀티+정회원 합산) -->
+      <div class="sum-card card-paid" onclick="filterByCard('paid')">
+        <div class="sum-card-label"><span class="dot-icon"></span>유료회원</div>
+        <div class="sum-card-num">160</div>
+        <!-- 비율 바 -->
+        <div class="paid-breakdown">
+          <div class="paid-bar-multi" style="width:30%"></div>
+          <div class="paid-bar-regular" style="width:70%"></div>
+        </div>
+        <!-- 멀티/정회원 분기 -->
+        <div class="paid-sub-row">
+          <div class="paid-sub-item">
+            <span class="paid-sub-dot" style="background:#8B5CF6"></span>
+            <span>멀티</span>
+            <span class="paid-sub-num" style="margin-left:3px">48</span>
+          </div>
+          <div style="width:1px;height:12px;background:var(--border-light)"></div>
+          <div class="paid-sub-item">
+            <span class="paid-sub-dot" style="background:#3B82F6"></span>
+            <span>정회원</span>
+            <span class="paid-sub-num" style="margin-left:3px">112</span>
+          </div>
+          <span class="sum-card-link" style="font-size:11px" onclick="event.stopPropagation();filterByCard('paid')">관리 →</span>
+        </div>
+      </div>
+
+      <!-- 일반회원 -->
+      <div class="sum-card card-basic" onclick="filterByCard('basic')">
+        <div class="sum-card-label"><span class="dot-icon"></span>일반회원</div>
+        <div class="sum-card-num">66</div>
+        <div class="sum-card-footer">
+          <span>무료 이용</span>
+          <span style="color:#9CA3AF;margin-left:4px">· 미가입 22</span>
+        </div>
+      </div>
+
+      <!-- 이용종료 -->
+      <div class="sum-card card-end" onclick="filterByCard('end')">
+        <div class="sum-card-label"><span class="dot-icon"></span>이용종료</div>
+        <div class="sum-card-num">22</div>
+        <div class="sum-card-footer"><span>누적 해지</span></div>
+      </div>
+
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <span class="f-label">기관 상태</span>
+        <div class="f-select-wrap"><select class="f-select" id="fOrgStatus" onchange="applyFilter()"><option value="">전체</option><option>이용중</option><option>이용종료</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">인증 상태</span>
+        <div class="f-select-wrap"><select class="f-select" id="fCertStatus" onchange="applyFilter()"><option value="">전체</option><option>인증완료</option><option>인증대기</option><option>인증실패</option></select></div>
+      </div>
+      <div class="filter-row">
+        <span class="f-label">멤버십</span>
+        <div class="f-select-wrap"><select class="f-select" id="fMembership" onchange="applyFilter()"><option value="">전체</option><option>멀티회원</option><option>정회원</option><option>일반회원</option><option>미가입</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">기관 유형</span>
+        <div class="f-select-wrap"><select class="f-select" id="fOrgType" onchange="applyFilter()"><option value="">전체</option><option>어린이집</option><option>유치원</option><option>기타</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">지역</span>
+        <div class="f-select-wrap"><select class="f-select" id="fRegion" onchange="applyFilter()"><option value="">전체</option><option>서울</option><option>경기</option><option>인천</option><option>부산</option><option>대구</option><option>기타</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">검색</span>
+        <div class="search-combo">
+          <select class="search-type" id="searchType" onchange="applyFilter()">
+            <option>기관명</option><option>기관장</option><option>전화번호</option><option>사업자번호</option>
+          </select>
+          <input class="search-input" placeholder="검색어를 입력하세요" id="searchInput" onkeydown="if(event.key==='Enter') applyFilter()">
+          <button class="search-btn" onclick="applyFilter()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-secondary" style="height:34px;font-size:12px" onclick="resetFilter()">초기화</button>
+      </div>
+      <div class="active-chips" id="activeChips" style="display:none"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="result-info" id="orgResultInfo">전체 <strong>0</strong>개 기관</div>
+        <div class="toolbar-right">
+          <button class="btn btn-secondary" onclick="showToast('엑셀 다운로드 기능 준비 중입니다.')">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            엑셀 다운로드
+          </button>
+          <div class="per-page-wrap">
+            <select class="per-page" id="orgPageSize" onchange="changeOrgPageSize(this.value)"><option value="20">20개씩</option><option value="50">50개씩</option><option value="100">100개씩</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table style="min-width:1320px">
+          <colgroup>
+            <col class="c-org"><col class="c-type"><col class="c-dir">
+            <col class="c-phone"><col class="c-region"><col class="c-cert">
+            <col class="c-cls"><col class="c-tch"><col class="c-kid">
+            <col style="width:90px"><col class="c-usage"><col class="c-join"><col class="c-last"><col class="c-view">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>기관명</th><th>유형</th><th>기관장</th>
+              <th>연락처</th><th>지역</th><th>인증상태</th>
+              <th class="c-cls">반</th><th class="c-tch">교사</th><th class="c-kid">원아</th>
+              <th>멤버십</th><th>운영상태</th><th>가입일</th><th>최근이용</th><th class="c-view"></th>
+            </tr>
+          </thead>
+          <tbody id="orgTableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div><!-- /page-list -->
+
+  <!-- ─── PAGE: 기관 승인 관리 ─── -->
+  <div class="content" id="page-approval" style="display:none">
+    <div class="page-header">
+      <div>
+        <div class="page-title">기관 승인 관리</div>
+        <div class="page-subtitle">기관 등록 신청을 검토하고 승인 또는 반려 처리합니다.</div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+      <div class="sum-card card-wait">
+        <div class="sum-card-label"><span class="dot-icon"></span>승인 대기</div>
+        <div class="sum-card-num" id="approvalPendingCount">0</div>
+        <div class="sum-card-footer">즉시 처리 필요</div>
+      </div>
+      <div class="sum-card card-inuse">
+        <div class="sum-card-label"><span class="dot-icon"></span>승인 완료</div>
+        <div class="sum-card-num" id="approvalCompletedCount">0</div>
+        <div class="sum-card-footer">현재 상태 기준</div>
+      </div>
+      <div class="sum-card card-end">
+        <div class="sum-card-label"><span class="dot-icon"></span>반려</div>
+        <div class="sum-card-num" id="approvalRejectedCount">0</div>
+        <div class="sum-card-footer">현재 상태 기준</div>
+      </div>
+    </div>
+
+    <div class="alert-box alert-warn" id="approvalDelayAlert" style="display:none">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <span>승인 신청일 기준 3일 이상 미처리 기관이 <strong id="approvalDelayCount">0</strong>건 있습니다. 오래된 요청을 먼저 확인해주세요.</span>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <span class="f-label">승인 상태</span>
+        <div class="f-select-wrap"><select class="f-select" id="approvalStatusFilter" onchange="applyApprovalFilters()"><option value="">전체</option><option selected>승인대기</option><option>승인완료</option><option>반려</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">기관 유형</span>
+        <div class="f-select-wrap"><select class="f-select" id="approvalTypeFilter" onchange="applyApprovalFilters()"><option value="">전체</option><option>어린이집</option><option>유치원</option></select></div>
+        <div class="filter-divider"></div>
+        <div class="search-combo">
+          <select class="search-type" id="approvalSearchType" onchange="applyApprovalFilters()"><option>기관명</option><option>원장명</option><option>사업자번호</option></select>
+          <input class="search-input" id="approvalSearchInput" placeholder="검색어를 입력하세요" onkeydown="if(event.key==='Enter') applyApprovalFilters()">
+          <button class="search-btn" onclick="applyApprovalFilters()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="result-info" id="approvalResultInfo">조회 결과 <strong>0</strong>건 / 전체 <strong>0</strong>건</div>
+        <div class="toolbar-right">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)">페이지당
+            <select class="f-select" id="approvalPageSize" style="width:72px;height:32px" onchange="changeApprovalPageSize(this.value)">
+              <option value="20" selected>20</option><option value="50">50</option><option value="100">100</option>
+            </select>
+          </label>
+          <button class="btn btn-secondary" id="bulkApprovalBtn" onclick="processBulkApproval()" disabled>일괄 승인</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table style="min-width:1100px">
+          <colgroup>
+            <col style="width:38px"><col style="width:160px"><col style="width:90px"><col style="width:90px">
+            <col style="width:120px"><col style="width:110px"><col style="width:90px"><col style="width:100px">
+            <col style="width:88px"><col style="width:130px">
+          </colgroup>
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="approvalSelectAll" onchange="toggleApprovalSelectAll(this.checked)"></th>
+              <th>기관명</th><th>신청 원장명</th><th>기관유형</th>
+              <th>사업자번호</th><th>기존 알림장 이전</th><th>신청일</th><th>경과</th>
+              <th>승인상태</th><th>처리</th>
+            </tr>
+          </thead>
+          <tbody id="approvalTableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="approvalPagination"></div>
+    </div>
+  </div><!-- /page-approval -->
+
+  <!-- ─── PAGE: 멤버십 관리 ─── -->
+  <div class="content" id="page-membership" style="display:none">
+    <div class="page-header">
+      <div>
+        <div class="page-title">멤버십 관리</div>
+        <div class="page-subtitle">빅스홈 이용 기관의 키드키즈 멤버십 이용 현황을 확인하고 관리합니다.</div>
+      </div>
+    </div>
+
+    <!-- 멤버십 요약 카드 -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="sum-card card-multi">
+        <div class="sum-card-label"><span class="dot-icon"></span>멀티회원</div>
+        <div class="sum-card-num">48</div>
+      </div>
+      <div class="sum-card card-regular">
+        <div class="sum-card-label"><span class="dot-icon"></span>정회원</div>
+        <div class="sum-card-num">112</div>
+      </div>
+      <div class="sum-card card-basic">
+        <div class="sum-card-label"><span class="dot-icon"></span>일반회원</div>
+        <div class="sum-card-num">66</div>
+      </div>
+      <!-- 유료 멤버십 이용률 = (멀티회원 + 정회원) ÷ 전체 기관 × 100 = (48 + 112) ÷ 226 × 100 -->
+      <div class="sum-card" style="--card-accent:#10B981;--card-num:#065F46">
+        <div class="sum-card-label"><span class="dot-icon" style="background:#10B981"></span>유료 멤버십 이용률</div>
+        <div class="sum-card-num">70.8%</div>
+        <div class="sum-card-footer">(멀티회원 + 정회원) ÷ 전체 기관</div>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <span class="f-label">멤버십</span>
+        <div class="f-select-wrap"><select class="f-select" id="fMembershipPage"><option value="">전체</option><option>멀티회원</option><option>정회원</option><option>일반회원</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">기관 유형</span>
+        <div class="f-select-wrap"><select class="f-select"><option value="">전체</option><option>어린이집</option><option>유치원</option><option>기타</option></select></div>
+        <div class="filter-divider"></div>
+        <span class="f-label">만료 임박</span>
+        <div class="f-select-wrap"><select class="f-select"><option value="">전체</option><option>30일 이내</option><option>60일 이내</option><option>90일 이내</option><option>만료됨</option></select></div>
+        <div class="filter-divider"></div>
+        <div class="search-combo">
+          <select class="search-type"><option>기관명</option><option>기관장</option></select>
+          <input class="search-input" placeholder="기관명 또는 기관장 검색">
+          <button class="search-btn"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="result-info">전체 기관 <strong>226</strong>건</div>
+        <div class="toolbar-right">
+          <button class="btn btn-secondary" onclick="showToast('엑셀 다운로드 기능 준비 중입니다.')">엑셀 다운로드</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table style="min-width:970px;table-layout:fixed">
+          <colgroup>
+            <col style="width:38px"><col style="width:160px"><col style="width:80px">
+            <col style="width:80px"><col style="width:110px"><col style="width:110px">
+            <col style="width:100px"><col style="width:110px"><col style="width:52px">
+            <col style="width:52px"><col style="width:52px">
+          </colgroup>
+          <thead>
+            <tr>
+              <th><input type="checkbox" onchange="document.querySelectorAll('.mb-row-chk').forEach(c=>c.checked=this.checked)"></th>
+              <th>기관명</th><th>유형</th><th>기관장</th>
+              <th>현재 멤버십</th><th>가입일</th><th>만료일</th>
+              <th>만료까지</th>
+              <th class="c-cls">반</th><th class="c-tch">교사</th><th class="c-kid">원아</th>
+            </tr>
+          </thead>
+          <tbody id="membershipTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /page-membership -->
+
+</main>
+
+<!-- ─── DETAIL SLIDE-OVER ─── -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<aside class="detail-page" id="detailPage">
+  <div class="detail-header">
+    <button style="background:none;border:none;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;gap:4px;font-size:13px;font-family:inherit;padding:0" onclick="closeDetail()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>목록
+    </button>
+    <span class="detail-title" id="detailTitle">기관 상세</span>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</aside>
+
+<!-- ─── MODAL: 승인/반려 ─── -->
+<div class="modal-overlay" id="approvalModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:20px" id="approvalModalIcon">✅</span>
+      <div class="modal-title" id="approvalModalTitle">기관 승인 처리</div>
+      <button class="modal-close" onclick="closeModal('approvalModal')">×</button>
+    </div>
+    <div class="modal-body" id="approvalModalBody">
+      <div class="alert-box alert-info" style="margin-bottom:16px">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>승인 시 기관이 즉시 개설되며, 원장에게 알림이 발송됩니다.</span>
+      </div>
+      <table class="dp-info-table" style="margin-bottom:16px">
+        <tr><td class="label">기관명</td><td class="val" id="am-orgName">-</td></tr>
+        <tr><td class="label">원장명</td><td class="val" id="am-dirName">-</td></tr>
+        <tr><td class="label">신청일</td><td class="val" id="am-date">-</td></tr>
+        <tr><td class="label">이전 상태</td><td class="val" id="am-migrationStatus">-</td></tr>
+        <tr><td class="label">입력 이메일</td><td class="val" id="am-migrationEmail">-</td></tr>
+        <tr><td class="label">이전 완료일</td><td class="val" id="am-migratedAt">-</td></tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('approvalModal')">취소</button>
+      <button class="btn btn-primary" id="approvalActionBtn" onclick="processApproval()">승인 처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL: 반려 ─── -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:20px">❌</span>
+      <div class="modal-title">기관 등록 반려</div>
+      <button class="modal-close" onclick="closeRejectModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warn" style="margin-bottom:16px">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span>반려 처리 시 원장에게 반려 사유가 포함된 알림이 발송됩니다.</span>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:12.5px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px">반려 사유 선택</label>
+        <div class="f-select-wrap" style="width:100%">
+          <select class="f-select" id="approvalRejectReason" style="width:100%">
+            <option value="">사유를 선택하세요</option>
+            <option value="CERT_INFO_MISMATCH">기관인증 정보 불일치</option>
+            <option value="BIZ_DOC_MISMATCH">사업자등록증 불일치</option>
+            <option value="DUPLICATE_ORG">중복 기관 등록</option>
+            <option value="MISSING_DOCUMENT">서류 미비</option>
+            <option value="OTHER">기타 (직접 입력)</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:12.5px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px">상세 사유 입력</label>
+        <textarea class="reason-textarea" id="approvalRejectDetail" maxlength="500" placeholder="반려 사유를 상세히 입력해주세요. 원장에게 전달됩니다." oninput="updateRejectDetailCount()"></textarea>
+        <div style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:4px"><span id="approvalRejectDetailCount">0</span> / 500자</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeRejectModal()">취소</button>
+      <button class="btn btn-danger" onclick="processReject()">반려 처리</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL: 반려 사유 조회 ─── -->
+<div class="modal-overlay" id="rejectReasonModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:20px">📄</span>
+      <div class="modal-title">반려 사유 조회</div>
+      <button class="modal-close" onclick="closeModal('rejectReasonModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="dp-info-table">
+        <tr><td class="label">기관명</td><td class="val" id="rr-orgName">-</td></tr>
+        <tr><td class="label">반려 사유</td><td class="val" id="rr-reason">-</td></tr>
+        <tr><td class="label">상세 사유</td><td class="val" id="rr-detail">-</td></tr>
+        <tr><td class="label">처리일시</td><td class="val" id="rr-processedAt">-</td></tr>
+        <tr><td class="label">처리 관리자</td><td class="val" id="rr-processedBy">-</td></tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('rejectReasonModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL: 이력 ─── -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:20px">📋</span>
+      <div class="modal-title">상태 변경 이력</div>
+      <button class="modal-close" onclick="closeModal('historyModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:16px" id="historyOrgName">키드키즈 어린이집</p>
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('historyModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ═══════════════ DATA ═══════════════ */
+const ORG_DATA = [
+  { id:1,  name:'키드키즈 어린이집', type:'어린이집', director:'홍길동', directorId:'kidkids01', phone:'02-1234-5678',  region:'서울', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'멀티회원', memberPlan:'멀티회원', memberSince:'2024.04.01', memberExpire:'2027.03.31', cls:6,  teacher:8,  kid:62,  joinDate:'2024.03.15', lastDate:'2026.03.16', biz:'123-45-67890', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:2,  name:'햇살유치원',         type:'유치원',   director:'김미영', directorId:'sunshine_kim', phone:'031-234-5678', region:'경기', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'정회원',   memberPlan:'정회원',   memberSince:'2024.06.01', memberExpire:'2026.05.31', cls:5,  teacher:7,  kid:55,  joinDate:'2024.05.20', lastDate:'2026.03.15', biz:'234-56-78901', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:3,  name:'행복한 어린이집',    type:'어린이집', director:'이준서', directorId:'happyday88', phone:'032-345-6789', region:'인천', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'일반회원', memberPlan:'일반회원', memberSince:'2024.07.01', memberExpire:'-',          cls:4,  teacher:5,  kid:38,  joinDate:'2024.07.01', lastDate:'2026.02.20', biz:'345-67-89012', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:4,  name:'하늘숲 유치원',      type:'유치원',   director:'박소연', directorId:'skyforest_park', phone:'051-456-7890', region:'부산', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'멀티회원', memberPlan:'멀티회원', memberSince:'2024.03.01', memberExpire:'2027.02.28', cls:8,  teacher:12, kid:94,  joinDate:'2024.02.10', lastDate:'2026.03.16', biz:'456-78-90123', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:5,  name:'새싹 어린이집',      type:'어린이집', director:'최현우', directorId:'sprout_choi', phone:'053-567-8901', region:'대구', cert:'인증대기', approval:'승인대기', status:'승인대기', membership:'미가입',   memberPlan:'-',        memberSince:'-',          memberExpire:'-',          cls:0,  teacher:0,  kid:0,   joinDate:'2026.03.01', lastDate:'-',          biz:'567-89-01234', certInfo:{ certifiedAt:null, method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:6,  name:'꿈나무 어린이집',    type:'어린이집', director:'정다혜', directorId:'dream_jung', phone:'02-678-9012',  region:'서울', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'정회원',   memberPlan:'정회원',   memberSince:'2023.12.01', memberExpire:'2026.11.30', cls:7,  teacher:10, kid:78,  joinDate:'2023.11.15', lastDate:'2026.03.14', biz:'678-90-12345', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:7,  name:'무지개 유치원',      type:'유치원',   director:'한지수', directorId:'rainbow_han', phone:'031-789-0123', region:'경기', cert:'인증실패', approval:'반려',    status:'반려',     membership:'미가입',   memberPlan:'-',        memberSince:'-',          memberExpire:'-',          cls:0,  teacher:0,  kid:0,   joinDate:'2026.02.20', lastDate:'-',          biz:'789-01-23456', certInfo:{ certifiedAt:null, method:'사업자등록번호 기반', agency:'국세청 연동', failureReason:'사업자등록증 정보 불일치 — 상호명 미일치' } },
+  { id:8,  name:'아이나라 어린이집',  type:'어린이집', director:'오민준', directorId:'inara_oh', phone:'042-890-1234', region:'기타', cert:'인증완료', approval:'승인완료', status:'이용종료', membership:'일반회원', memberPlan:'일반회원', memberSince:'2023.08.01', memberExpire:'2025.12.31', cls:3,  teacher:4,  kid:28,  joinDate:'2023.08.01', lastDate:'2025.12.31', biz:'890-12-34567', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:9,  name:'별빛 유치원',        type:'유치원',   director:'송혜진', directorId:'starlight_song', phone:'02-901-2345',  region:'서울', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'멀티회원', memberPlan:'멀티회원', memberSince:'2023.07.01', memberExpire:'2026.06.30', cls:9,  teacher:14, kid:110, joinDate:'2023.06.10', lastDate:'2026.03.16', biz:'901-23-45678', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:10, name:'초록숲 어린이집',    type:'어린이집', director:'임태양', directorId:'greenwood_lim', phone:'031-012-3456', region:'경기', cert:'인증완료', approval:'승인대기', status:'승인대기', membership:'미가입',   memberPlan:'-',        memberSince:'-',          memberExpire:'-',          cls:0,  teacher:0,  kid:0,   joinDate:'2026.03.08', lastDate:'-',          biz:'012-34-56789', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:11, name:'사랑나눔 어린이집',  type:'어린이집', director:'윤서영', directorId:'sarang_yoon', phone:'051-123-4567', region:'부산', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'정회원',   memberPlan:'정회원',   memberSince:'2024.10.01', memberExpire:'2026.09.30', cls:5,  teacher:6,  kid:44,  joinDate:'2024.09.05', lastDate:'2026.03.15', biz:'112-34-56789', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+  { id:12, name:'꽃잎 유치원',        type:'유치원',   director:'강민호', directorId:'petal_kang', phone:'062-234-5678', region:'기타', cert:'인증완료', approval:'승인완료', status:'이용중',   membership:'일반회원', memberPlan:'일반회원', memberSince:'2024.04.12', memberExpire:'-',          cls:4,  teacher:6,  kid:48,  joinDate:'2024.04.12', lastDate:'2026.03.10', biz:'223-45-67890', certInfo:{ certifiedAt:'2024.03.18 14:32', method:'사업자등록번호 기반', agency:'국세청 연동' } },
+];
+
+/* 승인관리 API 응답용 프로토타입 데이터: 화면 로직과 분리된 기관별 승인 신청/처리 정보 */
+function getPrototypeApprovalAppliedAt(daysAgo) {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() - daysAgo);
+  const pad = value => String(value).padStart(2, '0');
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
+}
+const APPROVAL_INFO_SAMPLE_DATA = [
+  { orgId:1,  approvalInfo:{ status:'승인완료', appliedAt:'2024.03.18', processedAt:'2024.03.20 09:20', processedById:'ADMIN-001', processedByName:'김관리자', rejectReason:null, rejectDetail:null } },
+  { orgId:2,  approvalInfo:{ status:'승인완료', appliedAt:'2024.05.20', processedAt:'2024.05.21 10:15', processedById:'ADMIN-002', processedByName:'이관리자', rejectReason:null, rejectDetail:null } },
+  { orgId:3,  approvalInfo:{ status:'반려', appliedAt:'2024.07.01', processedAt:'2024.07.02 11:30', processedById:'ADMIN-001', processedByName:'김관리자', rejectReason:'서류 미비', rejectDetail:'필수 확인 서류가 누락되어 반려 처리되었습니다.' } },
+  { orgId:4,  approvalInfo:{ status:'승인완료', appliedAt:'2024.02.12', processedAt:'2024.02.13 14:05', processedById:'ADMIN-002', processedByName:'이관리자', rejectReason:null, rejectDetail:null } },
+  { orgId:5,  approvalInfo:{ status:'승인대기', appliedAt:'2026.03.01', processedAt:null, processedById:null, processedByName:null, rejectReason:null, rejectDetail:null } },
+  { orgId:6,  approvalInfo:{ status:'반려', appliedAt:'2023.11.16', processedAt:'2023.11.17 09:40', processedById:'ADMIN-001', processedByName:'김관리자', rejectReason:'중복 기관 등록', rejectDetail:null } },
+  { orgId:7,  approvalInfo:{ status:'반려', appliedAt:'2026.02.20', processedAt:'2026.02.21 16:10', processedById:'ADMIN-002', processedByName:'이관리자', rejectReason:'기관인증 정보 불일치', rejectDetail:'사업자등록증의 상호명과 신청 기관명이 일치하지 않습니다.' } },
+  { orgId:8,  approvalInfo:{ status:'승인완료', appliedAt:'2023.08.02', processedAt:'2023.08.03 13:25', processedById:'ADMIN-001', processedByName:'김관리자', rejectReason:null, rejectDetail:null } },
+  { orgId:9,  approvalInfo:{ status:'승인완료', appliedAt:'2023.06.12', processedAt:'2023.06.13 10:50', processedById:'ADMIN-002', processedByName:'이관리자', rejectReason:null, rejectDetail:null } },
+  { orgId:10, approvalInfo:{ status:'승인대기', appliedAt:getPrototypeApprovalAppliedAt(1), processedAt:null, processedById:null, processedByName:null, rejectReason:null, rejectDetail:null } },
+  { orgId:11, approvalInfo:{ status:'승인대기', appliedAt:getPrototypeApprovalAppliedAt(3), processedAt:null, processedById:null, processedByName:null, rejectReason:null, rejectDetail:null } },
+  { orgId:12, approvalInfo:{ status:'승인대기', appliedAt:getPrototypeApprovalAppliedAt(8), processedAt:null, processedById:null, processedByName:null, rejectReason:null, rejectDetail:null } },
+];
+const APPROVAL_INFO_DATA = Array.isArray(window.__ORG_APPROVAL_INFO_DATA__)
+  ? window.__ORG_APPROVAL_INFO_DATA__
+  : APPROVAL_INFO_SAMPLE_DATA;
+const APPROVAL_INFO_BY_ORG_ID = new Map(
+  APPROVAL_INFO_DATA.map(item => [item.orgId, item.approvalInfo])
+);
+ORG_DATA.forEach(org => {
+  const approvalInfo = APPROVAL_INFO_BY_ORG_ID.get(org.id);
+  org.approvalInfo = approvalInfo ? { ...approvalInfo } : null;
+  if (org.approvalInfo?.status) org.approval = org.approvalInfo.status;
+});
+
+/* 기존 알림장 이전 API 응답용 프로토타입 데이터 */
+const MIGRATION_INFO_SAMPLE_DATA = [
+  { orgId:1,  migrationInfo:{ email:null,                    status:'NOT_APPLICABLE', migratedAt:null } },
+  { orgId:2,  migrationInfo:{ email:null,                    status:'NOT_ENTERED', migratedAt:null } },
+  { orgId:3,  migrationInfo:{ email:'junseo@example.com',    status:'MATCH_FAILED', migratedAt:null } },
+  { orgId:4,  migrationInfo:{ email:'soyeon@example.com',    status:'COMPLETED',  migratedAt:'2024.02.12 16:40' } },
+  { orgId:5,  migrationInfo:{ email:null,                    status:'NOT_ENTERED', migratedAt:null } },
+  { orgId:6,  migrationInfo:{ email:'dahye@example.com',     status:'MATCH_FAILED', migratedAt:null } },
+  { orgId:7,  migrationInfo:{ email:'jisoo@example.com',     status:'COMPLETED',  migratedAt:'2026.02.20 17:10' } },
+  { orgId:8,  migrationInfo:{ email:null,                    status:'NOT_ENTERED', migratedAt:null } },
+  { orgId:9,  migrationInfo:{ email:'hyejin@example.com',    status:'COMPLETED',  migratedAt:'2023.06.12 14:30' } },
+  { orgId:10, migrationInfo:{ email:'taeyang@example.com',   status:'MATCH_FAILED', migratedAt:null } },
+  { orgId:11, migrationInfo:{ email:'seoyoung@example.com',  status:'COMPLETED',  migratedAt:'2024.09.06 13:45' } },
+  { orgId:12, migrationInfo:{ email:null,                    status:'NOT_ENTERED', migratedAt:null } },
+];
+const MIGRATION_INFO_DATA = Array.isArray(window.__ORG_MIGRATION_INFO_DATA__)
+  ? window.__ORG_MIGRATION_INFO_DATA__
+  : MIGRATION_INFO_SAMPLE_DATA;
+const MIGRATION_INFO_BY_ORG_ID = new Map(
+  MIGRATION_INFO_DATA.map(item => [item.orgId, item.migrationInfo])
+);
+ORG_DATA.forEach(org => {
+  const migrationInfo = MIGRATION_INFO_BY_ORG_ID.get(org.id);
+  org.migrationInfo = migrationInfo ? { ...migrationInfo } : null;
+});
+
+/* 관리자 메모 API 응답 형태: 기관별 신규 등록 이력 */
+const PROTOTYPE_ADMIN_MEMOS = [
+  {
+    id:'ADMIN-MEMO-1-2', orgId:1,
+    content:'기관에서 원장 변경 관련 문의 접수. 확인 후 처리 예정.',
+    createdAt:'2026.09.14 13:05', createdById:'ADMIN-001', createdByName:'김관리자',
+  },
+  {
+    id:'ADMIN-MEMO-1-1', orgId:1,
+    content:'멤버십 관련 문의하여 안내 완료.',
+    createdAt:'2026.09.10 16:24', createdById:'ADMIN-002', createdByName:'이관리자',
+  },
+];
+const adminMemos = Array.isArray(window.__ORG_ADMIN_MEMOS__)
+  ? window.__ORG_ADMIN_MEMOS__
+  : PROTOTYPE_ADMIN_MEMOS;
+const CURRENT_ADMIN_USER = window.__CURRENT_ADMIN_USER__ || {
+  id:'ADMIN-001', name:'김관리자',
+};
+
+const REJECT_REASON_LABELS = {
+  CERT_INFO_MISMATCH: '기관인증 정보 불일치',
+  BIZ_DOC_MISMATCH:   '사업자등록증 불일치',
+  DUPLICATE_ORG:       '중복 기관 등록',
+  MISSING_DOCUMENT:    '서류 미비',
+  OTHER:                '기타 (직접 입력)',
+};
+function getRejectReasonLabel(reasonCode) {
+  return REJECT_REASON_LABELS[reasonCode] || reasonCode || '-';
+}
+
+const CERT_REQUIRED_SAMPLE_DATA = {
+  1:  { address:'서울특별시 강남구 테헤란로 123',       appliedAt:'2024.03.15 09:12', processedAt:'2024.03.15 10:20' },
+  2:  { address:'경기도 성남시 분당구 판교로 242',      appliedAt:'2024.05.20 10:05', processedAt:'2024.05.20 11:00' },
+  3:  { address:'인천광역시 남동구 인주대로 593',       appliedAt:'2024.07.01 11:20', processedAt:'2024.07.01 13:10' },
+  4:  { address:'부산광역시 해운대구 센텀중앙로 90',    appliedAt:'2024.02.10 09:45', processedAt:'2024.02.10 11:15' },
+  5:  { address:'대구광역시 수성구 달구벌대로 2450',    appliedAt:'2026.03.01 14:10', processedAt:null },
+  6:  { address:'서울특별시 마포구 월드컵북로 21',       appliedAt:'2023.11.15 08:55', processedAt:'2023.11.15 10:05' },
+  7:  { address:'경기도 수원시 영통구 광교중앙로 145',   appliedAt:'2026.02.20 15:30', processedAt:'2026.02.20 16:20' },
+  8:  { address:'대전광역시 서구 둔산대로 100',          appliedAt:'2023.08.01 10:40', processedAt:'2023.08.01 12:00' },
+  9:  { address:'서울특별시 송파구 올림픽로 300',         appliedAt:'2023.06.10 09:25', processedAt:'2023.06.10 10:30' },
+  10: { address:'경기도 고양시 일산동구 중앙로 1206',     appliedAt:'2026.03.08 13:15', processedAt:'2026.03.08 14:25' },
+  11: { address:'부산광역시 동래구 충렬대로 237',         appliedAt:'2024.09.05 11:05', processedAt:'2024.09.05 12:15' },
+  12: { address:'광주광역시 서구 상무중앙로 110',         appliedAt:'2024.04.12 09:50', processedAt:'2024.04.12 11:00' },
+};
+
+function createCertEvidencePreview(org, documentType) {
+  const stream = `BT
+/F1 20 Tf
+72 730 Td
+(Certificate Document Sample) Tj
+0 -42 Td
+/F1 12 Tf
+(Organization ID: ${org.id}) Tj
+0 -24 Td
+(Registration Number: ${org.biz}) Tj
+0 -24 Td
+(Prototype evidence file) Tj
+ET`;
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
+    `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+  ];
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(pdf.length);
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xrefOffset = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach(offset => {
+    pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+  });
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  return `data:application/pdf;base64,${btoa(pdf)}`;
+}
+
+/* 기관 인증 상세 API 응답 형태: 신청정보 / 증빙자료 / 인증 결과 */
+ORG_DATA.forEach(org => {
+  const source = org.certInfo || {};
+  const application = source.application || {};
+  const evidence = source.evidence || {};
+  const result = source.result || {};
+  const usePrototypeSample = !source.application && !source.evidence && !source.result;
+  const requiredSample = usePrototypeSample ? (CERT_REQUIRED_SAMPLE_DATA[org.id] || {}) : {};
+  const documentType = evidence.documentType ?? (usePrototypeSample ? '사업자등록증' : null);
+  const fileName = evidence.fileName ?? (usePrototypeSample ? `${org.name}_${documentType}.pdf` : null);
+  const normalizedCertInfo = {
+    application: {
+      organizationName: application.organizationName ?? org.name ?? null,
+      representativeName: application.representativeName ?? org.director ?? null,
+      registrationNumber: application.registrationNumber ?? org.biz ?? null,
+      address: application.address ?? requiredSample.address ?? null,
+      appliedAt: application.appliedAt ?? requiredSample.appliedAt ?? null,
+    },
+    evidence: {
+      documentType,
+      fileName,
+      fileUrl: evidence.fileUrl ?? (usePrototypeSample ? createCertEvidencePreview(org, documentType) : null),
+    },
+    result: {
+      status: result.status ?? org.cert ?? null,
+      processedAt: result.processedAt ?? requiredSample.processedAt ?? source.certifiedAt ?? null,
+      method: result.method ?? source.method ?? null,
+      failureReason: result.failureReason ?? source.failureReason ?? null,
+    },
+  };
+  const requiredFields = {
+    'application.appliedAt': normalizedCertInfo.application.appliedAt,
+    'application.address': normalizedCertInfo.application.address,
+    'evidence.fileName': normalizedCertInfo.evidence.fileName,
+    'evidence.fileUrl': normalizedCertInfo.evidence.fileUrl,
+  };
+  normalizedCertInfo.validation = {
+    missingRequiredFields: Object.entries(requiredFields)
+      .filter(([, value]) => value === null || value === undefined || value === '')
+      .map(([field]) => field),
+  };
+  org.certInfo = normalizedCertInfo;
+});
+
+function getServiceCurrentOperationYear() {
+  const serviceOperationYear = Number(window.__SERVICE_CONTEXT__?.currentOperationYear);
+  return Number.isInteger(serviceOperationYear) && serviceOperationYear > 0
+    ? serviceOperationYear
+    : new Date().getFullYear();
+}
+
+const SAMPLE_SURNAMES = ['김','이','박','최','정','강','조','윤','장','임'];
+const SAMPLE_GIVEN_NAMES = ['서윤','하준','지우','민서','도윤','하은','지호','수아','예준','채원','현우','다은'];
+const SAMPLE_BOY_GIVEN_NAMES = ['하준','도윤','지호','예준','현우'];
+
+function createCompositionName(index, offset = 0) {
+  const value = index + offset;
+  return `${SAMPLE_SURNAMES[value % SAMPLE_SURNAMES.length]}${SAMPLE_GIVEN_NAMES[Math.floor(value / SAMPLE_SURNAMES.length) % SAMPLE_GIVEN_NAMES.length]}`;
+}
+
+function getCompositionChildGender(name) {
+  return SAMPLE_BOY_GIVEN_NAMES.some(givenName => name.endsWith(givenName)) ? '남아' : '여아';
+}
+
+/* 정적 프로토타입 전용 데이터 팩토리입니다.
+   실제 서비스에서는 API가 전달한 classId/teacherIds/childIds 소속관계를 그대로 사용합니다. */
+function createPrototypeCompositionYearData({ orgId, operationYear, classSpecs, staffCount, childCount, guardianCount }) {
+  const staff = Array.from({ length: staffCount }, (_, index) => ({
+    id: `ORG${orgId}-${operationYear}-STAFF${String(index + 1).padStart(3, '0')}`,
+    name: createCompositionName(index, orgId * 3),
+    role: index % 3 === 0 ? '담임' : '부담임',
+    employmentStatus: '재직',
+  }));
+  const children = Array.from({ length: childCount }, (_, index) => {
+    const name = createCompositionName(index, orgId * 7 + 20);
+    return {
+      id: `ORG${orgId}-${operationYear}-CHILD${String(index + 1).padStart(3, '0')}`,
+      name,
+      gender: getCompositionChildGender(name),
+      profileImageUrl: null,
+      enrollmentStatus: '재원',
+    };
+  });
+  const classes = classSpecs.map(([name, age], index) => ({
+    id: `ORG${orgId}-${operationYear}-CLASS${String(index + 1).padStart(2, '0')}`,
+    name,
+    age,
+    operationYear,
+    operationStatus: '운영중',
+    teacherIds: [],
+    childIds: [],
+  }));
+
+  if (classes.length) {
+    staff.forEach((member, index) => classes[index % classes.length].teacherIds.push(member.id));
+    children.forEach((child, index) => classes[index % classes.length].childIds.push(child.id));
+    if (staff[0] && classes[1]) classes[1].teacherIds.push(staff[0].id);
+  }
+
+  const guardians = Array.from({ length: guardianCount }, (_, index) => {
+    const isPrimaryAccount = index < children.length;
+    const childIndex = isPrimaryAccount ? index : (index - children.length) % children.length;
+    const primaryChild = children[childIndex];
+    const additionalChild = !isPrimaryAccount && children.length > 1 && index % 10 === 0
+      ? children[(childIndex + 1) % children.length]
+      : null;
+    return {
+      id: `ORG${orgId}-${operationYear}-GUARDIAN${String(index + 1).padStart(3, '0')}`,
+      name: createCompositionName(index, orgId * 11 + 45),
+      accountStatus: '활성',
+      accountType: isPrimaryAccount ? '주계정' : '보조계정',
+      relationship: index % 2 === 0 ? '엄마' : '아빠',
+      connectionStatus: '연결완료',
+      childIds: primaryChild
+        ? [primaryChild.id, ...(additionalChild ? [additionalChild.id] : [])]
+        : [],
+    };
+  });
+
+  /* 선택 연도 집계 제외 조건 검증용 데이터 */
+  const formerStaff = { id:`ORG${orgId}-${operationYear}-STAFF-FORMER`, name:'퇴사 교직원', role:'담임', employmentStatus:'퇴사' };
+  const formerChild = { id:`ORG${orgId}-${operationYear}-CHILD-FORMER`, name:'퇴소 원아', enrollmentStatus:'퇴소' };
+  const inactiveGuardian = {
+    id:`ORG${orgId}-${operationYear}-GUARDIAN-INACTIVE`,
+    accountStatus:'비활성',
+    accountType:'주계정',
+    connectionStatus:'연결완료',
+    childIds: children[0] ? [children[0].id] : [formerChild.id],
+  };
+  const invitedGuardian = {
+    id:`ORG${orgId}-${operationYear}-GUARDIAN-INVITED`,
+    accountStatus:'초대중',
+    accountType:'보조계정',
+    connectionStatus:'미연결',
+    childIds:[],
+  };
+  const formerChildGuardian = {
+    id:`ORG${orgId}-${operationYear}-GUARDIAN-FORMER-ONLY`,
+    accountStatus:'활성',
+    accountType:'주계정',
+    connectionStatus:'연결완료',
+    childIds:[formerChild.id],
+  };
+  const inactiveClass = {
+    id:`ORG${orgId}-${operationYear}-CLASS-INACTIVE`,
+    name:'미운영반',
+    age:'-',
+    operationYear,
+    operationStatus:'미운영',
+    teacherIds:[formerStaff.id],
+    childIds:[formerChild.id],
+  };
+
+  return {
+    operationYear,
+    classes: [...classes, inactiveClass],
+    staff: [...staff, formerStaff],
+    children: [...children, formerChild],
+    guardians: [...guardians, inactiveGuardian, invitedGuardian, formerChildGuardian],
+  };
+}
+
+function createPrototypeCompositionData({
+  orgId, classSpecs, staffCount, childCount, guardianCount,
+  previousClassCount, previousStaffCount, previousChildCount, previousGuardianCount,
+}) {
+  const currentOperationYear = getServiceCurrentOperationYear();
+  return {
+    currentOperationYear,
+    years: {
+      [currentOperationYear]: createPrototypeCompositionYearData({
+        orgId, operationYear:currentOperationYear, classSpecs, staffCount, childCount, guardianCount,
+      }),
+      [currentOperationYear - 1]: createPrototypeCompositionYearData({
+        orgId,
+        operationYear:currentOperationYear - 1,
+        classSpecs:classSpecs.slice(0, previousClassCount),
+        staffCount:previousStaffCount,
+        childCount:previousChildCount,
+        guardianCount:previousGuardianCount,
+      }),
+    },
+  };
+}
+
+function createPrototypeOrgCompositionData() {
+  return {
+  1: createPrototypeCompositionData({ orgId:1, staffCount:8, childCount:62, guardianCount:112, previousClassCount:5, previousStaffCount:7, previousChildCount:54, previousGuardianCount:96, classSpecs:[['햇살반','3세'],['꽃잎반','4세'],['솔이반','5세'],['달님반','6세'],['별빛반','7세'],['하늘반','8세']] }),
+  2: createPrototypeCompositionData({ orgId:2, staffCount:7, childCount:55, guardianCount:99, previousClassCount:4, previousStaffCount:6, previousChildCount:46, previousGuardianCount:82, classSpecs:[['새싹반','3세'],['햇살반','4세'],['꽃잎반','5세'],['나무반','6세'],['하늘반','7세']] }),
+  3: createPrototypeCompositionData({ orgId:3, staffCount:5, childCount:38, guardianCount:68, previousClassCount:3, previousStaffCount:4, previousChildCount:30, previousGuardianCount:54, classSpecs:[['기쁨반','3세'],['사랑반','4세'],['행복반','5세'],['희망반','6세']] }),
+  4: createPrototypeCompositionData({ orgId:4, staffCount:12, childCount:94, guardianCount:169, previousClassCount:7, previousStaffCount:10, previousChildCount:82, previousGuardianCount:147, classSpecs:[['새싹반','3세'],['햇살반','3세'],['꽃잎반','4세'],['나무반','4세'],['바다반','5세'],['하늘반','5세'],['달님반','6세'],['별빛반','7세']] }),
+  5: createPrototypeCompositionData({ orgId:5, staffCount:0, childCount:0, guardianCount:0, previousClassCount:0, previousStaffCount:0, previousChildCount:0, previousGuardianCount:0, classSpecs:[] }),
+  6: createPrototypeCompositionData({ orgId:6, staffCount:10, childCount:78, guardianCount:140, previousClassCount:6, previousStaffCount:9, previousChildCount:68, previousGuardianCount:122, classSpecs:[['새싹반','3세'],['잎새반','3세'],['꽃잎반','4세'],['나무반','5세'],['숲속반','5세'],['하늘반','6세'],['무지개반','7세']] }),
+  7: createPrototypeCompositionData({ orgId:7, staffCount:0, childCount:0, guardianCount:0, previousClassCount:0, previousStaffCount:0, previousChildCount:0, previousGuardianCount:0, classSpecs:[] }),
+  8: createPrototypeCompositionData({ orgId:8, staffCount:4, childCount:28, guardianCount:50, previousClassCount:3, previousStaffCount:4, previousChildCount:24, previousGuardianCount:43, classSpecs:[['나라반','3세'],['사랑반','4세'],['희망반','5세']] }),
+  9: createPrototypeCompositionData({ orgId:9, staffCount:14, childCount:110, guardianCount:198, previousClassCount:8, previousStaffCount:12, previousChildCount:98, previousGuardianCount:176, classSpecs:[['새싹반','3세'],['햇살반','3세'],['꽃잎반','4세'],['잎새반','4세'],['나무반','5세'],['바다반','5세'],['달님반','6세'],['별빛반','6세'],['하늘반','7세']] }),
+  10:createPrototypeCompositionData({ orgId:10,staffCount:0, childCount:0, guardianCount:0, previousClassCount:0, previousStaffCount:0, previousChildCount:0, previousGuardianCount:0, classSpecs:[] }),
+  11:createPrototypeCompositionData({ orgId:11,staffCount:6, childCount:44, guardianCount:79, previousClassCount:4, previousStaffCount:5, previousChildCount:37, previousGuardianCount:66, classSpecs:[['사랑반','3세'],['나눔반','4세'],['기쁨반','5세'],['행복반','6세'],['희망반','7세']] }),
+  12:createPrototypeCompositionData({ orgId:12,staffCount:6, childCount:48, guardianCount:86, previousClassCount:3, previousStaffCount:5, previousChildCount:40, previousGuardianCount:72, classSpecs:[['새싹반','3세'],['꽃잎반','4세'],['열매반','5세'],['하늘반','6세']] }),
+  };
+}
+
+/* API 연동 시 동일한 구조의 기관별 데이터를 주입하며, 프로토타입 팩토리는 실행하지 않습니다. */
+const ORG_COMPOSITION_DATA = window.__ORG_COMPOSITION_DATA__ || createPrototypeOrgCompositionData();
+
+const PROTOTYPE_MEMBERSHIP_PLANS = {
+  '멀티회원': { code:'MULTI', name:'멀티회원', basePrice:49000, memberUnitPrice:1000 },
+  '정회원':   { code:'REGULAR', name:'정회원', basePrice:null, memberUnitPrice:null },
+  '일반회원': { code:'BASIC', name:'일반회원', basePrice:null, memberUnitPrice:null },
+  '미가입':   { code:'NONE', name:'미가입', basePrice:null, memberUnitPrice:null },
+};
+const PROTOTYPE_MULTI_INCLUDED_COUNTS = { 1:5, 4:7, 9:0 };
+const PROTOTYPE_NOTE_SERVICE_ACTIVE = {
+  1:true, 2:true, 3:true, 4:true, 5:false, 6:true,
+  7:false, 8:false, 9:true, 10:false, 11:true, 12:true,
+};
+const PROTOTYPE_AVATAR_COLORS = ['#7C3AED','#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6'];
+
+/* 서비스이용 화면 검증용 샘플 팩토리입니다. 실제 서비스에서는 동일 구조의 API 데이터를 주입합니다. */
+function createPrototypeServiceUsageData() {
+  return Object.fromEntries(ORG_DATA.map(org => {
+    const composition = ORG_COMPOSITION_DATA[org.id] || null;
+    const yearData = getCompositionYearData(composition, composition?.currentOperationYear);
+    const uniqueTeachers = new Map();
+    (yearData?.staff || []).forEach(teacher => {
+      if (teacher.employmentStatus === '재직') uniqueTeachers.set(teacher.id, teacher);
+    });
+    const includedLimit = org.membership === '멀티회원'
+      ? (PROTOTYPE_MULTI_INCLUDED_COUNTS[org.id] || 0)
+      : 0;
+    const teacherAccounts = [...uniqueTeachers.values()].map((teacher, index) => ({
+      userId: teacher.id,
+      name: teacher.name,
+      email: `teacher${String(index + 1).padStart(2, '0')}.org${org.id}@prototype.kidkids.kr`,
+      role: teacher.role,
+      employmentStatus: teacher.employmentStatus,
+      membershipIncluded: index < includedLimit,
+      membershipJoinedAt: index < includedLimit && org.memberSince !== '-' ? org.memberSince : null,
+      lastAccessedAt: index === 0 && org.lastDate !== '-' ? org.lastDate : null,
+      avatarBg: PROTOTYPE_AVATAR_COLORS[index % PROTOTYPE_AVATAR_COLORS.length],
+    }));
+    const hasPaidMembership = org.membership === '멀티회원' || org.membership === '정회원';
+    const membershipHistory = hasPaidMembership && org.memberSince !== '-'
+      ? [{
+          id:`MH-${org.id}-JOIN`,
+          type:'유료 멤버십 가입',
+          membership:org.membership,
+          changedAt:org.memberSince,
+          changedBy:'김관리자',
+        }]
+      : [];
+
+    return [org.id, {
+      membership:org.membership,
+      membershipAppliedAt:org.memberSince !== '-' ? org.memberSince : null,
+      membershipEndsAt:org.memberExpire !== '-' ? org.memberExpire : null,
+      operationStatus:org.status,
+      noteServiceActive:PROTOTYPE_NOTE_SERVICE_ACTIVE[org.id] ?? false,
+      membershipPlan:{ ...(PROTOTYPE_MEMBERSHIP_PLANS[org.membership] || PROTOTYPE_MEMBERSHIP_PLANS['미가입']) },
+      directorAccount:{
+        userId:`ORG${org.id}-DIRECTOR`,
+        name:org.director,
+        accountType:'기관장',
+        employmentStatus:'재직',
+        lastAccessedAt:org.lastDate !== '-' ? org.lastDate : null,
+      },
+      teacherAccounts,
+      membershipHistory,
+    }];
+  }));
+}
+
+const ORG_SERVICE_USAGE_DATA = window.__ORG_SERVICE_USAGE_DATA__ || createPrototypeServiceUsageData();
+
+function getCompositionYears(composition) {
+  if (!composition || !composition.years) return [];
+  return Object.keys(composition.years).map(Number).sort((a, b) => b - a);
+}
+
+function getCompositionYearData(composition, operationYear) {
+  if (!composition || !composition.years) return null;
+  return composition.years[operationYear] || null;
+}
+
+function getOperatingClasses(yearData) {
+  if (!yearData || !Array.isArray(yearData.classes)) return [];
+  return yearData.classes.filter(item =>
+    item.operationYear === yearData.operationYear && item.operationStatus === '운영중'
+  );
+}
+
+function getUniqueActiveIds(records, statusField, activeStatus) {
+  if (!Array.isArray(records)) return null;
+  return new Set(records.filter(item => item[statusField] === activeStatus).map(item => item.id)).size;
+}
+
+function getClassActiveMembers(ids, records, statusField, activeStatus) {
+  if (!Array.isArray(ids) || !Array.isArray(records)) return null;
+  const classIds = new Set(ids);
+  const uniqueMembers = new Map();
+  records.forEach(item => {
+    if (item[statusField] === activeStatus && classIds.has(item.id)) uniqueMembers.set(item.id, item);
+  });
+  return [...uniqueMembers.values()];
+}
+
+function getClassMemberCount(ids, records, statusField, activeStatus) {
+  const members = getClassActiveMembers(ids, records, statusField, activeStatus);
+  return members ? members.length : null;
+}
+
+function getCompositionSummary(yearData) {
+  if (!yearData) return { classCount:null, staffCount:null, childCount:null, guardianCount:null };
+  const hasClassData = Array.isArray(yearData.classes);
+  const operatingClasses = getOperatingClasses(yearData);
+  const enrolledChildren = Array.isArray(yearData.children)
+    ? yearData.children.filter(child => child.enrollmentStatus === '재원')
+    : null;
+  const enrolledChildIds = enrolledChildren
+    ? new Set(enrolledChildren.map(child => child.id))
+    : null;
+  const guardianCount = Array.isArray(yearData.guardians) && enrolledChildIds
+    ? new Set(yearData.guardians
+        .filter(guardian => guardian.accountStatus === '활성'
+          && guardian.connectionStatus === '연결완료'
+          && Array.isArray(guardian.childIds)
+          && guardian.childIds.some(childId => enrolledChildIds.has(childId)))
+        .map(guardian => guardian.id)).size
+    : null;
+  return {
+    classCount: hasClassData ? operatingClasses.length : null,
+    staffCount: getUniqueActiveIds(yearData.staff, 'employmentStatus', '재직'),
+    childCount: enrolledChildren ? new Set(enrolledChildren.map(child => child.id)).size : null,
+    guardianCount,
+  };
+}
+
+function displayCompositionCount(value, unit = '') {
+  return value === null || value === undefined ? '-' : `${value}${unit}`;
+}
+
+function displayCompositionValue(value) {
+  return value === null || value === undefined || value === '' ? '-' : value;
+}
+
+function renderCompositionCountCell(classItem, yearData, memberType) {
+  const isTeacher = memberType === 'teacher';
+  const ids = isTeacher ? classItem.teacherIds : classItem.childIds;
+  const records = isTeacher ? yearData?.staff : yearData?.children;
+  const statusField = isTeacher ? 'employmentStatus' : 'enrollmentStatus';
+  const activeStatus = isTeacher ? '재직' : '재원';
+  const label = isTeacher ? '교사' : '원아';
+  const count = getClassMemberCount(ids, records, statusField, activeStatus);
+
+  if (count === null) return '<span class="composition-count-text">-</span>';
+  if (count === 0) return '<span class="composition-count-text">0명</span>';
+
+  const isExpanded = expandedCompositionDetail?.classId === classItem.id
+    && expandedCompositionDetail?.memberType === memberType;
+  return `<button type="button" class="composition-count-button" aria-expanded="${isExpanded}"
+    onclick="toggleCompositionDetail('${classItem.id}','${memberType}')">${label} ${count}명</button>`;
+}
+
+function getLinkedGuardianAccounts(childId, yearData) {
+  if (!childId || !Array.isArray(yearData?.guardians)) return [];
+  const uniqueAccounts = new Map();
+  yearData.guardians.forEach(guardian => {
+    if (guardian.accountStatus === '활성'
+      && guardian.connectionStatus === '연결완료'
+      && Array.isArray(guardian.childIds)
+      && guardian.childIds.includes(childId)) {
+      uniqueAccounts.set(guardian.id, guardian);
+    }
+  });
+  return [...uniqueAccounts.values()];
+}
+
+function renderCompositionChild(child, yearData) {
+  const guardianAccounts = getLinkedGuardianAccounts(child.id, yearData);
+  const primaryAccount = guardianAccounts.find(account => account.accountType === '주계정') || null;
+  const secondaryCount = guardianAccounts.filter(account => account.accountType === '보조계정').length;
+  const childName = displayCompositionValue(child.name);
+  const nameInitial = childName === '-' ? '?' : Array.from(childName)[0];
+
+  return `<div class="composition-child-card">
+    <div class="composition-child-avatar" aria-hidden="true">
+      <span>${nameInitial}</span>
+      ${child.profileImageUrl ? `<img src="${child.profileImageUrl}" alt="" onerror="this.remove()">` : ''}
+    </div>
+    <div class="composition-child-info">
+      <div class="composition-child-head">
+        <strong class="composition-child-name">${childName}</strong>
+        <span class="composition-gender-chip">${displayCompositionValue(child.gender)}</span>
+      </div>
+      <div class="composition-guardian-line">
+        <span class="composition-guardian-name">${primaryAccount ? `${displayCompositionValue(primaryAccount.name)} · ${displayCompositionValue(primaryAccount.relationship)}` : '-'}</span>
+        ${primaryAccount ? '<span class="composition-account-label">주계정</span>' : ''}
+        ${secondaryCount ? `<span class="composition-secondary-count">+ 보조 ${secondaryCount}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCompositionDetailRow(classItem, yearData) {
+  if (expandedCompositionDetail?.classId !== classItem.id) return '';
+  const isTeacher = expandedCompositionDetail.memberType === 'teacher';
+  const members = getClassActiveMembers(
+    isTeacher ? classItem.teacherIds : classItem.childIds,
+    isTeacher ? yearData?.staff : yearData?.children,
+    isTeacher ? 'employmentStatus' : 'enrollmentStatus',
+    isTeacher ? '재직' : '재원',
+  );
+  if (!members || !members.length) return '';
+
+  const label = isTeacher ? '교사' : '원아';
+  const sortedMembers = [...members]
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ko-KR'));
+  const detailItems = isTeacher
+    ? sortedMembers.map(member => `<div class="composition-detail-person"><strong>${displayCompositionValue(member.name)}</strong> · ${displayCompositionValue(member.role)}</div>`).join('')
+    : sortedMembers.map(child => renderCompositionChild(child, yearData)).join('');
+  return `<tr class="composition-detail-row">
+    <td colspan="4">
+      <div class="composition-detail-panel">
+        <div class="composition-detail-title">${displayCompositionValue(classItem.name)} ${label} 목록</div>
+        <div class="composition-detail-list">
+          ${detailItems}
+        </div>
+      </div>
+    </td>
+  </tr>`;
+}
+
+function renderCompositionContent(org, operationYear) {
+  const composition = ORG_COMPOSITION_DATA[org.id] || null;
+  const availableYears = getCompositionYears(composition);
+  const requestedYear = Number(operationYear);
+  const selectedYear = availableYears.includes(requestedYear)
+    ? requestedYear
+    : (composition?.currentOperationYear ?? availableYears[0] ?? null);
+  const yearData = getCompositionYearData(composition, selectedYear);
+  const summary = getCompositionSummary(yearData);
+  const operatingClasses = getOperatingClasses(yearData);
+
+  return `
+    <div class="composition-toolbar">
+      <label class="composition-year-control">운영연도
+        <select class="composition-year-select" onchange="changeCompositionYear(this.value)" ${availableYears.length ? '' : 'disabled'}>
+          ${availableYears.length
+            ? availableYears.map(year => `<option value="${year}" ${year === selectedYear ? 'selected' : ''}>${year}년</option>`).join('')
+            : '<option>-</option>'}
+        </select>
+      </label>
+    </div>
+    <div class="dp-sec">📊 기관 구성 현황</div>
+    <div class="dp-stats-row">
+      <div class="dp-stat-card">
+        <div class="dp-stat-num">${displayCompositionCount(summary.classCount)}</div>
+        <div class="dp-stat-label">반 수</div>
+      </div>
+      <div class="dp-stat-card">
+        <div class="dp-stat-num">${displayCompositionCount(summary.staffCount)}</div>
+        <div class="dp-stat-label">교사 수</div>
+      </div>
+      <div class="dp-stat-card">
+        <div class="dp-stat-num">${displayCompositionCount(summary.childCount)}</div>
+        <div class="dp-stat-label">원아 수</div>
+      </div>
+      <div class="dp-stat-card">
+        <div class="dp-stat-num">${displayCompositionCount(summary.guardianCount)}</div>
+        <div class="dp-stat-label">학부모 계정 수</div>
+      </div>
+    </div>
+    ${operatingClasses.length ? `
+    <div class="dp-sec" style="margin-top:20px">🏠 반 목록</div>
+    <table class="dp-info-table class-summary-table">
+      <colgroup>
+        <col class="col-class"><col class="col-age"><col class="col-teacher"><col class="col-kid">
+      </colgroup>
+      <thead><tr style="background:#F8F9FB">
+        <td class="label" style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.4px">반명</td>
+        <td class="label" style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.4px">연령</td>
+        <td class="label" style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.4px">교사</td>
+        <td class="label" style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.4px">원아</td>
+      </tr></thead>
+      <tbody>
+        ${operatingClasses.map(classItem => `<tr>
+          <td class="val">${displayCompositionValue(classItem.name)}</td>
+          <td class="val">${displayCompositionValue(classItem.age)}</td>
+          <td class="val count-cell">${renderCompositionCountCell(classItem, yearData, 'teacher')}</td>
+          <td class="val count-cell">${renderCompositionCountCell(classItem, yearData, 'child')}</td>
+        </tr>${renderCompositionDetailRow(classItem, yearData)}`).join('')}
+      </tbody>
+    </table>` : '<p class="dp-notice">현재 운영 중인 반이 없습니다.</p>'}
+  `;
+}
+
+function uniqueOrganizationsById(data) {
+  return [...new Map(data.filter(Boolean).map(org => [org.id, org])).values()];
+}
+const APPROVAL_STATUSES = ['승인대기', '승인완료', '반려'];
+const APPROVAL_DATA = uniqueOrganizationsById(ORG_DATA.filter(org => (
+  org.cert === '인증완료'
+  && Boolean(String(org.approvalInfo?.appliedAt || '').trim())
+  && APPROVAL_STATUSES.includes(org.approvalInfo?.status)
+)));
+const STATUS_DATA = ORG_DATA.filter(o => o.membership !== '미가입' && o.approval === '승인완료');
+let ORG_LIST_DATA = uniqueOrganizationsById(ORG_DATA.filter(o => o.approvalInfo?.status === '승인완료'));
+
+let orgFilteredData = [...ORG_LIST_DATA];
+let orgCurrentPage = 1;
+let orgPageSize = 20;
+let approvalFilteredData = [];
+let approvalCurrentPage = 1;
+let approvalPageSize = 20;
+const selectedApprovalIds = new Set();
+let currentApprovalOrgId = null;
+let currentRejectOrgId = null;
+
+/* ═══════════════ RENDER ═══════════════ */
+/* 아이디 마스킹: 앞 3자리만 노출하고 나머지는 * 처리 (3자 이하는 첫 글자만 노출) */
+function maskLoginId(id) {
+  if (!id) return '-';
+  const visible = id.length > 3 ? 3 : 1;
+  return id.slice(0, visible) + '*'.repeat(id.length - visible);
+}
+function membershipBadge(m) {
+  const map = {
+    '멀티회원': ['mb-multi',   '👑 멀티회원'],
+    '정회원':   ['mb-regular', '⭐ 정회원'],
+    '일반회원': ['mb-basic',   '일반회원'],
+    '미가입':   ['mb-none',    '미가입'],
+  };
+  const [cls, label] = map[m] || ['mb-none', m||'-'];
+  return `<span class="mbadge ${cls}">${label}</span>`;
+}
+function certBadge(s) {
+  if(s==='인증완료') return `<span class="sbadge" style="background:var(--s-cert-bg);color:var(--s-cert-text)"><span class="sdot" style="background:var(--s-cert-dot)"></span>${s}</span>`;
+  if(s==='인증대기') return `<span class="sbadge" style="background:var(--s-cpend-bg);color:var(--s-cpend-text)"><span class="sdot" style="background:var(--s-cpend-dot)"></span>${s}</span>`;
+  if(s==='인증실패') return `<span class="sbadge" style="background:var(--s-cfail-bg);color:var(--s-cfail-text)"><span class="sdot" style="background:var(--s-cfail-dot)"></span>${s}</span>`;
+  return `<span class="sbadge" style="background:var(--bg-base);color:var(--text-secondary)"><span class="sdot" style="background:var(--text-muted)"></span>${s||'-'}</span>`;
+}
+function apprBadge(s) {
+  if(s==='승인완료') return `<span class="sbadge" style="background:var(--s-done-bg);color:var(--s-done-text)"><span class="sdot" style="background:var(--s-done-dot)"></span>${s}</span>`;
+  if(s==='승인대기') return `<span class="sbadge" style="background:var(--s-wait-bg);color:var(--s-wait-text)"><span class="sdot" style="background:var(--s-wait-dot)"></span>${s}</span>`;
+  return `<span class="sbadge" style="background:var(--s-reject-bg);color:var(--s-reject-text)"><span class="sdot" style="background:var(--s-reject-dot)"></span>${s}</span>`;
+}
+function statusBadge(s) {
+  if(s==='이용중') return `<span class="sbadge" style="background:var(--s-inuse-bg);color:var(--s-inuse-text)"><span class="sdot" style="background:var(--s-inuse-dot)"></span>${s}</span>`;
+  if(s==='이용종료') return `<span class="sbadge" style="background:var(--s-end-bg);color:var(--s-end-text)"><span class="sdot" style="background:var(--s-end-dot)"></span>${s}</span>`;
+  if(s==='승인대기') return `<span class="sbadge" style="background:var(--s-wait-bg);color:var(--s-wait-text)"><span class="sdot" style="background:var(--s-wait-dot)"></span>${s}</span>`;
+  return `<span class="sbadge" style="background:#F3F4F6;color:#374151"><span class="sdot" style="background:#9CA3AF"></span>${s}</span>`;
+}
+function typeBadge(t) {
+  if(t==='어린이집') return `<span class="tag tag-daycare">${t}</span>`;
+  if(t==='유치원')  return `<span class="tag tag-kinder">${t}</span>`;
+  return `<span class="tag tag-etc">${t}</span>`;
+}
+
+function renderOrgTable(data) {
+  const tbody = document.getElementById('orgTableBody');
+  if(!data.length) { tbody.innerHTML = `<tr><td colspan="14" style="text-align:center;padding:40px;color:var(--text-muted)">조회된 기관이 없습니다.</td></tr>`; return; }
+  const displayValue = value => value === null || value === undefined || value === '' ? '-' : value;
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><a style="font-weight:600;color:var(--accent-primary);cursor:pointer" onclick="openDetail(${r.id})">${r.name}</a></td>
+      <td>${typeBadge(r.type)}</td>
+      <td>${displayValue(r.director)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${displayValue(r.phone)}</td>
+      <td>${displayValue(r.region)}</td>
+      <td>${certBadge(r.cert)}</td>
+      <td class="count-cell" style="text-align:center">${displayValue(r.cls)}</td>
+      <td class="count-cell" style="text-align:center">${displayValue(r.teacher)}</td>
+      <td class="count-cell" style="text-align:center">${displayValue(r.kid)}</td>
+      <td>${membershipBadge(r.membership)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td style="font-size:12px;color:var(--text-secondary)">${displayValue(r.joinDate)}</td>
+      <td style="font-size:12px;color:var(--text-secondary)">${displayValue(r.lastDate)}</td>
+      <td style="text-align:center"><button class="view-btn" onclick="openDetail(${r.id})" title="상세보기">↗</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderOrgList() {
+  const total = orgFilteredData.length;
+  const totalPages = Math.max(1, Math.ceil(total / orgPageSize));
+  if (orgCurrentPage > totalPages) orgCurrentPage = totalPages;
+  const start = (orgCurrentPage - 1) * orgPageSize;
+  renderOrgTable(orgFilteredData.slice(start, start + orgPageSize));
+  document.getElementById('orgResultInfo').innerHTML = `전체 <strong>${total}</strong>개 기관`;
+  renderPagination(totalPages);
+}
+
+function parseApprovalDate(value) {
+  const match = String(value || '').trim().match(/^(\d{4})[.-](\d{2})[.-](\d{2})/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const timestamp = Date.UTC(year, month - 1, day);
+  const parsed = new Date(timestamp);
+  if (
+    parsed.getUTCFullYear() !== year
+    || parsed.getUTCMonth() !== month - 1
+    || parsed.getUTCDate() !== day
+  ) return null;
+  return timestamp;
+}
+
+function getApprovalElapsedDays(appliedAt, today = new Date()) {
+  const appliedTimestamp = parseApprovalDate(appliedAt);
+  if (appliedTimestamp === null) return null;
+  const todayTimestamp = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.max(0, Math.floor((todayTimestamp - appliedTimestamp) / 86400000));
+}
+
+function displayApprovalValue(value) {
+  return value === null || value === undefined || value === '' ? '-' : value;
+}
+
+function getMigrationStatusLabel(status) {
+  const labels = {
+    NOT_APPLICABLE:'해당없음',
+    NOT_ENTERED:'미입력',
+    MATCH_FAILED:'확인실패',
+    COMPLETED:'이전완료',
+  };
+  return labels[status] || '-';
+}
+
+function migrationStatusBadge(status) {
+  if (status === 'NOT_APPLICABLE') {
+    return '<span class="sbadge" style="background:var(--bg-base);color:var(--text-secondary)"><span class="sdot" style="background:var(--text-muted)"></span>해당없음</span>';
+  }
+  if (status === 'COMPLETED') {
+    return '<span class="sbadge" style="background:var(--s-done-bg);color:var(--s-done-text)"><span class="sdot" style="background:var(--s-done-dot)"></span>이전완료</span>';
+  }
+  if (status === 'MATCH_FAILED') {
+    return '<span class="sbadge" style="background:var(--s-reject-bg);color:var(--s-reject-text)"><span class="sdot" style="background:var(--s-reject-dot)"></span>확인실패</span>';
+  }
+  if (status === 'NOT_ENTERED') {
+    return '<span class="sbadge" style="background:var(--bg-base);color:var(--text-secondary)"><span class="sdot" style="background:var(--text-muted)"></span>미입력</span>';
+  }
+  return '-';
+}
+
+function maskMigrationEmail(email) {
+  const value = String(email || '').trim();
+  const atIndex = value.lastIndexOf('@');
+  if (atIndex <= 0 || atIndex === value.length - 1) return '-';
+  const local = value.slice(0, atIndex);
+  const domain = value.slice(atIndex + 1);
+  const visibleLength = local.length > 2 ? 2 : 1;
+  const visible = local.slice(0, visibleLength);
+  const masked = '*'.repeat(Math.max(3, local.length - visibleLength));
+  return `${visible}${masked}@${domain}`;
+}
+
+function isApprovalEligible(org) {
+  return org?.approvalInfo?.status === '승인대기';
+}
+
+function isRejectEligible(org) {
+  return org?.approvalInfo?.status === '승인대기';
+}
+
+function getApprovalSortedData(data) {
+  return data.slice().sort((a, b) => {
+    const aDate = parseApprovalDate(a.approvalInfo?.appliedAt);
+    const bDate = parseApprovalDate(b.approvalInfo?.appliedAt);
+    if (aDate === null && bDate === null) return a.id - b.id;
+    if (aDate === null) return 1;
+    if (bDate === null) return -1;
+    return aDate - bDate || a.id - b.id;
+  });
+}
+
+function renderApprovalElapsed(org) {
+  if (org.approvalInfo?.status !== '승인대기') return '-';
+  const elapsedDays = getApprovalElapsedDays(org.approvalInfo?.appliedAt);
+  if (elapsedDays === null) return '-';
+  const style = elapsedDays >= 3
+    ? 'color:#EF4444;font-weight:700'
+    : 'color:var(--text-secondary)';
+  return `<span style="${style}">${elapsedDays}일 경과</span>`;
+}
+
+function renderApprovalTable(data) {
+  const tbody = document.getElementById('approvalTableBody');
+  if (!tbody) return;
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">조회된 승인 대상 기관이 없습니다.</td></tr>';
+    updateApprovalSelectionControls();
+    return;
+  }
+
+  tbody.innerHTML = data.map(org => {
+    const approvalInfo = org.approvalInfo || {};
+    const canApprove = isApprovalEligible(org);
+    const canReject = isRejectEligible(org);
+    const actionHtml = approvalInfo.status === '승인대기'
+      ? `${canApprove ? `<button class="btn btn-primary" style="height:28px;font-size:12px;padding:0 10px" onclick="openApprovalModal(${org.id})">승인</button>` : ''}
+         ${canReject ? `<button class="btn btn-danger" style="height:28px;font-size:12px;padding:0 10px;margin-left:${canApprove ? '4px' : '0'}" onclick="openRejectModal(${org.id})">반려</button>` : ''}`
+      : approvalInfo.status === '반려'
+        ? `<button class="btn btn-secondary" style="height:28px;font-size:12px;padding:0 10px" onclick="openRejectReasonModal(${org.id})">반려 사유</button>`
+        : '<span style="font-size:12px;color:var(--text-muted)">처리완료</span>';
+    return `
+      <tr>
+        <td><input type="checkbox" class="approval-row-checkbox" data-org-id="${org.id}" ${canApprove ? '' : 'disabled'} ${selectedApprovalIds.has(org.id) ? 'checked' : ''} onchange="toggleApprovalSelection(${org.id}, this.checked)"></td>
+        <td><a style="font-weight:600;color:var(--accent-primary);cursor:pointer" onclick="openDetail(${org.id})">${displayApprovalValue(org.name)}</a></td>
+        <td>${displayApprovalValue(org.director)}</td>
+        <td>${org.type ? typeBadge(org.type) : '-'}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${displayApprovalValue(org.biz)}</td>
+        <td>${migrationStatusBadge(org.migrationInfo?.status)}</td>
+        <td style="font-size:12px;color:var(--text-secondary)">${displayApprovalValue(approvalInfo.appliedAt)}</td>
+        <td>${renderApprovalElapsed(org)}</td>
+        <td>${approvalInfo.status ? apprBadge(approvalInfo.status) : '-'}</td>
+        <td>${actionHtml || '-'}</td>
+      </tr>`;
+  }).join('');
+  updateApprovalSelectionControls();
+}
+
+function getApprovalCurrentPageData() {
+  const start = (approvalCurrentPage - 1) * approvalPageSize;
+  return approvalFilteredData.slice(start, start + approvalPageSize);
+}
+
+function renderApprovalPagination(totalPages) {
+  const pagination = document.getElementById('approvalPagination');
+  if (!pagination) return;
+  let html = `<button class="page-btn" onclick="goToApprovalPage(${approvalCurrentPage - 1})" ${approvalCurrentPage === 1 ? 'disabled' : ''} aria-label="이전 페이지">‹</button>`;
+  for (let page = 1; page <= totalPages; page += 1) {
+    html += `<button class="page-btn ${page === approvalCurrentPage ? 'active' : ''}" onclick="goToApprovalPage(${page})" ${page === approvalCurrentPage ? 'aria-current="page"' : ''}>${page}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goToApprovalPage(${approvalCurrentPage + 1})" ${approvalCurrentPage === totalPages ? 'disabled' : ''} aria-label="다음 페이지">›</button>`;
+  pagination.innerHTML = html;
+}
+
+function renderApprovalPage() {
+  const total = approvalFilteredData.length;
+  const totalPages = Math.max(1, Math.ceil(total / approvalPageSize));
+  if (approvalCurrentPage > totalPages) approvalCurrentPage = totalPages;
+  const resultInfo = document.getElementById('approvalResultInfo');
+  if (resultInfo) {
+    resultInfo.innerHTML = `조회 결과 <strong>${total}</strong>건 / 전체 <strong>${APPROVAL_DATA.length}</strong>건`;
+  }
+  renderApprovalTable(getApprovalCurrentPageData());
+  renderApprovalPagination(totalPages);
+}
+
+function renderApprovalSummary() {
+  const organizations = uniqueOrganizationsById(APPROVAL_DATA);
+  const pendingCount = organizations.filter(org => org.approvalInfo?.status === '승인대기').length;
+  const completedCount = organizations.filter(org => org.approvalInfo?.status === '승인완료').length;
+  const rejectedCount = organizations.filter(org => org.approvalInfo?.status === '반려').length;
+  const delayedCount = organizations.filter(org => (
+    org.approvalInfo?.status === '승인대기'
+    && getApprovalElapsedDays(org.approvalInfo?.appliedAt) >= 3
+  )).length;
+
+  const counts = {
+    approvalPendingCount:pendingCount,
+    approvalCompletedCount:completedCount,
+    approvalRejectedCount:rejectedCount,
+  };
+  Object.entries(counts).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = String(value);
+  });
+
+  const delayAlert = document.getElementById('approvalDelayAlert');
+  const delayCount = document.getElementById('approvalDelayCount');
+  if (delayCount) delayCount.textContent = String(delayedCount);
+  if (delayAlert) delayAlert.style.display = delayedCount > 0 ? 'flex' : 'none';
+}
+
+function applyApprovalFilters(resetPage = true) {
+  if (resetPage) approvalCurrentPage = 1;
+  selectedApprovalIds.clear();
+
+  const approvalStatus = document.getElementById('approvalStatusFilter')?.value || '';
+  const organizationType = document.getElementById('approvalTypeFilter')?.value || '';
+  const searchType = document.getElementById('approvalSearchType')?.value || '기관명';
+  const query = (document.getElementById('approvalSearchInput')?.value || '').trim().toLowerCase();
+  const searchField = searchType === '원장명'
+    ? 'director'
+    : searchType === '사업자번호' ? 'biz' : 'name';
+  const normalizedQuery = searchField === 'biz' ? query.replace(/-/g, '') : query;
+
+  approvalFilteredData = getApprovalSortedData(APPROVAL_DATA.filter(org => {
+    const matchesStatus = !approvalStatus || org.approvalInfo?.status === approvalStatus;
+    const matchesType = !organizationType || org.type === organizationType;
+    const targetValue = String(org[searchField] ?? '').toLowerCase();
+    const normalizedTarget = searchField === 'biz' ? targetValue.replace(/-/g, '') : targetValue;
+    const matchesSearch = !normalizedQuery || normalizedTarget.includes(normalizedQuery);
+    return matchesStatus && matchesType && matchesSearch;
+  }));
+  renderApprovalPage();
+}
+
+function changeApprovalPageSize(value) {
+  const pageSize = Number(value);
+  approvalPageSize = [20, 50, 100].includes(pageSize) ? pageSize : 20;
+  approvalCurrentPage = 1;
+  selectedApprovalIds.clear();
+  renderApprovalPage();
+}
+
+function goToApprovalPage(page) {
+  const totalPages = Math.max(1, Math.ceil(approvalFilteredData.length / approvalPageSize));
+  if (page < 1 || page > totalPages || page === approvalCurrentPage) return;
+  approvalCurrentPage = page;
+  selectedApprovalIds.clear();
+  renderApprovalPage();
+}
+
+function toggleApprovalSelection(orgId, checked) {
+  const org = APPROVAL_DATA.find(item => item.id === orgId);
+  if (!isApprovalEligible(org)) {
+    selectedApprovalIds.delete(orgId);
+    renderApprovalPage();
+    return;
+  }
+  if (checked) selectedApprovalIds.add(orgId);
+  else selectedApprovalIds.delete(orgId);
+  updateApprovalSelectionControls();
+}
+
+function toggleApprovalSelectAll(checked) {
+  getApprovalCurrentPageData().forEach(org => {
+    if (!isApprovalEligible(org)) return;
+    if (checked) selectedApprovalIds.add(org.id);
+    else selectedApprovalIds.delete(org.id);
+  });
+  renderApprovalTable(getApprovalCurrentPageData());
+}
+
+function updateApprovalSelectionControls() {
+  const eligibleIds = getApprovalCurrentPageData().filter(isApprovalEligible).map(org => org.id);
+  const selectedCount = eligibleIds.filter(id => selectedApprovalIds.has(id)).length;
+  const selectAll = document.getElementById('approvalSelectAll');
+  if (selectAll) {
+    selectAll.disabled = eligibleIds.length === 0;
+    selectAll.checked = eligibleIds.length > 0 && selectedCount === eligibleIds.length;
+    selectAll.indeterminate = selectedCount > 0 && selectedCount < eligibleIds.length;
+  }
+  const bulkButton = document.getElementById('bulkApprovalBtn');
+  if (bulkButton) bulkButton.disabled = selectedApprovalIds.size === 0;
+}
+
+function formatApprovalProcessedAt(date = new Date()) {
+  const pad = value => String(value).padStart(2, '0');
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function refreshApprovedOrganizationSource() {
+  ORG_LIST_DATA = uniqueOrganizationsById(
+    ORG_DATA.filter(org => org.approvalInfo?.status === '승인완료')
+  );
+  applyFilter(false);
+}
+
+function applyApprovalCompletion(org, processedAt = formatApprovalProcessedAt()) {
+  if (!isApprovalEligible(org)) return false;
+  org.approvalInfo.status = '승인완료';
+  org.approvalInfo.processedAt = processedAt;
+  org.approvalInfo.processedById = CURRENT_ADMIN_USER.id;
+  org.approvalInfo.processedByName = CURRENT_ADMIN_USER.name;
+  org.approvalInfo.rejectReason = null;
+  org.approvalInfo.rejectDetail = null;
+  org.approval = '승인완료';
+  return true;
+}
+
+function refreshApprovalScreen() {
+  selectedApprovalIds.clear();
+  renderApprovalSummary();
+  applyApprovalFilters(false);
+  refreshApprovedOrganizationSource();
+}
+
+function processBulkApproval() {
+  const targetIds = [...selectedApprovalIds];
+  if (!targetIds.length) return;
+  const processedAt = formatApprovalProcessedAt();
+  let successCount = 0;
+  let failureCount = 0;
+
+  targetIds.forEach(orgId => {
+    const org = APPROVAL_DATA.find(item => item.id === orgId);
+    if (applyApprovalCompletion(org, processedAt)) successCount += 1;
+    else failureCount += 1;
+  });
+
+  refreshApprovalScreen();
+  const failureMessage = failureCount ? ` 실패 ${failureCount}건은 기존 상태를 유지했습니다.` : '';
+  showToast(`선택 기관 ${successCount}건을 승인 완료했습니다.${failureMessage}`);
+}
+
+function renderStatusTable(data) {
+  const tbody = document.getElementById('statusTableBody');
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><input type="checkbox"></td>
+      <td><a style="font-weight:600;color:var(--accent-primary);cursor:pointer" onclick="openDetail(${r.id})">${r.name}</a></td>
+      <td>${typeBadge(r.type)}</td>
+      <td>${r.director}</td>
+      <td>${membershipBadge(r.membership)}</td>
+      <td>${r.status === '이용중' ? statusBadge(r.status) : r.status === '이용종료' ? statusBadge(r.status) : statusBadge(r.status)}</td>
+      <td style="font-size:12px;color:var(--text-secondary)">2026.01.15</td>
+      <td style="font-size:12px;color:var(--text-secondary);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">서비스 이용요금 미납 (3개월)</td>
+      <td><button class="btn btn-secondary" style="height:28px;font-size:12px;padding:0 10px" onclick="openHistoryModal('${r.name}')">이력 보기</button></td>
+      <td><button class="btn btn-primary" style="height:28px;font-size:12px;padding:0 10px" onclick="openStatusModal()">상태 변경</button></td>
+    </tr>
+  `).join('');
+}
+
+/* ═══════════════ DETAIL ═══════════════ */
+let currentDetailId = null;
+let orgListReturnScrollY = null;
+let selectedCompositionYear = null;
+let expandedCompositionDetail = null;
+const ADMIN_MEMO_PAGE_SIZE = 10;
+const adminMemoVisibleCounts = {};
+
+function changeCompositionYear(operationYear) {
+  const org = ORG_DATA.find(item => item.id === currentDetailId);
+  if (!org) return;
+  selectedCompositionYear = Number(operationYear);
+  expandedCompositionDetail = null;
+  const tab = document.getElementById('tab-members');
+  if (tab) tab.innerHTML = renderCompositionContent(org, selectedCompositionYear);
+}
+
+function toggleCompositionDetail(classId, memberType) {
+  const org = ORG_DATA.find(item => item.id === currentDetailId);
+  if (!org) return;
+  const isSameDetail = expandedCompositionDetail?.classId === classId
+    && expandedCompositionDetail?.memberType === memberType;
+  expandedCompositionDetail = isSameDetail ? null : { classId, memberType };
+  const tab = document.getElementById('tab-members');
+  if (tab) tab.innerHTML = renderCompositionContent(org, selectedCompositionYear);
+}
+
+function openDetail(id) {
+  const listPage = document.getElementById('page-list');
+  if (listPage && getComputedStyle(listPage).display !== 'none') {
+    orgListReturnScrollY = window.scrollY;
+  }
+  currentDetailId = id;
+  const r = ORG_DATA.find(o=>o.id===id);
+  if(!r) return;
+  const certInfo = r.certInfo || {};
+  const certApplication = certInfo.application || {};
+  const certEvidence = certInfo.evidence || {};
+  const certResult = certInfo.result || {};
+  const certValue = value => value === null || value === undefined || value === '' ? '-' : value;
+  const certRequiredValue = (value, field) =>
+    value === null || value === undefined || value === ''
+      ? `<span class="cert-data-anomaly" data-missing-field="${field}">필수 데이터 누락</span>`
+      : value;
+  const hasCertFile = Boolean(certEvidence.fileName && certEvidence.fileUrl);
+  const composition = ORG_COMPOSITION_DATA[r.id] || null;
+  const serviceUsage = getOrgServiceUsage(r);
+  const representativeLastAccessedAt = getRepresentativeLastAccessedAt(serviceUsage);
+  selectedCompositionYear = composition?.currentOperationYear ?? getCompositionYears(composition)[0] ?? null;
+  expandedCompositionDetail = null;
+  adminMemoVisibleCounts[id] = ADMIN_MEMO_PAGE_SIZE;
+  document.getElementById('detailTitle').textContent = r.name;
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-tabs">
+      <div class="dtab active" onclick="switchTab(this,'tab-basic')">기본정보</div>
+      <div class="dtab" onclick="switchTab(this,'tab-cert')">기관인증</div>
+      <div class="dtab" onclick="switchTab(this,'tab-members')">구성현황</div>
+      <div class="dtab" onclick="switchTab(this,'tab-service')">서비스이용</div>
+      <div class="dtab" onclick="switchTab(this,'tab-memo')">관리자 메모</div>
+    </div>
+
+    <!-- 기본정보 -->
+    <div id="tab-basic" class="detail-info-tab">
+      <div class="dp-sec">🏫 기본정보</div>
+      <div class="dp-info-grid">
+        <div class="dp-info-item">
+          <div class="dp-info-label">기관명</div>
+          <div class="dp-info-value"><strong>${r.name}</strong></div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">기관유형</div>
+          <div class="dp-info-value">${typeBadge(r.type)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">사업자번호</div>
+          <div class="dp-info-value mono">${r.biz}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">기관장명</div>
+          <div class="dp-info-value">${r.director}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">기관장 아이디</div>
+          <div class="dp-info-value mono">${maskLoginId(r.directorId)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">연락처</div>
+          <div class="dp-info-value mono">${r.phone}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">지역</div>
+          <div class="dp-info-value">${r.region}</div>
+        </div>
+        <div class="dp-info-item full">
+          <div class="dp-info-label">기관 주소</div>
+          <div class="dp-info-value">서울특별시 강남구 테헤란로 123 (샘플 주소)</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">가입일</div>
+          <div class="dp-info-value mono">${r.joinDate}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">승인 상태</div>
+          <div class="dp-info-value">${apprBadge(r.approval)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">승인일</div>
+          <div class="dp-info-value mono">${r.approval==='승인완료'?'2024.03.20':'-'}</div>
+        </div>
+      </div>
+
+      <div class="dp-sec" style="margin-top:20px">🔗 연계 관리 바로가기</div>
+      <div class="shortcut-row">
+        <button class="shortcut-btn" onclick="showToast('반 관리 화면으로 이동합니다.')">🏠 반 관리 (${r.cls}개)</button>
+        <button class="shortcut-btn" onclick="showToast('교사 관리 화면으로 이동합니다.')">👩‍🏫 교사 관리 (${r.teacher}명)</button>
+        <button class="shortcut-btn" onclick="showToast('원아 관리 화면으로 이동합니다.')">👶 원아 관리 (${r.kid}명)</button>
+        <button class="shortcut-btn" onclick="showToast('기관장 계정 조회 화면으로 이동합니다.')">👤 기관장 계정 보기</button>
+      </div>
+    </div>
+
+    <!-- 기관인증 -->
+    <div id="tab-cert" class="detail-info-tab" style="display:none">
+      <div class="dp-sec">📝 인증 신청정보</div>
+      <div class="dp-info-grid">
+        <div class="dp-info-item">
+          <div class="dp-info-label">상호명(기관명)</div>
+          <div class="dp-info-value">${certValue(certApplication.organizationName)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">대표자명</div>
+          <div class="dp-info-value">${certValue(certApplication.representativeName)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">고유번호 또는 사업자등록번호</div>
+          <div class="dp-info-value mono">${certValue(certApplication.registrationNumber)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">인증 신청일시</div>
+          <div class="dp-info-value mono">${certRequiredValue(certApplication.appliedAt, 'application.appliedAt')}</div>
+        </div>
+        <div class="dp-info-item full">
+          <div class="dp-info-label">주소</div>
+          <div class="dp-info-value">${certRequiredValue(certApplication.address, 'application.address')}</div>
+        </div>
+      </div>
+
+      <div class="dp-sec">📎 증빙자료</div>
+      <div class="dp-info-grid">
+        <div class="dp-info-item full">
+          <div class="dp-info-label">고유번호증 또는 사업자등록증</div>
+          <div class="dp-info-value cert-file-row">
+            <span class="cert-file-name">${hasCertFile ? certEvidence.fileName : '<span class="cert-data-anomaly" data-missing-field="evidence.file">필수 데이터 누락</span>'}</span>
+            ${hasCertFile ? `<button class="btn btn-secondary" style="height:30px;font-size:12px;padding:0 12px" onclick="openCertEvidence(${r.id})">파일 확인</button>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="dp-sec">✅ 인증 결과</div>
+      <div class="dp-info-grid">
+        <div class="dp-info-item">
+          <div class="dp-info-label">인증 상태</div>
+          <div class="dp-info-value">${certBadge(certResult.status)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">인증 처리일시</div>
+          <div class="dp-info-value mono">${certValue(certResult.processedAt)}</div>
+        </div>
+        <div class="dp-info-item full">
+          <div class="dp-info-label">인증 방식</div>
+          <div class="dp-info-value">${certValue(certResult.method)}</div>
+        </div>
+        ${certResult.status === '인증실패' ? `
+        <div class="dp-info-item full">
+          <div class="dp-info-label">인증 실패 사유</div>
+          <div class="dp-info-value" style="color:#EF4444">
+            ${certValue(certResult.failureReason)}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <!-- 구성현황 -->
+    <div id="tab-members" style="display:none">
+      ${renderCompositionContent(r, selectedCompositionYear)}
+    </div>
+
+    <!-- 서비스이용 -->
+    <div id="tab-service" class="detail-info-tab" style="display:none">
+
+      <div class="dp-sec">📱 서비스 이용 정보</div>
+      <div class="dp-info-grid">
+        <div class="dp-info-item">
+          <div class="dp-info-label">멤버십</div>
+          <div class="dp-info-value">${membershipBadge(serviceUsage.membership)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">멤버십 적용일</div>
+          <div class="dp-info-value mono">${displayServiceValue(serviceUsage.membershipAppliedAt)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">만료일</div>
+          <div class="dp-info-value mono">${displayServiceValue(serviceUsage.membershipEndsAt)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">최근 접속일</div>
+          <div class="dp-info-value mono">${displayServiceValue(representativeLastAccessedAt)}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">운영 상태</div>
+          <div class="dp-info-value">${serviceUsage.operationStatus ? statusBadge(serviceUsage.operationStatus) : '-'}</div>
+        </div>
+        <div class="dp-info-item">
+          <div class="dp-info-label">알림장 이용 상태</div>
+          <div class="dp-info-value">${renderNoteServiceStatus(serviceUsage.noteServiceActive)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 관리자 메모 -->
+    <div id="tab-memo" style="display:none">
+      <div class="dp-sec">📝 관리자 메모</div>
+      <div class="dp-memo-card">
+        <textarea class="dp-memo-textarea" id="detailMemoTA" placeholder="민원, 특이사항, 정지 사유, 내부 운영 메모 등을 입력합니다. (내부 전용, 원장에게 노출되지 않음)" maxlength="500" oninput="document.getElementById('detailMemoCount').textContent=this.value.length"></textarea>
+        <div class="dp-memo-footer">
+          <div class="dp-memo-count"><span id="detailMemoCount">0</span> / 500자</div>
+          <button class="dp-memo-save" onclick="saveAdminMemo(${r.id})">저장</button>
+        </div>
+      </div>
+      <div class="admin-memo-history">
+        <div class="dp-sec">관리자 메모 이력</div>
+        <div id="adminMemoHistory">${renderAdminMemoHistory(r.id)}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('show');
+  document.getElementById('detailPage').classList.add('show');
+}
+
+function switchTab(el, tabId) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display='none');
+  document.getElementById(tabId).style.display='block';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+  document.getElementById('detailPage').classList.remove('show');
+  if (orgListReturnScrollY !== null) {
+    const returnY = orgListReturnScrollY;
+    orgListReturnScrollY = null;
+    requestAnimationFrame(() => window.scrollTo(0, returnY));
+  }
+}
+
+function openCertEvidence(orgId) {
+  const org = ORG_DATA.find(o => o.id === orgId);
+  const fileUrl = org?.certInfo?.evidence?.fileUrl;
+  if (!fileUrl) return;
+  window.open(fileUrl, '_blank', 'noopener,noreferrer');
+}
+
+function escapeAdminMemoHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function getAdminMemoTimestamp(value) {
+  if (!value) return Number.NEGATIVE_INFINITY;
+  const normalized = String(value).trim().replace(
+    /^(\d{4})\.(\d{2})\.(\d{2})\s+(\d{2}):(\d{2})$/,
+    '$1-$2-$3T$4:$5:00'
+  );
+  const timestamp = Date.parse(normalized);
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+}
+
+function getAdminMemosByOrg(orgId) {
+  return adminMemos
+    .filter(memo => Number(memo.orgId) === Number(orgId))
+    .slice()
+    .sort((a, b) => {
+      const timestampDiff = getAdminMemoTimestamp(b.createdAt) - getAdminMemoTimestamp(a.createdAt);
+      if (Number.isFinite(timestampDiff) && timestampDiff !== 0) return timestampDiff;
+      return String(b.createdAt || '').localeCompare(String(a.createdAt || ''), 'ko-KR');
+    });
+}
+
+function renderAdminMemoHistory(orgId) {
+  const memos = getAdminMemosByOrg(orgId);
+  if (!memos.length) {
+    return '<div class="admin-memo-history-empty">등록된 관리자 메모가 없습니다.</div>';
+  }
+
+  const visibleCount = adminMemoVisibleCounts[orgId] || ADMIN_MEMO_PAGE_SIZE;
+  const visibleMemos = memos.slice(0, visibleCount);
+  const listHtml = visibleMemos.map(memo => `
+    <div class="admin-memo-history-item">
+      <div class="admin-memo-history-meta">${escapeAdminMemoHtml(memo.createdAt)} · ${escapeAdminMemoHtml(memo.createdByName)}</div>
+      <div class="admin-memo-history-content">${escapeAdminMemoHtml(memo.content)}</div>
+    </div>
+  `).join('');
+  const moreHtml = memos.length > visibleCount
+    ? `<div class="admin-memo-more-wrap"><button class="admin-memo-more" onclick="showMoreAdminMemos(${Number(orgId)})">더보기</button></div>`
+    : '';
+  return `<div class="admin-memo-history-list">${listHtml}</div>${moreHtml}`;
+}
+
+function refreshAdminMemoHistory(orgId) {
+  const history = document.getElementById('adminMemoHistory');
+  if (history && Number(currentDetailId) === Number(orgId)) {
+    history.innerHTML = renderAdminMemoHistory(orgId);
+  }
+}
+
+function formatAdminMemoDateTime(date) {
+  const pad = value => String(value).padStart(2, '0');
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function saveAdminMemo(orgId) {
+  const textarea = document.getElementById('detailMemoTA');
+  const count = document.getElementById('detailMemoCount');
+  if (!textarea || Number(currentDetailId) !== Number(orgId)) return;
+
+  const content = textarea.value.trim();
+  if (!content) {
+    showToast('메모 내용을 입력해주세요.');
+    textarea.focus();
+    return;
+  }
+  if (content.length > 500) {
+    showToast('관리자 메모는 최대 500자까지 입력할 수 있습니다.');
+    return;
+  }
+
+  const createdAt = formatAdminMemoDateTime(new Date());
+  adminMemos.push({
+    id:`ADMIN-MEMO-${orgId}-${Date.now()}`,
+    orgId:Number(orgId),
+    content,
+    createdAt,
+    createdById:CURRENT_ADMIN_USER.id,
+    createdByName:CURRENT_ADMIN_USER.name,
+  });
+
+  adminMemoVisibleCounts[orgId] = ADMIN_MEMO_PAGE_SIZE;
+  textarea.value = '';
+  if (count) count.textContent = '0';
+  refreshAdminMemoHistory(orgId);
+  showToast('메모가 저장되었습니다.');
+}
+
+function showMoreAdminMemos(orgId) {
+  const currentVisibleCount = adminMemoVisibleCounts[orgId] || ADMIN_MEMO_PAGE_SIZE;
+  adminMemoVisibleCounts[orgId] = currentVisibleCount + ADMIN_MEMO_PAGE_SIZE;
+  refreshAdminMemoHistory(orgId);
+}
+
+/* ═══════════════ PAGES ═══════════════ */
+function showPage(p, entryFilter = '') {
+  ['list','approval','membership'].forEach(id => {
+    const el = document.getElementById('page-'+id);
+    if(el) el.style.display = (id===p)?'block':'none';
+  });
+  const labels = {list:'기관 조회', approval:'기관 승인 관리', membership:'멤버십 관리'};
+  document.getElementById('breadcrumbCurrent').textContent = labels[p]||'기관관리';
+  if(location.hash.replace('#','') !== p) history.replaceState(null,'','#'+p);
+  document.querySelectorAll('#sub-org .nav-item').forEach(item => item.classList.remove('active'));
+  const idx = {list:0, approval:1, membership:2}[p];
+  const items = document.querySelectorAll('#sub-org .nav-item');
+  if(items[idx]) items[idx].classList.add('active');
+
+  if (p === 'approval' && entryFilter === 'pending') {
+    const approvalStatus = document.getElementById('approvalStatusFilter');
+    if (approvalStatus) {
+      approvalStatus.value = '승인대기';
+      applyApprovalFilters();
+    }
+  }
+
+  const membershipSelect = document.getElementById('fMembershipPage');
+  if (p === 'membership' && membershipSelect) {
+    const entryOption = membershipSelect.querySelector('option[data-entry-only="paid"]');
+    if (entryFilter === 'paid') {
+      const paidOption = entryOption || new Option('유료회원', '__paid__');
+      paidOption.dataset.entryOnly = 'paid';
+      if (!entryOption) membershipSelect.insertBefore(paidOption, membershipSelect.firstChild);
+      membershipSelect.value = '__paid__';
+      renderMembershipTable(STATUS_DATA.filter(r => r.membership === '멀티회원' || r.membership === '정회원'));
+    } else {
+      if (entryOption) entryOption.remove();
+      membershipSelect.value = '';
+      renderMembershipTable(STATUS_DATA);
+    }
+  }
+}
+
+/* ═══════════════ MODALS ═══════════════ */
+function openApprovalModal(id) {
+  const r = APPROVAL_DATA.find(o => o.id === id);
+  if (!isApprovalEligible(r)) {
+    showToast('현재 상태에서는 승인할 수 없습니다.');
+    return;
+  }
+  currentApprovalOrgId = id;
+  document.getElementById('approvalModalIcon').textContent = '✅';
+  document.getElementById('approvalModalTitle').textContent = '기관 승인 처리';
+  document.getElementById('am-orgName').textContent = displayApprovalValue(r.name);
+  document.getElementById('am-dirName').textContent = displayApprovalValue(r.director);
+  document.getElementById('am-date').textContent = displayApprovalValue(r.approvalInfo?.appliedAt);
+  document.getElementById('am-migrationStatus').textContent = getMigrationStatusLabel(r.migrationInfo?.status);
+  document.getElementById('am-migrationEmail').textContent = maskMigrationEmail(r.migrationInfo?.email);
+  document.getElementById('am-migratedAt').textContent = r.migrationInfo?.status === 'COMPLETED'
+    ? displayApprovalValue(r.migrationInfo?.migratedAt)
+    : '-';
+  document.getElementById('approvalModal').classList.add('show');
+}
+
+function openRejectModal(id) {
+  const org = APPROVAL_DATA.find(item => item.id === id);
+  if (!isRejectEligible(org)) {
+    showToast('현재 상태에서는 반려할 수 없습니다.');
+    return;
+  }
+  resetRejectModalState();
+  currentRejectOrgId = id;
+  document.getElementById('rejectModal').classList.add('show');
+}
+
+function resetRejectModalState() {
+  const reasonSelect = document.getElementById('approvalRejectReason');
+  const detailTextarea = document.getElementById('approvalRejectDetail');
+  if (reasonSelect) reasonSelect.value = '';
+  if (detailTextarea) detailTextarea.value = '';
+  updateRejectDetailCount();
+  currentRejectOrgId = null;
+}
+
+function updateRejectDetailCount() {
+  const detailTextarea = document.getElementById('approvalRejectDetail');
+  const countEl = document.getElementById('approvalRejectDetailCount');
+  if (detailTextarea && countEl) countEl.textContent = String(detailTextarea.value.length);
+}
+
+function closeRejectModal() {
+  closeModal('rejectModal');
+  resetRejectModalState();
+}
+
+function openRejectReasonModal(id) {
+  const org = APPROVAL_DATA.find(item => item.id === id);
+  if (!org || org.approvalInfo?.status !== '반려') {
+    showToast('반려 사유를 조회할 수 없습니다.');
+    return;
+  }
+  document.getElementById('rr-orgName').textContent = displayApprovalValue(org.name);
+  document.getElementById('rr-reason').textContent = getRejectReasonLabel(org.approvalInfo.rejectReason);
+  document.getElementById('rr-detail').textContent = org.approvalInfo.rejectDetail || '-';
+  document.getElementById('rr-processedAt').textContent = displayApprovalValue(org.approvalInfo.processedAt);
+  document.getElementById('rr-processedBy').textContent = displayApprovalValue(org.approvalInfo.processedByName);
+  document.getElementById('rejectReasonModal').classList.add('show');
+}
+
+function openStatusModal() {
+  document.getElementById('statusModal').classList.add('show');
+}
+
+function openHistoryModal(orgName) {
+  document.getElementById('historyOrgName').textContent = orgName;
+  document.getElementById('historyList').innerHTML = `
+    <div class="history-item"><div class="history-dot" style="background:#F59E0B"></div><div class="history-content"><div class="history-action">정지 처리</div><div class="history-meta">2026.01.15 14:30 · 김관리자</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">사유: 서비스 이용요금 미납 (3개월)</div></div></div>
+    <div class="history-item"><div class="history-dot" style="background:#10B981"></div><div class="history-content"><div class="history-action">이용중 전환</div><div class="history-meta">2024.07.05 09:15 · 이관리자</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">기관 승인 완료 후 서비스 개시</div></div></div>
+    <div class="history-item"><div class="history-dot" style="background:#8B5CF6"></div><div class="history-content"><div class="history-action">기관 등록 신청</div><div class="history-meta">2024.07.01 11:00 · 원장 이준서 (신청)</div></div></div>
+  `;
+  document.getElementById('historyModal').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function processApproval() {
+  const org = APPROVAL_DATA.find(item => item.id === currentApprovalOrgId);
+  if (!applyApprovalCompletion(org)) {
+    showToast('승인 가능한 기관 정보를 다시 확인해주세요.');
+    return;
+  }
+  closeModal('approvalModal');
+  currentApprovalOrgId = null;
+  refreshApprovalScreen();
+  showToast('✅ 기관 승인이 완료되었습니다. 원장에게 알림이 발송됩니다.');
+}
+function processReject() {
+  const org = APPROVAL_DATA.find(item => item.id === currentRejectOrgId);
+  if (!isRejectEligible(org)) {
+    showToast('반려 가능한 기관 정보를 다시 확인해주세요.');
+    return;
+  }
+  const reason = document.getElementById('approvalRejectReason').value;
+  const detail = document.getElementById('approvalRejectDetail').value.trim();
+  if (!reason) {
+    showToast('반려 사유를 선택해주세요.');
+    document.getElementById('approvalRejectReason').focus();
+    return;
+  }
+  if (reason === 'OTHER' && !detail) {
+    showToast('기타 반려 사유의 상세 내용을 입력해주세요.');
+    document.getElementById('approvalRejectDetail').focus();
+    return;
+  }
+
+  org.approvalInfo.status = '반려';
+  org.approvalInfo.processedAt = formatApprovalProcessedAt();
+  org.approvalInfo.processedById = CURRENT_ADMIN_USER.id;
+  org.approvalInfo.processedByName = CURRENT_ADMIN_USER.name;
+  org.approvalInfo.rejectReason = reason;
+  org.approvalInfo.rejectDetail = detail || null;
+  org.approval = '반려';
+  closeRejectModal();
+  refreshApprovalScreen();
+  showToast('기관 등록 반려 처리가 완료되었습니다.');
+}
+
+/* ═══════════════ FILTER / UTIL ═══════════════ */
+const ORG_FILTERS = [
+  { id:'fOrgStatus', field:'status' },
+  { id:'fCertStatus', field:'cert' },
+  { id:'fMembership', field:'membership' },
+  { id:'fOrgType', field:'type' },
+  { id:'fRegion', field:'region' },
+];
+
+function updateOrgFilterChips() {
+  const chips = document.getElementById('activeChips');
+  const active = ORG_FILTERS
+    .map(filter => ({ filter, value: document.getElementById(filter.id).value }))
+    .filter(item => item.value);
+
+  chips.innerHTML = active.map(({filter, value}) => `
+    <span class="chip">${value}<button class="chip-rm" onclick="removeChip('${filter.id}')" aria-label="${value} 필터 해제">×</button></span>
+  `).join('');
+  chips.style.display = active.length ? 'flex' : 'none';
+}
+
+function applyFilter(resetPage = true) {
+  if (resetPage) orgCurrentPage = 1;
+
+  const searchType = document.getElementById('searchType').value;
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const searchField = searchType === '기관장' ? 'director' :
+    searchType === '전화번호' ? 'phone' :
+    searchType === '사업자번호' ? 'biz' : 'name';
+
+  orgFilteredData = ORG_LIST_DATA.filter(org => {
+    const matchesFilters = ORG_FILTERS.every(({id, field}) => {
+      const value = document.getElementById(id).value;
+      return !value || org[field] === value;
+    });
+    const target = String(org[searchField] ?? '').toLowerCase();
+    return matchesFilters && (!query || target.includes(query));
+  });
+
+  updateOrgFilterChips();
+  renderOrgList();
+}
+
+function resetFilter() {
+  ORG_FILTERS.forEach(({id}) => { document.getElementById(id).value = ''; });
+  document.getElementById('searchType').value = '기관명';
+  document.getElementById('searchInput').value = '';
+  orgCurrentPage = 1;
+  applyFilter(false);
+}
+
+function filterByCard(type) {
+  if(type === 'all') {
+    resetFilter();
+  } else if(type === 'approval') {
+    showPage('approval', 'pending');
+  } else if(type === 'paid') {
+    showPage('membership', 'paid');
+  } else if(type === 'basic') {
+    document.getElementById('fMembership').value = '일반회원';
+    applyFilter();
+  } else if(type === 'end') {
+    document.getElementById('fOrgStatus').value = '이용종료';
+    applyFilter();
+  }
+}
+function removeChip(filterId) {
+  const filter = document.getElementById(filterId);
+  if (!filter) return;
+  filter.value = '';
+  applyFilter();
+}
+function toggleSubNav(el, subId) {
+  var sub = document.getElementById(subId);
+  if (!sub) return;
+  var isOpen = sub.style.display === 'block';
+  sub.style.display = isOpen ? 'none' : 'block';
+  var chev = el.querySelector('.nav-chevron');
+  if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ═══════════════ PAGINATION ═══════════════ */
+function renderPagination(totalPages) {
+  const pg = document.getElementById('pagination');
+  let html = `<button class="page-btn" onclick="goToOrgPage(${orgCurrentPage - 1})" ${orgCurrentPage === 1 ? 'disabled' : ''} aria-label="이전 페이지">‹</button>`;
+  for(let i=1;i<=totalPages;i++) {
+    html += `<button class="page-btn ${i===orgCurrentPage?'active':''}" onclick="goToOrgPage(${i})" ${i===orgCurrentPage?'aria-current="page"':''}>${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goToOrgPage(${orgCurrentPage + 1})" ${orgCurrentPage === totalPages ? 'disabled' : ''} aria-label="다음 페이지">›</button>`;
+  pg.innerHTML = html;
+}
+
+function goToOrgPage(page) {
+  const totalPages = Math.max(1, Math.ceil(orgFilteredData.length / orgPageSize));
+  if (page < 1 || page > totalPages || page === orgCurrentPage) return;
+  orgCurrentPage = page;
+  renderOrgList();
+}
+
+function changeOrgPageSize(value) {
+  orgPageSize = Number(value) || 20;
+  orgCurrentPage = 1;
+  renderOrgList();
+}
+
+function renderMembershipTable(data) {
+  const tbody = document.getElementById('membershipTableBody');
+  if(!tbody) return;
+  function dday(expire) {
+    if(!expire || expire==='-') return '<span style="color:var(--text-muted);font-size:12px">-</span>';
+    const diff = Math.ceil((new Date(expire.replace(/\./g,'-')) - new Date()) / 86400000);
+    if(diff < 0)  return '<span style="background:#FEE2E2;color:#991B1B;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">만료됨</span>';
+    if(diff <= 30) return '<span style="background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">D-'+diff+'</span>';
+    if(diff <= 90) return '<span style="background:#DBEAFE;color:#1E40AF;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600">D-'+diff+'</span>';
+    return '<span style="font-size:12px;color:var(--text-secondary)">D-'+diff+'</span>';
+  }
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><input type="checkbox" class="mb-row-chk"></td>
+      <td><a style="font-weight:600;color:var(--accent-primary);cursor:pointer" onclick="openDetail(${r.id})">${r.name}</a></td>
+      <td>${typeBadge(r.type)}</td>
+      <td>${r.director}</td>
+      <td>${membershipBadge(r.membership)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-secondary)">${r.memberSince||'-'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-secondary)">${r.memberExpire||'-'}</td>
+      <td>${dday(r.memberExpire)}</td>
+      <td class="count-cell" style="text-align:center">${r.cls||'-'}</td>
+      <td class="count-cell" style="text-align:center">${r.teacher||'-'}</td>
+      <td class="count-cell" style="text-align:center">${r.kid||'-'}</td>
+    </tr>
+  `).join('');
+}
+
+/* ═══════════════ HASH ROUTING ═══════════════ */
+function routeByHash() {
+  const hash = location.hash.replace('#','') || 'list';
+  const map = { list:'list', approval:'approval', membership:'membership' };
+  showPage(map[hash] || 'list');
+}
+window.addEventListener('hashchange', routeByHash);
+
+/* ═══════════════ INIT ═══════════════ */
+renderOrgList();
+renderApprovalSummary();
+applyApprovalFilters();
+renderMembershipTable(STATUS_DATA);
+routeByHash();
+
+/* ════ 서비스 이용 정보 함수 ════ */
+
+function getOrgServiceUsage(org) {
+  return ORG_SERVICE_USAGE_DATA[org.id] || {
+    membership:org.membership || null,
+    membershipAppliedAt:null,
+    membershipEndsAt:null,
+    operationStatus:org.status || null,
+    noteServiceActive:null,
+    membershipPlan:null,
+    directorAccount:null,
+    teacherAccounts:[],
+    membershipHistory:[],
+  };
+}
+
+function displayServiceValue(value) {
+  return value === null || value === undefined || value === '' ? '-' : value;
+}
+
+function renderNoteServiceStatus(isActive) {
+  if (isActive === true) return '<span style="color:#10B981;font-weight:700">✓ 사용 중</span>';
+  if (isActive === false) return '<span style="color:#9CA3AF">미사용</span>';
+  return '-';
+}
+
+function getDateTimestamp(value) {
+  if (!value || value === '-') return Number.NEGATIVE_INFINITY;
+  const normalized = String(value).trim().replace(/\./g, '-').replace(/-$/, '');
+  const timestamp = Date.parse(normalized);
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+}
+
+function getRepresentativeLastAccessedAt(serviceUsage) {
+  const accounts = [
+    serviceUsage?.directorAccount,
+    ...(Array.isArray(serviceUsage?.teacherAccounts)
+      ? serviceUsage.teacherAccounts.filter(teacher => teacher.employmentStatus === '재직')
+      : []),
+  ].filter(Boolean);
+  const latest = accounts
+    .filter(account => getDateTimestamp(account.lastAccessedAt) !== Number.NEGATIVE_INFINITY)
+    .sort((a, b) => getDateTimestamp(b.lastAccessedAt) - getDateTimestamp(a.lastAccessedAt))[0];
+  return latest?.lastAccessedAt || null;
+}
+
+</script>
+</body>
+</html>
