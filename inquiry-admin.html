@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알림장 관리자 — 1:1 문의 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-base:#F4F5F7; --bg-surface:#FFFFFF;
+  --bg-sidebar:#1A1D2E; --bg-sidebar-hover:#252840; --bg-sidebar-active:#2E3250;
+  --accent-primary:#4361EE; --accent-primary-light:#EEF1FD;
+  --text-primary:#1A1D2E; --text-secondary:#6B7280; --text-muted:#9CA3AF; --text-sidebar:#C5C9D6;
+  --border-light:#E5E7EB; --border-medium:#D1D5DB;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.05); --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12); --shadow-modal:0 20px 60px rgba(0,0,0,0.18);
+  --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-xl:16px;
+  --sidebar-width:240px; --header-height:60px;
+}
+body { font-family:'Pretendard',-apple-system,sans-serif; background:var(--bg-base); color:var(--text-primary); font-size:14px; line-height:1.5; min-height:100vh; display:flex; }
+
+/* SIDEBAR */
+.sidebar { width:var(--sidebar-width); min-height:100vh; background:var(--bg-sidebar); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+.sidebar-logo { height:var(--header-height); display:flex; align-items:center; padding:0 20px; gap:10px; border-bottom:1px solid rgba(255,255,255,0.06); flex-shrink:0; }
+.logo-icon { width:32px; height:32px; background:var(--accent-primary); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:16px; }
+.logo-text { font-size:14px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+.logo-badge { font-size:10px; font-weight:500; color:var(--accent-primary); background:rgba(67,97,238,0.15); padding:2px 6px; border-radius:4px; margin-left:auto; }
+.sidebar-nav { flex:1; padding:12px 0; overflow-y:auto; }
+.nav-section-title { font-size:10px; font-weight:600; color:rgba(197,201,214,0.4); letter-spacing:1px; text-transform:uppercase; padding:12px 20px 6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 20px; color:var(--text-sidebar); cursor:pointer; font-size:13.5px; font-weight:400; transition:all 0.15s; position:relative; }
+.nav-item:hover { background:var(--bg-sidebar-hover); color:#fff; }
+.nav-item.active { background:var(--bg-sidebar-active); color:#fff; font-weight:500; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent-primary); border-radius:0 2px 2px 0; }
+.nav-icon { width:18px; height:18px; opacity:.75; flex-shrink:0; }
+.nav-item.active .nav-icon { opacity:1; }
+.nav-badge { margin-left:auto; background:var(--accent-primary); color:#fff; font-size:10px; font-weight:600; padding:1px 6px; border-radius:10px; }
+.nav-sub { background:rgba(0,0,0,0.15); overflow:hidden; }
+.nav-sub .nav-item { padding-left:44px; font-size:13px; }
+.nav-sub .nav-item.active { background:rgba(67,97,238,0.22); color:#fff; font-weight:600; }
+.nav-sub .nav-item.active::before { display:none; }
+.sidebar-footer { padding:16px 20px; border-top:1px solid rgba(255,255,255,0.06); }
+.sidebar-user { display:flex; align-items:center; gap:10px; padding:8px; border-radius:var(--radius-md); cursor:pointer; transition:background 0.15s; }
+.sidebar-user:hover { background:var(--bg-sidebar-hover); }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#4361EE,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.user-name { font-size:13px; font-weight:600; color:#fff; }
+.user-role { font-size:11px; color:rgba(197,201,214,0.6); }
+
+/* MAIN */
+.main { margin-left:var(--sidebar-width); flex:1; display:flex; flex-direction:column; min-width:0; }
+.topbar { height:var(--header-height); background:var(--bg-surface); border-bottom:1px solid var(--border-light); display:flex; align-items:center; padding:0 24px; position:sticky; top:0; z-index:50; box-shadow:var(--shadow-sm); gap:8px; }
+.breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); }
+.breadcrumb-sep { color:var(--text-muted); }
+.breadcrumb-current { color:var(--text-primary); font-weight:600; }
+.topbar-actions { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.icon-btn { width:34px; height:34px; border:1px solid var(--border-light); border-radius:var(--radius-md); background:var(--bg-surface); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); transition:all 0.15s; position:relative; }
+.icon-btn:hover { background:var(--bg-base); }
+.notif-dot { position:absolute; top:6px; right:6px; width:6px; height:6px; background:#EF4444; border-radius:50%; border:1.5px solid #fff; }
+.topbar-divider { width:1px; height:20px; background:var(--border-light); margin:0 4px; }
+.topbar-profile { display:flex; align-items:center; gap:8px; padding:4px 10px; border-radius:var(--radius-md); cursor:pointer; transition:background 0.15s; }
+.topbar-profile:hover { background:var(--bg-base); }
+.profile-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#4361EE,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
+.profile-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+
+/* CONTENT */
+.content { padding:24px; flex:1; }
+
+/* KPI */
+.kpi-grid { display:grid; grid-template-columns:repeat(3,minmax(0,280px)); gap:16px; margin-bottom:24px; justify-content:center; }
+.kpi-card { background:var(--bg-surface); border:1.5px solid var(--border-light); border-radius:var(--radius-xl); padding:22px 24px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; transition:all 0.18s; }
+.kpi-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.kpi-top-bar { position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--radius-xl) var(--radius-xl) 0 0; }
+.kpi-label { font-size:12.5px; font-weight:600; color:var(--text-secondary); margin-bottom:10px; }
+.kpi-num { font-size:34px; font-weight:800; letter-spacing:-1.5px; line-height:1; margin-bottom:10px; color:var(--text-primary); }
+.kpi-trend { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#10B981; }
+
+/* SECTION HEADER */
+.sec-head { display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.sec-bar { width:4px; height:18px; background:var(--accent-primary); border-radius:2px; flex-shrink:0; }
+.sec-title { font-size:15px; font-weight:800; letter-spacing:-0.2px; }
+
+/* FILTER */
+.filter-bar { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.fsel-wrap { position:relative; }
+.fsel-wrap::after { content:''; position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text-muted); }
+.fsel { height:36px; padding:0 30px 0 12px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); font-size:13px; background:var(--bg-surface); appearance:none; font-family:inherit; cursor:pointer; color:var(--text-primary); min-width:116px; transition:border 0.15s; }
+.fsel:focus { outline:none; border-color:var(--accent-primary); }
+.search-wrap { display:flex; align-items:center; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-surface); height:36px; flex:1; max-width:320px; overflow:hidden; transition:border 0.15s; }
+.search-wrap:focus-within { border-color:var(--accent-primary); }
+.search-inp { flex:1; border:none; padding:0 12px; font-size:13px; outline:none; font-family:inherit; color:var(--text-primary); }
+.search-btn { width:38px; height:36px; background:var(--accent-primary); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s; }
+.search-btn:hover { background:#3251D5; }
+.bulk-wrap { margin-left:auto; display:flex; gap:6px; }
+.bulk-btn { height:34px; padding:0 15px; border-radius:var(--radius-md); font-size:12.5px; font-weight:700; cursor:pointer; border:none; font-family:inherit; transition:all 0.15s; }
+.b-approve { background:#1A1D2E; color:#fff; }
+.b-approve:hover { background:#2E3250; }
+.b-reject { background:var(--border-medium); color:var(--text-primary); }
+.b-reject:hover { background:#bcc1ce; }
+.b-cancel { background:#FEE2E2; color:#991B1B; }
+.b-cancel:hover { background:#fca5a5; }
+
+/* TABLE */
+.table-card { background:var(--bg-surface); border:1px solid var(--border-light); border-radius:var(--radius-xl); overflow:hidden; box-shadow:var(--shadow-sm); }
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+thead th { padding:10px 12px; font-size:11.5px; font-weight:700; color:var(--text-muted); text-align:left; border-bottom:1.5px solid var(--border-light); white-space:nowrap; background:#FAFAFA; letter-spacing:0.3px; }
+thead th:first-child { padding-left:16px; width:36px; }
+tbody td { padding:11px 12px; font-size:13px; border-bottom:1px solid var(--border-light); vertical-align:middle; white-space:nowrap; }
+tbody td:first-child { padding-left:16px; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:#FBFCFF; }
+tbody tr.row-sel { background:#F0F4FF; }
+.tbl-note { padding:12px 18px; font-size:11.5px; color:var(--text-muted); border-top:1px solid var(--border-light); line-height:1.9; }
+
+/* BADGES */
+.sbadge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700; white-space:nowrap; }
+.sdot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.s-pending  { background:#FEF3C7; color:#92400E; } .s-pending  .sdot { background:#F59E0B; }
+.s-approved { background:#D1FAE5; color:#065F46; } .s-approved .sdot { background:#10B981; }
+.s-rejected { background:#FEE2E2; color:#991B1B; } .s-rejected .sdot { background:#EF4444; }
+.tbadge { padding:2px 9px; border-radius:5px; font-size:11.5px; font-weight:700; }
+.t-teacher  { background:#DBEAFE; color:#1E40AF; }
+.t-parent   { background:#EDE9FE; color:#5B21B6; }
+.t-director { background:#FEF3C7; color:#92400E; }
+.rtag { font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:5px; }
+.r-legacy { background:#E0F2FE; color:#0369A1; }
+.r-invite { background:#D1FAE5; color:#065F46; }
+.r-direct { background:#F3E8FF; color:#6B21A8; }
+.inv-o { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#D1FAE5; color:#065F46; font-size:12px; font-weight:800; }
+.inv-x { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#FEE2E2; color:#991B1B; font-size:12px; font-weight:800; }
+.name-link { font-weight:600; color:var(--text-primary); cursor:pointer; border-bottom:1px dotted transparent; transition:all 0.15s; }
+.name-link:hover { color:var(--accent-primary); border-bottom-color:var(--accent-primary); }
+.act-sel { height:28px; padding:0 8px; border:1px solid var(--border-medium); border-radius:var(--radius-sm); font-size:12px; font-family:inherit; background:var(--bg-base); cursor:pointer; color:var(--text-primary); min-width:64px; }
+.act-cancel-btn { font-size:12px; font-weight:700; padding:3px 10px; border-radius:5px; cursor:pointer; border:none; font-family:inherit; background:#FEE2E2; color:#991B1B; transition:background 0.15s; }
+.act-cancel-btn:hover { background:#fca5a5; }
+.act-none { font-size:12px; color:var(--text-muted); }
+
+/* DETAIL PANEL */
+.dp-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,28,0.32); backdrop-filter:blur(2px); z-index:1000; align-items:flex-start; justify-content:flex-end; }
+.dp-overlay.show { display:flex; }
+.dp-panel { width:380px; height:100vh; background:#fff; box-shadow:-4px 0 24px rgba(0,0,0,0.10); display:flex; flex-direction:column; animation:slideIn 0.24s cubic-bezier(0.34,1.08,0.64,1); overflow:hidden; border-left:1px solid var(--border-light); }
+@keyframes slideIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+.dp-hd { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 14px; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+.dp-title { font-size:15px; font-weight:700; color:var(--text-primary); }
+.dp-x { width:28px; height:28px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--text-muted); transition:all 0.15s; line-height:1; }
+.dp-x:hover { background:#F3F4F6; color:var(--text-primary); }
+/* profile row */
+.dp-profile { display:flex; align-items:center; gap:12px; padding:16px 20px 14px; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+.dp-av { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:#fff; flex-shrink:0; }
+.dp-pname { font-size:15px; font-weight:700; color:var(--text-primary); }
+.dp-pmeta { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+/* scrollable body */
+.dp-scroll { flex:1; overflow-y:auto; padding:0; }
+.dp-scroll::-webkit-scrollbar { width:3px; }
+.dp-scroll::-webkit-scrollbar-thumb { background:#E5E7EB; border-radius:4px; }
+/* flat section */
+.dp-section { padding:16px 20px 4px; }
+.dp-section-title { font-size:12px; font-weight:700; color:var(--text-secondary); letter-spacing:0.3px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border-light); }
+.dp-divider { height:8px; background:#F4F5F7; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); }
+/* 2-col flat grid */
+.dp-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.dp-field { display:flex; flex-direction:column; gap:4px; padding:8px 0 12px; }
+.dp-field.full { grid-column:1/-1; }
+.dp-label { font-size:11px; color:var(--text-muted); font-weight:500; }
+.dp-val { font-size:13px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:6px; }
+/* footer */
+.dp-foot { padding:12px 20px; border-top:1px solid var(--border-light); display:flex; gap:8px; justify-content:flex-end; flex-shrink:0; background:#fff; }
+.dp-btn { height:36px; padding:0 20px; border-radius:var(--radius-md); font-size:13px; font-weight:700; cursor:pointer; border:none; font-family:inherit; transition:all 0.15s; }
+.dp-ghost   { background:#F3F4F6; color:#374151; } .dp-ghost:hover   { background:#E5E7EB; }
+.dp-approve { background:var(--accent-primary); color:#fff; } .dp-approve:hover { background:#3251D5; }
+.dp-reject  { background:#EF4444; color:#fff; }   .dp-reject:hover  { background:#dc2626; }
+
+/* CONFIRM MODAL */
+.cm-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,28,0.5); backdrop-filter:blur(4px); z-index:2000; align-items:center; justify-content:center; }
+.cm-overlay.show { display:flex; }
+.cm-box { background:var(--bg-surface); border-radius:var(--radius-xl); width:420px; padding:28px 28px 24px; box-shadow:var(--shadow-modal); animation:popIn 0.22s cubic-bezier(0.34,1.1,0.64,1); }
+@keyframes popIn { from { transform:scale(0.92) translateY(12px); opacity:0; } to { transform:scale(1) translateY(0); opacity:1; } }
+.cm-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px; }
+.cm-title { font-size:17px; font-weight:800; letter-spacing:-0.3px; margin-bottom:8px; }
+.cm-desc  { font-size:13.5px; color:var(--text-secondary); line-height:1.65; margin-bottom:22px; }
+.cm-btns  { display:flex; gap:8px; justify-content:flex-end; }
+.cm-btn   { height:40px; padding:0 20px; border-radius:var(--radius-md); font-size:13.5px; font-weight:700; cursor:pointer; border:none; font-family:inherit; transition:all 0.15s; }
+.cm-cancel-btn  { background:#F3F4F6; color:#374151; }   .cm-cancel-btn:hover  { background:#E5E7EB; }
+.cm-ok-approve  { background:var(--accent-primary); color:#fff; } .cm-ok-approve:hover  { background:#3251D5; }
+.cm-ok-reject   { background:#EF4444; color:#fff; }       .cm-ok-reject:hover   { background:#dc2626; }
+
+/* TOAST */
+.toast-wrap { position:fixed; bottom:24px; right:24px; z-index:3000; display:flex; flex-direction:column; gap:8px; }
+.toast { display:flex; align-items:center; gap:10px; padding:12px 18px; background:#1A1D2E; color:#fff; border-radius:var(--radius-lg); font-size:13px; font-weight:500; box-shadow:var(--shadow-lg); min-width:250px; animation:toastIn 0.22s ease; }
+@keyframes toastIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+
+
+
+/* ===== 1:1 문의 관리 전용 (기존 토큰 재사용) ===== */
+.kpi-grid { grid-template-columns:repeat(4,minmax(0,1fr)); max-width:1100px; margin-left:auto; margin-right:auto; }
+.kpi-sub { font-size:11.5px; color:var(--text-muted); font-weight:500; }
+.sec-head { margin-bottom:6px; }
+.sec-desc { font-size:12.5px; color:var(--text-secondary); margin:0 0 16px 12px; }
+
+.filter-card { background:var(--bg-surface); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:14px; box-shadow:var(--shadow-sm); }
+.filter-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.filter-row + .filter-row { margin-top:10px; }
+.f-label { font-size:11.5px; font-weight:600; color:var(--text-secondary); white-space:nowrap; width:68px; flex-shrink:0; }
+.f-gap { width:16px; }
+.f-input { height:34px; padding:0 10px; border:1px solid var(--border-medium); border-radius:var(--radius-sm); font-size:13px; font-family:inherit; background:var(--bg-base); color:var(--text-primary); }
+.f-input:focus, .f-sel:focus { outline:none; border-color:var(--accent-primary); }
+.f-sel { height:34px; padding:0 28px 0 10px; border:1px solid var(--border-medium); border-radius:var(--radius-sm); font-size:13px; font-family:inherit; background:var(--bg-base); color:var(--text-primary); appearance:none; cursor:pointer; min-width:120px; }
+.f-btn { height:34px; padding:0 14px; border-radius:var(--radius-md); font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit; border:1px solid var(--border-medium); background:var(--bg-surface); color:var(--text-primary); display:inline-flex; align-items:center; gap:6px; }
+.f-btn:hover { background:var(--bg-base); }
+.f-btn.primary { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+.f-btn.primary:hover { background:#3251D5; }
+
+.table-toolbar { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid var(--border-light); }
+.result-info { font-size:13px; color:var(--text-secondary); }
+.result-info strong { color:var(--text-primary); font-weight:800; }
+tbody tr.clickable { cursor:pointer; }
+.title-cell { max-width:280px; overflow:hidden; text-overflow:ellipsis; font-weight:600; }
+.mono { font-family:'JetBrains Mono',monospace; font-size:12px; }
+.detail-btn { height:28px; padding:0 12px; border-radius:5px; border:1px solid var(--border-medium); background:var(--bg-surface); font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; color:var(--text-primary); }
+.detail-btn:hover { background:var(--bg-base); border-color:var(--accent-primary); color:var(--accent-primary); }
+
+.s-wait { background:#FEF3C7; color:#92400E; } .s-wait .sdot { background:#F59E0B; }
+.s-progress { background:#DBEAFE; color:#1E40AF; } .s-progress .sdot { background:#3B82F6; }
+.s-done { background:#D1FAE5; color:#065F46; } .s-done .sdot { background:#10B981; }
+.t-guest { background:#F3F4F6; color:#4B5563; }
+.r-app { background:#E0F2FE; color:#0369A1; }
+.r-parentapp { background:#F3E8FF; color:#6B21A8; }
+.r-web { background:#D1FAE5; color:#065F46; }
+
+.pagination-area { display:flex; align-items:center; justify-content:space-between; padding:13px 20px; border-top:1px solid var(--border-light); gap:12px; flex-wrap:wrap; }
+.pg-left { display:flex; align-items:center; gap:12px; }
+.pg-info { font-size:12.5px; color:var(--text-secondary); }
+.pagination { display:flex; align-items:center; gap:3px; }
+.pg-btn { min-width:30px; height:30px; padding:0 6px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light); border-radius:var(--radius-sm); font-size:12.5px; cursor:pointer; color:var(--text-secondary); background:var(--bg-surface); transition:all .15s; font-family:inherit; }
+.pg-btn:hover { background:var(--bg-base); color:var(--text-primary); }
+.pg-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-weight:700; }
+.pg-btn:disabled { opacity:.38; cursor:not-allowed; }
+
+.dp-panel { width:520px; max-width:100vw; }
+.dp-text-box { background:#F9FAFB; border:1px solid var(--border-light); border-radius:var(--radius-md); padding:12px 14px; font-size:13px; line-height:1.7; white-space:pre-wrap; word-break:break-word; margin-bottom:12px; }
+.dp-q-title { font-size:14px; font-weight:700; margin-bottom:8px; }
+.att-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--border-light); border-radius:var(--radius-md); margin-bottom:8px; font-size:12.5px; }
+.att-name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+.att-size { color:var(--text-muted); font-size:11.5px; }
+.att-btn { height:26px; padding:0 10px; border-radius:5px; border:1px solid var(--border-medium); background:#fff; font-size:11.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+.att-btn:hover { border-color:var(--accent-primary); color:var(--accent-primary); }
+.reply-hist { border:1px solid #BFDBFE; background:#F0F7FF; border-radius:var(--radius-md); padding:12px 14px; margin-bottom:14px; }
+.reply-hist-hd { display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px; }
+.reply-hist-hd b { font-weight:700; }
+.reply-hist-hd span { color:var(--text-muted); }
+.reply-hist-body { font-size:13px; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
+.dp-textarea { width:100%; min-height:130px; padding:10px 12px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); font-size:13px; font-family:inherit; line-height:1.6; resize:vertical; color:var(--text-primary); }
+.dp-textarea:focus { outline:none; border-color:var(--accent-primary); }
+.dp-select { height:34px; width:100%; padding:0 10px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); font-size:13px; font-family:inherit; background:#fff; color:var(--text-primary); }
+.dp-select:focus { outline:none; border-color:var(--accent-primary); }
+.dp-hint { font-size:11.5px; color:var(--text-muted); margin:6px 0 14px; line-height:1.6; }
+.dp-save { background:#fff; color:var(--accent-primary); border:1.5px solid var(--accent-primary); } .dp-save:hover { background:var(--accent-primary-light); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏫</div>
+    <div class="logo-text">알림장 Admin</div>
+    <div class="logo-badge">v2.4</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item " onclick="location.href='dashboard.html'" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      Home (대시보드)
+    </div>
+
+    <div class="nav-section-title">관리</div>
+
+<div class="nav-item" onclick="location.href='common-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+  공통관리
+</div>
+
+<div class="nav-item" onclick="toggleSubNav(this,'sub-member')" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+  </svg>
+  회원/승인관리
+  <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">3</span>
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0;">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+  </svg>
+</div>
+
+<div class="nav-sub" id="sub-member" style="display:none">
+  <div class="nav-item" onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
+  <div class="nav-item" onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
+  <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer">초대 관리</div>
+  <div class="nav-item" onclick="location.href='member-status-admin.html'" style="cursor:pointer">회원 상태 관리</div>
+</div>
+
+    <div class="nav-item" onclick="document.getElementById('sub-org').style.display = document.getElementById('sub-org').style.display === 'block' ? 'none' : 'block'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+  기관관리
+  <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-org" style="display:none">
+  <div class="nav-item" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
+  <div class="nav-item" onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+</div>
+
+<div class="nav-item active" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0;transform:rotate(90deg)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:block">
+  <div class="nav-item active" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+</div>
+
+<div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+  운영도구
+</div>
+
+<div class="nav-item" onclick="location.href='site-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+  사이트관리
+</div>
+
+<div class="nav-item" onclick="location.href='stats-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  통계관리
+</div> 
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user" onclick="showToast('프로필 설정 화면으로 이동합니다.')" style="cursor:pointer">
+      <div class="user-avatar">관</div>
+      <div class="user-info" style="flex:1;min-width:0">
+        <div class="user-name">슈퍼 관리자</div>
+        <div class="user-role">admin@kidkids.kr</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="breadcrumb">
+      <span>운영관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">1:1 문의 관리</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      </button>
+      <button class="icon-btn">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-profile">
+        <div class="profile-avatar">관</div>
+        <span class="profile-name">슈퍼 관리자</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="sec-head">
+      <div class="sec-bar"></div>
+      <div class="sec-title">1:1 문의 관리</div>
+    </div>
+    <div class="sec-desc">교사·원장·학부모·비회원의 고객 문의를 통합 조회하고 답변 상태를 관리합니다.</div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#4361EE"></div><div class="kpi-label">전체 문의</div><div class="kpi-num" id="kpiAll">0</div><div class="kpi-sub">현재 조건 기준</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#F59E0B"></div><div class="kpi-label">답변 대기</div><div class="kpi-num" id="kpiWait" style="color:#D97706">0</div><div class="kpi-sub">현재 조건 기준</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#3B82F6"></div><div class="kpi-label">처리 중</div><div class="kpi-num" id="kpiProgress" style="color:#2563EB">0</div><div class="kpi-sub">현재 조건 기준</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#10B981"></div><div class="kpi-label">답변 완료</div><div class="kpi-num" id="kpiDone" style="color:#10B981">0</div><div class="kpi-sub">현재 조건 기준</div></div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-card">
+      <div class="filter-row">
+        <span class="f-label">기간</span>
+        <input type="date" class="f-input" id="fFrom" onchange="applyFilter()">
+        <span style="color:var(--text-muted)">~</span>
+        <input type="date" class="f-input" id="fTo" onchange="applyFilter()">
+        <div class="f-gap"></div>
+        <span class="f-label">처리 상태</span>
+        <div class="fsel-wrap"><select class="f-sel" id="fStatus" onchange="applyFilter()">
+          <option value="">전체</option><option value="wait">답변 대기</option><option value="progress">처리 중</option><option value="done">답변 완료</option>
+        </select></div>
+        <div class="f-gap"></div>
+        <span class="f-label">회원 유형</span>
+        <div class="fsel-wrap"><select class="f-sel" id="fMember" onchange="applyFilter()">
+          <option value="">전체</option><option value="teacher">교사</option><option value="director">원장</option><option value="parent">학부모</option><option value="guest">비회원</option>
+        </select></div>
+      </div>
+      <div class="filter-row">
+        <span class="f-label">유입 서비스</span>
+        <div class="fsel-wrap"><select class="f-sel" id="fService" onchange="applyFilter()">
+          <option value="">전체</option><option value="kidkids_app">키드키즈 앱</option><option value="parent_app">학부모 알림장 앱</option><option value="kidkids_web">키드키즈 WEB</option>
+        </select></div>
+        <div class="f-gap"></div>
+        <span class="f-label">문의 유형</span>
+        <div class="fsel-wrap"><select class="f-sel" id="fCategory" onchange="applyFilter()">
+          <option value="">전체</option><option>회원가입</option><option>로그인/계정</option><option>서비스 이용</option><option>오류/장애</option><option>결제/이용권</option><option>기타</option>
+        </select></div>
+      </div>
+      <div class="filter-row">
+        <span class="f-label">검색</span>
+        <div class="search-wrap" style="max-width:380px;height:34px">
+          <input class="search-inp" id="fSearch" placeholder="문의 제목, 문의자명, 회원 ID, 연락처" onkeydown="if(event.key==='Enter')applyFilter()">
+          <button class="search-btn" style="height:34px" onclick="applyFilter()">
+            <svg width="14" height="14" fill="none" stroke="#fff" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2.2"/><path stroke-linecap="round" stroke-width="2.2" d="M21 21l-4.35-4.35"/></svg>
+          </button>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="f-btn primary" onclick="applyFilter()">조회</button>
+          <button class="f-btn" onclick="resetFilter()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>초기화
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="result-info">총 <strong id="resultCount">0</strong>건</div>
+        <div class="fsel-wrap"><select class="fsel" id="pageSize" onchange="changePageSize()" style="min-width:90px;height:32px">
+          <option value="20">20건씩</option><option value="50">50건씩</option>
+        </select></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:auto;padding-left:16px">접수 일시</th><th>문의 유형</th><th>문의 제목</th><th>문의자</th><th>회원 유형</th>
+              <th>유입 서비스</th><th>상태</th><th>담당자</th><th>답변 일시</th><th>상세</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-area">
+        <div class="pg-left"><div class="pg-info" id="pgInfo"></div></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+      <div class="tbl-note">
+        · 회원 유형·로그인 여부·유입 서비스 값으로 구분하며, 비로그인 문의는 <b>비회원</b>으로 별도 관리됩니다(비회원 ≠ 학부모).<br>
+        · 답변 완료 시 문의자에게 이메일/푸시는 발송되지 않습니다(프로토타입). 실제 발송·고객센터 연동은 향후 API 연결 대상입니다.
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- DETAIL PANEL -->
+<div class="dp-overlay" id="dpOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="dp-panel">
+    <div class="dp-hd">
+      <div class="dp-title">문의 상세</div>
+      <button class="dp-x" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-scroll" id="dpBody"></div>
+    <div class="dp-foot" id="dpFoot"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ───────── 데이터 구조 (실제 API 연결 시 동일 필드 사용) ─────────
+ { id, isLoggedIn, memberType('teacher'|'director'|'parent'|'guest'), memberId, name, phone, email, org,
+   category, title, content, attachments[{name,size}], service('kidkids_app'|'parent_app'|'kidkids_web'),
+   createdAt, status('wait'|'progress'|'done'), assignee, reply, repliedAt }                        */
+const ME = '슈퍼 관리자 (admin)';   // 로그인한 관리자 이름(아이디) — 향후 로그인 세션 값 사용
+const ASSIGNEES = [ME,'김CS (cs01)'];   // 샘플 데이터용(내부 직원 계정)
+const MEMBER = { teacher:'교사', director:'원장', parent:'학부모', guest:'비회원' };
+const STATUS = { wait:'답변 대기', progress:'처리 중', done:'답변 완료' };
+const SERVICE = { kidkids_app:'키드키즈 앱', parent_app:'학부모 알림장 앱', kidkids_web:'키드키즈 WEB' };
+const SVC_CLS = { kidkids_app:'r-app', parent_app:'r-parentapp', kidkids_web:'r-web' };
+
+const INQ = [];
+function add(o){ INQ.push(Object.assign({ isLoggedIn:o.memberType!=='guest', memberId:'', phone:'', email:'', org:'', attachments:[], assignee:'', reply:'', repliedAt:'' }, o)); }
+
+/* 핵심 샘플 (교사/원장/학부모/비회원 × 대기/처리중/완료) */
+add({ memberType:'teacher', memberId:'kimminji01', name:'김민지', phone:'010-2345-1111', email:'minji.kim@kidkids.kr', org:'해맑은어린이집', category:'로그인/계정', title:'로그인이 되지 않습니다', content:'오늘 아침부터 앱에서 로그인을 하면 "아이디 또는 비밀번호가 올바르지 않습니다"라고 나옵니다.\n비밀번호는 바꾼 적이 없는데 확인 부탁드립니다.', service:'kidkids_app', createdAt:'2026.11.11 10:25', status:'wait' });
+add({ memberType:'teacher', memberId:'parkseoyeon', name:'박서연', phone:'010-3456-2222', email:'seoyeon.park@kidkids.kr', org:'푸른숲유치원', category:'서비스 이용', title:'알림장 사진 업로드 용량 제한이 궁금합니다', content:'알림장에 사진을 한 번에 몇 장, 몇 MB까지 올릴 수 있나요?\n10장 이상 올리면 실패하는 것 같습니다.', attachments:[{name:'업로드_실패화면.png',size:'842KB'}], service:'kidkids_app', createdAt:'2026.11.11 09:40', status:'progress', assignee:ME, reply:'업로드 제한 기준을 개발팀에 확인 중입니다. (임시 메모)' });
+add({ memberType:'director', memberId:'director_lee', name:'이정훈', phone:'010-4567-3333', email:'jh.lee@happykids.kr', org:'행복한어린이집', category:'로그인/계정', title:'원장 계정 비밀번호 재설정 메일이 오지 않습니다', content:'비밀번호 재설정을 요청했는데 30분이 지나도 메일이 오지 않습니다.\n스팸함도 확인했습니다.', service:'kidkids_app', createdAt:'2026.11.10 17:12', status:'wait' });
+add({ memberType:'parent', memberId:'parent_suah', name:'최수아', phone:'010-5678-4444', email:'', org:'', category:'서비스 이용', title:'아이 반 변경 후 알림장이 보이지 않아요', content:'아이가 새 학기에 다른 반으로 옮겼는데 이전 반 알림장만 보이고 새 반 알림장이 안 보입니다.', service:'parent_app', createdAt:'2026.11.10 15:03', status:'progress', assignee:ME });
+add({ memberType:'guest', name:'한지민', phone:'010-6789-5555', email:'jimin.han@example.com', category:'회원가입', title:'교사 가입 시 기관 승인 요청은 어떻게 하나요?', content:'교사로 가입하려는데 기관 코드를 입력하는 단계에서 막혔습니다.\n원장님께 어떤 요청을 드려야 하는지 안내 부탁드립니다.', service:'kidkids_web', createdAt:'2026.11.10 11:47', status:'wait' });
+add({ memberType:'guest', name:'오세훈', phone:'010-7890-6666', email:'sehun.oh@example.com', category:'회원가입', title:'인증번호 문자가 오지 않습니다', content:'회원가입 중 휴대폰 인증번호가 5분째 오지 않습니다.', attachments:[{name:'인증화면.jpg',size:'1.2MB'}], service:'kidkids_app', createdAt:'2026.11.09 14:20', status:'done', assignee:ME, reply:'안녕하세요, 키드키즈 고객센터입니다.\n일시적인 문자 발송 지연이 있었으며 현재는 정상화되었습니다. 인증번호를 다시 요청해 주세요.', repliedAt:'2026.11.09 15:02' });
+add({ memberType:'teacher', memberId:'jungdaeun', name:'정다은', phone:'010-8901-7777', email:'daeun.jung@kidkids.kr', org:'꿈나무어린이집', category:'오류/장애', title:'출석 체크 시 오류가 발생합니다', content:'웹에서 출석 체크 저장 버튼을 누르면 "일시적인 오류가 발생했습니다"가 나옵니다.', service:'kidkids_web', createdAt:'2026.11.08 16:30', status:'done', assignee:ME, reply:'불편을 드려 죄송합니다. 해당 오류는 11/9 패치로 수정되었습니다. 이용에 참고 부탁드립니다.', repliedAt:'2026.11.09 10:15' });
+add({ memberType:'director', memberId:'kangminsu', name:'강민수', phone:'010-9012-8888', email:'ms.kang@sunshine.kr', org:'햇살유치원', category:'결제/이용권', title:'이용권 갱신 일정 문의', content:'올해 12월에 이용권이 만료되는데 갱신은 언제부터 가능한가요?', service:'kidkids_app', createdAt:'2026.11.07 13:10', status:'done', assignee:ME, reply:'이용권 갱신은 만료 30일 전부터 가능합니다. 사이트 > 이용권 메뉴에서 신청해 주세요.', repliedAt:'2026.11.07 17:45' });
+add({ memberType:'parent', memberId:'parent_haneul', name:'윤하늘', phone:'010-1212-9999', email:'haneul.yoon@example.com', org:'새싹어린이집', category:'오류/장애', title:'푸시 알림이 오지 않습니다', content:'알림장이 올라와도 푸시 알림이 오지 않습니다. 설정은 모두 켜져 있습니다.', attachments:[{name:'알림설정.png',size:'530KB'},{name:'기기정보.txt',size:'1KB'}], service:'parent_app', createdAt:'2026.11.06 09:55', status:'wait' });
+add({ memberType:'parent', memberId:'parent_seoyun', name:'장서윤', phone:'', email:'seoyun.jang@example.com', org:'', category:'로그인/계정', title:'카카오 로그인 연동 해제 방법', content:'카카오 계정으로 가입했는데 연동을 해제하고 이메일 로그인으로 바꾸고 싶습니다.', service:'parent_app', createdAt:'2026.11.05 20:11', status:'done', assignee:'CS 담당자', reply:'앱 > 설정 > 계정 관리에서 연동 해제가 가능합니다. 안내 이미지를 참고해 주세요.', repliedAt:'2026.11.06 09:20' });
+
+/* 목록/페이지네이션 확인용 추가 샘플 (규칙 기반 자동 생성) */
+(function gen(){
+  const names=['김서준','이도윤','박예준','최시우','정하준','강지호','조서아','윤지안','장하윤','임수현','한유진','오민재','서지우','신예린','권도현','황나연','안소율','송재원','류하은','홍준서'];
+  const orgs=['꿈터어린이집','사랑유치원','별빛어린이집','무지개유치원','초록어린이집','해오름유치원'];
+  const T={
+    '회원가입':[['가입 승인이 오래 걸립니다','가입 신청 후 이틀이 지났는데 아직 승인 전입니다.'],['기관 코드를 모르겠어요','기관 코드를 어디서 확인하나요?'],['중복 가입으로 나옵니다','처음 가입하는데 이미 가입된 번호라고 나옵니다.']],
+    '로그인/계정':[['비밀번호를 잊어버렸어요','비밀번호 찾기를 어떻게 하나요?'],['계정이 잠겼다고 나옵니다','로그인 시도 후 계정이 잠겼다는 안내가 나옵니다.'],['휴대폰 번호를 변경하고 싶어요','번호가 바뀌어 계정 정보를 수정해야 합니다.']],
+    '서비스 이용':[['앨범 사진 다운로드 방법','저장된 사진을 한꺼번에 내려받을 수 있나요?'],['투약 의뢰서 작성 문의','투약 의뢰서는 어디에서 작성하나요?'],['반 이동 방법 문의','아이를 다른 반으로 옮기려면 어떻게 하나요?']],
+    '오류/장애':[['앱이 자꾸 종료됩니다','알림장 화면에 들어가면 앱이 꺼집니다.'],['사진이 로딩되지 않아요','알림장 사진이 계속 회색 화면으로만 나옵니다.'],['화면이 하얗게 나옵니다','접속 시 흰 화면만 보이고 진행되지 않습니다.']],
+    '결제/이용권':[['이용권 결제 내역 문의','결제 내역서를 발급받고 싶습니다.'],['환불 가능 여부 문의','중복 결제가 되어 환불 가능한지 문의드립니다.']],
+    '기타':[['서비스 제안드립니다','알림장에 일정 공유 기능이 있으면 좋겠습니다.'],['제휴 문의','제휴 관련 담당자 연락처를 알고 싶습니다.']]
+  };
+  const cats=Object.keys(T);
+  const allow={ teacher:cats, director:cats, parent:['서비스 이용','로그인/계정','오류/장애','결제/이용권','기타'], guest:['회원가입','로그인/계정','오류/장애','기타'] };
+  const seq=['teacher','parent','director','guest','parent','teacher','guest','parent','teacher','director'];
+  const st=['done','wait','progress','done','wait','done','progress'];
+  let t=new Date(2026,10,5,18,0);
+  for(let i=0;i<38;i++){
+    t=new Date(t.getTime()-(6*60+37+i%5*11)*60000);
+    const mt=seq[i%seq.length], nm=names[i%names.length];
+    const cs=allow[mt], cat=cs[(i*7+3)%cs.length], tt=T[cat][i%T[cat].length];
+    const status=st[i%st.length];
+    const svc= mt==='parent'?'parent_app': (mt==='guest'? (i%2?'kidkids_web':'kidkids_app') : (i%3?'kidkids_app':'kidkids_web'));
+    const p=n=>String(n).padStart(2,'0');
+    const ts=`${t.getFullYear()}.${p(t.getMonth()+1)}.${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}`;
+    const o={ memberType:mt, name:nm, category:cat, title:tt[0], content:tt[1]+'\n확인 부탁드립니다.', service:svc, createdAt:ts, status,
+              phone:`010-${1000+i*37%9000}-${2000+i*53%8000}`, email: mt==='parent'&&i%2? '' : `user${i+10}@example.com` };
+    if(mt!=='guest'){ o.memberId=`${mt}_${String(i+10).padStart(3,'0')}`; if(mt!=='parent'||i%3===0) o.org=orgs[i%orgs.length]; }
+    if(i%6===2) o.attachments=[{name:`첨부_${i+10}.png`,size:'640KB'}];
+    if(status!=='wait') o.assignee=ASSIGNEES[i%ASSIGNEES.length];
+    if(status==='done'){ o.reply='안녕하세요, 키드키즈 고객센터입니다.\n문의하신 내용 확인하여 안내드립니다. 추가 문의가 있으시면 언제든 남겨 주세요.'; const r=new Date(t.getTime()+(3*60+12)*60000); o.repliedAt=`${r.getFullYear()}.${p(r.getMonth()+1)}.${p(r.getDate())} ${p(r.getHours())}:${p(r.getMinutes())}`; }
+    add(o);
+  }
+  /* 문의 번호: 접수일 + 일별 순번 */
+  const cnt={};
+  [...INQ].sort((a,b)=>a.createdAt.localeCompare(b.createdAt)).forEach(r=>{ const d=r.createdAt.slice(0,10).replace(/\./g,''); cnt[d]=(cnt[d]||0)+1; r.id=`INQ-${d}-${String(cnt[d]).padStart(3,'0')}`; });
+})();
+
+/* ───────── 상태 ───────── */
+let FILTERED=[], page=1, pageSize=20, openId=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dash=v=>v?esc(v):'-';
+const nowStr=()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+
+const stBadge=s=>`<span class="sbadge s-${s}"><span class="sdot"></span>${STATUS[s]}</span>`;
+const mBadge=m=>`<span class="tbadge t-${m}">${MEMBER[m]}</span>`;
+const svTag=s=>`<span class="rtag ${SVC_CLS[s]}">${SERVICE[s]}</span>`;
+
+/* ───────── 필터 ───────── */
+function matchFilter(r, skipStatus){
+  const from=$('fFrom').value, to=$('fTo').value;
+  const day=r.createdAt.slice(0,10).replace(/\./g,'-');
+  if(from && day<from) return false;
+  if(to && day>to) return false;
+  if(!skipStatus && $('fStatus').value && r.status!==$('fStatus').value) return false;
+  if($('fMember').value && r.memberType!==$('fMember').value) return false;
+  if($('fService').value && r.service!==$('fService').value) return false;
+  if($('fCategory').value && r.category!==$('fCategory').value) return false;
+  const q=$('fSearch').value.trim().toLowerCase();
+  if(q){
+    const qd=q.replace(/\D/g,'');
+    const hit=[r.title,r.name,r.memberId].some(v=>(v||'').toLowerCase().includes(q))
+      || (r.phone||'').includes(q) || (qd && (r.phone||'').replace(/\D/g,'').includes(qd));
+    if(!hit) return false;
+  }
+  return true;
+}
+function applyFilter(keepPage){
+  const from=$('fFrom').value, to=$('fTo').value;
+  if(from && to && from>to) showToast('시작일이 종료일보다 늦습니다.',false);
+  FILTERED=INQ.filter(r=>matchFilter(r,false)).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  if(!keepPage) page=1;
+  renderAll();
+}
+function resetFilter(){
+  ['fFrom','fTo','fStatus','fMember','fService','fCategory','fSearch'].forEach(id=>$(id).value='');
+  $('pageSize').value='20'; pageSize=20;
+  applyFilter();
+}
+function changePageSize(){ pageSize=+$('pageSize').value; page=1; renderAll(); }
+
+/* ───────── 렌더 ───────── */
+function renderKpi(){
+  const base=INQ.filter(r=>matchFilter(r,true));   // 상태 필터 제외, 나머지 조건 기준
+  $('kpiAll').textContent=base.length;
+  $('kpiWait').textContent=base.filter(r=>r.status==='wait').length;
+  $('kpiProgress').textContent=base.filter(r=>r.status==='progress').length;
+  $('kpiDone').textContent=base.filter(r=>r.status==='done').length;
+}
+function renderTable(){
+  const total=FILTERED.length, pages=Math.max(1,Math.ceil(total/pageSize));
+  if(page>pages) page=pages;
+  const start=(page-1)*pageSize, rows=FILTERED.slice(start,start+pageSize);
+  $('resultCount').textContent=total;
+  $('tbody').innerHTML = rows.length ? rows.map(r=>`
+    <tr class="clickable ${r.id===openId?'row-sel':''}" onclick="openDetail('${r.id}')">
+      <td class="mono" style="padding-left:16px">${r.createdAt}</td>
+      <td>${esc(r.category)}</td>
+      <td class="title-cell" title="${esc(r.title)}">${esc(r.title)}</td>
+      <td style="font-weight:600">${esc(r.name)}</td>
+      <td>${mBadge(r.memberType)}</td>
+      <td>${svTag(r.service)}</td>
+      <td>${stBadge(r.status)}</td>
+      <td>${r.assignee?esc(r.assignee):'<span class="act-none">-</span>'}</td>
+      <td class="mono">${r.repliedAt||'<span class="act-none">-</span>'}</td>
+      <td><button class="detail-btn" onclick="event.stopPropagation();openDetail('${r.id}')">상세</button></td>
+    </tr>`).join('')
+    : '<tr><td colspan="10" style="text-align:center;padding:36px;color:var(--text-muted)">검색 결과가 없습니다.</td></tr>';
+  $('pgInfo').textContent = total ? `${start+1} – ${Math.min(start+pageSize,total)} / 총 ${total}건` : '0건';
+  renderPagination(pages);
+}
+function renderPagination(pages){
+  const b=(label,p,dis,act)=>`<button class="pg-btn ${act?'active':''}" ${dis?'disabled':''} onclick="goPage(${p})">${label}</button>`;
+  let s=b('‹‹',1,page===1)+b('‹',page-1,page===1);
+  const from=Math.max(1,Math.min(page-2,pages-4)), to=Math.min(pages,from+4);
+  for(let p=from;p<=to;p++) s+=b(p,p,false,p===page);
+  s+=b('›',page+1,page===pages)+b('››',pages,page===pages);
+  $('pagination').innerHTML=s;
+}
+function goPage(p){ page=p; renderTable(); }
+function renderAll(){ renderKpi(); renderTable(); }
+
+/* ───────── 상세 패널 ───────── */
+function field(label,val,full,mono){ return `<div class="dp-field ${full?'full':''}"><div class="dp-label">${label}</div><div class="dp-val" ${mono?'style="font-family:\'JetBrains Mono\',monospace;font-size:12px"':''}>${val}</div></div>`; }
+
+function openDetail(id){ openId=id; renderDetail(); $('dpOverlay').classList.add('show'); renderTable(); }
+function closeDetail(){ openId=null; $('dpOverlay').classList.remove('show'); renderTable(); }
+
+function renderDetail(){
+  const r=INQ.find(x=>x.id===openId); if(!r) return;
+  const guest=r.memberType==='guest';
+  let who;
+  if(guest){
+    who=field('이름',dash(r.name))+field('연락처',dash(r.phone),false,true)+field('이메일',dash(r.email),true);
+  } else if(r.memberType==='parent'){
+    // 학부모: 존재하는 정보만 표시
+    who=field('이름',dash(r.name))+field('회원 유형',mBadge(r.memberType))
+      +(r.memberId?field('회원 ID',esc(r.memberId),false,true):'')+(r.org?field('소속 기관',esc(r.org)):'')
+      +(r.phone?field('연락처',esc(r.phone),false,true):'')+(r.email?field('이메일',esc(r.email),true):'');
+  } else {
+    who=field('이름',dash(r.name))+field('회원 유형',mBadge(r.memberType))+field('회원 ID',dash(r.memberId),false,true)
+      +field('소속 기관',dash(r.org))+field('연락처',dash(r.phone),false,true)+field('이메일',dash(r.email),true);
+  }
+  const atts=r.attachments.length
+    ? r.attachments.map((a,i)=>`<div class="att-item"><span>📎</span><span class="att-name" title="${esc(a.name)}">${esc(a.name)}</span><span class="att-size">${esc(a.size)}</span><button class="att-btn" onclick="fileAct('${esc(a.name)}')">확인/다운로드</button></div>`).join('')
+    : '<div style="font-size:12.5px;color:var(--text-muted);padding-bottom:12px">첨부파일이 없습니다.</div>';
+  const hist = r.repliedAt ? `
+    <div class="reply-hist">
+      <div class="reply-hist-hd"><b>${esc(r.assignee||'-')}</b><span>${r.repliedAt}</span></div>
+      <div class="reply-hist-body">${esc(r.reply)}</div>
+    </div>` : '';
+  $('dpBody').innerHTML=`
+    <div class="dp-profile">
+      <div class="dp-av" style="background:linear-gradient(135deg,#4361EE,#7C3AED)">${esc((r.name||'?')[0])}</div>
+      <div style="flex:1;min-width:0">
+        <div class="dp-pname">${esc(r.name)}</div>
+        <div class="dp-pmeta">${MEMBER[r.memberType]} · ${r.isLoggedIn?'로그인 문의':'비로그인 문의'}</div>
+      </div>
+      <div style="flex-shrink:0">${stBadge(r.status)}</div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">문의 기본정보</div>
+      <div class="dp-grid">
+        ${field('접수 일시',r.createdAt,false,true)}${field('문의 번호',r.id,false,true)}
+        ${field('문의 유형',esc(r.category))}${field('상태',stBadge(r.status))}
+        ${field('유입 서비스',svTag(r.service),true)}
+      </div>
+    </div>
+    <div class="dp-divider"></div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">문의자 정보</div>
+      <div class="dp-grid">${who}</div>
+    </div>
+    <div class="dp-divider"></div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">문의 내용</div>
+      <div class="dp-q-title">${esc(r.title)}</div>
+      <div class="dp-text-box">${esc(r.content)}</div>
+      <div class="dp-label" style="margin-bottom:6px">첨부파일</div>
+      ${atts}
+    </div>
+    <div class="dp-divider"></div>
+
+    <div class="dp-section" style="padding-bottom:16px">
+      <div class="dp-section-title">답변 관리</div>
+      ${hist}
+      <div class="dp-grid" style="gap:0 12px">
+        <div class="dp-field"><div class="dp-label">처리 상태</div>
+          <select class="dp-select" id="dpStatus">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${k===r.status?'selected':''}>${v}</option>`).join('')}</select></div>
+        <div class="dp-field"><div class="dp-label">담당자</div>
+          <div class="dp-val" style="height:34px;padding:0 10px;background:#F9FAFB;border:1.5px solid var(--border-light);border-radius:var(--radius-md);font-size:13px">${esc(r.assignee||ME)}</div></div>
+      </div>
+      <div class="dp-label" style="margin:4px 0 6px">답변 내용</div>
+      <textarea class="dp-textarea" id="dpReply" placeholder="문의자에게 전달할 답변을 입력하세요.">${esc(r.reply)}</textarea>
+      <div class="dp-hint">※ 프로토타입: 저장/답변 완료 시 이메일·푸시는 발송되지 않습니다. (향후 API 연동 예정)</div>
+    </div>`;
+  $('dpFoot').innerHTML=`<button class="dp-btn dp-ghost" onclick="closeDetail()">닫기</button><button class="dp-btn dp-save" onclick="saveReply(false)">저장</button><button class="dp-btn dp-approve" onclick="saveReply(true)">답변 완료</button>`;
+}
+
+function saveReply(complete){
+  const r=INQ.find(x=>x.id===openId); if(!r) return;
+  const reply=$('dpReply').value.trim();
+  let status=$('dpStatus').value;
+  const assignee=ME;   // 담당자 = 로그인한 관리자(저장/답변 처리자)
+  if(complete) status='done';
+  if(status==='done' && !reply){ showToast('답변 완료 처리를 하려면 답변 내용을 입력하세요.',false); $('dpReply').focus(); return; }
+  const prev=r.status;
+  r.assignee=assignee; r.reply=reply; r.status=status;
+  if(status==='done'){ r.repliedAt=nowStr(); }          // 재수정 시 최신 내용·일시로 갱신
+  else { r.repliedAt=''; }                               // 완료가 아니면 답변 일시 없음(내용은 작성 중 저장)
+  showToast(status==='done' ? '답변이 완료 처리되었습니다.' : (prev!==status ? `상태가 '${STATUS[status]}'(으)로 변경되어 저장되었습니다.` : '저장되었습니다.'));
+  renderDetail(); applyFilter(true);
+}
+function fileAct(name){ showToast(`[프로토타입] 샘플 파일 "${name}" — 실제 다운로드는 API 연동 후 제공됩니다.`); }
+
+function toggleSubNav(el,subId){
+  const s=document.getElementById(subId), open=s.style.display==='block';
+  s.style.display=open?'none':'block';
+  const c=el.querySelector('.nav-chevron'); if(c) c.style.transform=open?'':'rotate(90deg)';
+}
+function showToast(msg,ok=true){
+  const w=$('toastWrap'), t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML=`<svg width="16" height="16" fill="none" stroke="${ok?'#10B981':'#F59E0B'}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),350); },3500);
+}
+window.addEventListener('DOMContentLoaded',()=>applyFilter());
+</script>
+</body>
+</html>
