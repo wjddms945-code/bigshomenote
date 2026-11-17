@@ -818,7 +818,7 @@ body {
           </div>
         </div>
         <div class="notice-list" id="noticeList"></div>
-        <a class="notice-more" onclick="showToast('공지사항 전체 목록으로 이동합니다.')">더보기 →</a>
+        <a class="notice-more" onclick="location.href='site-admin.html?screen=notice'">더보기 →</a>
       </div>
     </div>
 
@@ -911,13 +911,13 @@ const RANK_TCH_LOW = [
   { name:'전다인 (햇빛어린이집)', posts:4, pct:28 },
 ];
 const NOTICES = [
-  { tag:'ALL',    tagClass:'ntag-all',    text:'시스템 점검 안내(12/03 AM 4~6시)',              date:'25-12-03', views:1420 },
-  { tag:'ALL',    tagClass:'ntag-all',    text:'<strong>새로운 스케줄 메뉴기능이 업데이트 되었습니다.</strong>', date:'25-12-02', views:980 },
-  { tag:'기관',   tagClass:'ntag-org',    text:'12월 크리스마스 EVENT! 산타잡기 OPEN!',           date:'25-12-01', views:870 },
-  { tag:'기관',   tagClass:'ntag-org',    text:'알림장이용 TOP3 기관에 유료회원 전용자료를 무료로...', date:'25-12-01', views:720 },
-  { tag:'ALL',    tagClass:'ntag-all',    text:'장애 오류 안내.(SORRY)',                          date:'25-11-28', views:612 },
-  { tag:'학부모', tagClass:'ntag-parent', text:'12월 아이들이 좋아하는 TOP5 선물 보기',            date:'25-11-25', views:540 },
-  { tag:'기관',   tagClass:'ntag-org',    text:'키드키즈 콘서트에 초대합니다.',                    date:'25-11-02', views:380 },
+  { id:1, tag:'ALL',    tagClass:'ntag-all',    text:'시스템 점검 안내(12/03 AM 4~6시)',              date:'25-12-03', views:1420 },
+  { id:2, tag:'ALL',    tagClass:'ntag-all',    text:'<strong>새로운 스케줄 메뉴기능이 업데이트 되었습니다.</strong>', date:'25-12-02', views:980 },
+  { id:3, tag:'기관',   tagClass:'ntag-org',    text:'12월 크리스마스 EVENT! 산타잡기 OPEN!',           date:'25-12-01', views:870 },
+  { id:4, tag:'기관',   tagClass:'ntag-org',    text:'알림장이용 TOP3 기관에 유료회원 전용자료를 무료로...', date:'25-12-01', views:720 },
+  { id:5, tag:'ALL',    tagClass:'ntag-all',    text:'장애 오류 안내.(SORRY)',                          date:'25-11-28', views:612 },
+  { id:6, tag:'학부모', tagClass:'ntag-parent', text:'12월 아이들이 좋아하는 TOP5 선물 보기',            date:'25-11-25', views:540 },
+  { id:7, tag:'기관',   tagClass:'ntag-org',    text:'키드키즈 콘서트에 초대합니다.',                    date:'25-11-02', views:380 },
 ];
 const DEVICE_DATA = [
   { name:'Android', pct:52.1, color:'#1A1D2E' },
@@ -1052,7 +1052,7 @@ function renderNotices() {
     : b.views - a.views
   );
   document.getElementById('noticeList').innerHTML = sorted.slice(0,7).map(n => `
-    <div class="notice-item" onclick="showToast('공지사항 상세로 이동합니다.')">
+    <div class="notice-item" onclick="location.href='site-admin.html?screen=notice&post=${n.id}'">
       <span class="notice-tag ${n.tagClass}">${n.tag}</span>
       <span class="notice-text">${n.text}</span>
       <span class="notice-date">${n.date}</span>
