@@ -233,25 +233,33 @@ tbody tr.row-sel { background:#F0F4FF; }
 <div class="nav-sub" id="sub-member" style="display:block">
   <div class="nav-item" onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
   <div class="nav-item active" onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
-  <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer">초대 관리</div>
-  <div class="nav-item" onclick="location.href='member-status-admin.html'" style="cursor:pointer">회원 상태 관리</div>
 </div>
 
     <div class="nav-item" onclick="document.getElementById('sub-org').style.display = document.getElementById('sub-org').style.display === 'block' ? 'none' : 'block'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-  기관관리
+  기관/승인관리
   <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
   <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
 </div>
 <div class="nav-sub" id="sub-org" style="display:none">
   <div class="nav-item" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
   <div class="nav-item" onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
-  <div class="nav-item" onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+  <div id="sub-invite" style="display:none;background:rgba(0,0,0,0.12)">
+    <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+    <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+  </div>
 </div>
 
-<div class="nav-item" style="cursor:default;opacity:0.5">
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
 <div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
@@ -661,6 +669,16 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('fStatus').value='pending';
   applyFilter();
 });
+
+function toggleSubNav(el, subId) {
+  var sub = document.getElementById(subId);
+  if (!sub) return;
+  var isOpen = sub.style.display === 'block';
+  sub.style.display = isOpen ? 'none' : 'block';
+  var chev = el.querySelector('.nav-chevron');
+  if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
 </script>
+<script src="nav-links.js"></script>
 </body>
 </html>

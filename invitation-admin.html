@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>알림장 관리자 — 초대장 관리</title>
+<title>알림장 관리자 — 기관별 초대현황</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -252,6 +252,18 @@ tbody tr:hover { background:#FBFCFF; }
   color: #ffffff; /* 활성화된 메뉴는 흰색 유지 */
   background-color: var(--bg-sidebar-active); /* 배경색 강조 */
 }
+
+/* ── 초대 관리 추가 (기존 토큰 재사용) ── */
+.s-none   { background:#fff; color:#6B7280; border:1px dashed #D1D5DB; } .s-none .sdot { background:#D1D5DB; }
+.s-cancel { background:#E5E7EB; color:#374151; } .s-cancel .sdot { background:#6B7280; }
+.pagination-area { display:flex; align-items:center; justify-content:space-between; padding:13px 20px; border-top:1px solid var(--border-light); gap:12px; flex-wrap:wrap; }
+.pg-info { font-size:12.5px; color:var(--text-secondary); }
+.pagination { display:flex; align-items:center; gap:3px; }
+.pg-btn { min-width:30px; height:30px; padding:0 6px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light); border-radius:var(--radius-sm); font-size:12.5px; cursor:pointer; color:var(--text-secondary); background:var(--bg-surface); transition:all .15s; font-family:inherit; }
+.pg-btn:hover { background:var(--bg-base); color:var(--text-primary); }
+.pg-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-weight:700; }
+.pg-btn:disabled { opacity:.38; cursor:not-allowed; }
+.drawer { width:640px; max-width:100vw; }
 </style>
 </head>
 <body>
@@ -280,34 +292,42 @@ tbody tr:hover { background:#FBFCFF; }
   공통관리
 </div>
 
-    <div class="nav-item active" onclick="toggleSubNav(this,'sub-member')" style="cursor:pointer">
+    <div class="nav-item " onclick="toggleSubNav(this,'sub-member')" style="cursor:pointer">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
       회원/승인관리
       <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">3</span>
       <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
     </div>
-    <div class="nav-sub" id="sub-member" style="display:block">
+    <div class="nav-sub" id="sub-member" style="display:none">
       <div class="nav-item " onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
       <div class="nav-item " onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
-      <div class="nav-item active" onclick="location.href='invitation-admin.html'" style="cursor:pointer">초대 관리</div>
-      <div class="nav-item " onclick="location.href='member-status-admin.html'" style="cursor:pointer">회원 상태 관리</div>
     </div>
 
-    <div class="nav-item " onclick="toggleSubNav(this,'sub-org')" style="cursor:pointer">
+    <div class="nav-item active" onclick="toggleSubNav(this,'sub-org')" style="cursor:pointer">
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-      기관관리
+      기관/승인관리
       <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
       <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
     </div>
-    <div class="nav-sub" id="sub-org" style="display:none">
+    <div class="nav-sub" id="sub-org" style="display:block">
       <div class="nav-item " onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
       <div class="nav-item " onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
-      <div class="nav-item " onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+      <div class="nav-item " onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+      <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0;transform:rotate(90deg)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      <div id="sub-invite" style="display:block;background:rgba(0,0,0,0.12)">
+        <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+        <div class="nav-item active" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+      </div>
     </div>
 
-<div class="nav-item" style="cursor:default;opacity:0.5">
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
 <div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
@@ -341,9 +361,11 @@ tbody tr:hover { background:#FBFCFF; }
 <div class="main">
   <header class="topbar">
     <div class="breadcrumb">
-      <span>회원/승인관리</span>
+      <span>기관/승인관리</span>
       <span class="breadcrumb-sep">›</span>
-      <span class="breadcrumb-current">초대장 관리</span>
+      <span>초대관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">기관별 초대현황</span>
     </div>
     <div class="topbar-actions">
       <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
@@ -359,245 +381,32 @@ tbody tr:hover { background:#FBFCFF; }
 
   <div class="content">
 
-    <!-- KPI -->
+    <!-- KPI : 학부모(반)·교직원(건/명)은 합산하지 않음 -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-top-bar" style="background:#4361EE"></div>
-        <div class="kpi-label">전체 초대 발송</div>
-        <div class="kpi-num">248</div>
-        <div class="kpi-sub">이번달 +34건</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top-bar" style="background:#10B981"></div>
-        <div class="kpi-label">가입 완료</div>
-        <div class="kpi-num" style="color:#10B981">183</div>
-        <div class="kpi-sub">가입율 73.8%</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top-bar" style="background:#F59E0B"></div>
-        <div class="kpi-label">초대 중 (활성)</div>
-        <div class="kpi-num" style="color:#F59E0B">42</div>
-        <div class="kpi-sub">미가입 대기</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-top-bar" style="background:#EF4444"></div>
-        <div class="kpi-label">만료/중단</div>
-        <div class="kpi-num" style="color:#EF4444">23</div>
-        <div class="kpi-sub">재발송 필요</div>
-      </div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#3B82F6"></div><div class="kpi-label">학부모 가입</div><div class="kpi-num" id="kpiPJoined" style="color:#2563EB">0</div><div class="kpi-sub">명</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#10B981"></div><div class="kpi-label">학부모 초대중</div><div class="kpi-num" id="kpiPActive" style="color:#10B981">0</div><div class="kpi-sub">반</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#F59E0B"></div><div class="kpi-label">교직원 초대중</div><div class="kpi-num" id="kpiTPending" style="color:#F59E0B">0</div><div class="kpi-sub">건</div></div>
+      <div class="kpi-card"><div class="kpi-top-bar" style="background:#EF4444"></div><div class="kpi-label">확인 필요</div><div class="kpi-num" id="kpiAttn" style="color:#EF4444">0</div><div class="kpi-sub">건</div></div>
     </div>
 
-    <!-- TABS -->
-    <div class="tab-bar">
-      <div class="tab active" onclick="switchTab('send',this)">초대 발송 <span class="tab-count">42</span></div>
-      <div class="tab" onclick="switchTab('status',this)">초대 상태 조회 <span class="tab-count">248</span></div>
-      <div class="tab" onclick="switchTab('resend',this)">재발송 / 만료 처리 <span class="tab-count">23</span></div>
+    <!-- 기관별 초대 현황 (기관 1곳 = 1행) -->
+    <div class="sec-head">
+      <div class="sec-title-wrap"><div class="sec-bar"></div><div class="sec-title">기관별 초대현황</div></div>
+      <div class="sec-actions"><span id="oCount" style="font-size:12px;color:var(--text-muted)"></span><button class="btn btn-ghost btn-sm" onclick="exportListCsv()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>CSV 내보내기</button></div>
     </div>
-
-    <!-- ══ TAB: 초대 발송 ══ -->
-    <div id="tab-send">
-
-      <!-- 학부모 / 교직원 서브탭 -->
-      <div style="display:flex;gap:0;border:1.5px solid var(--border-light);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px;background:var(--bg-base);">
-        <button id="subtab-parent" onclick="switchSendSubtab('parent')"
-          style="flex:1;height:38px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all 0.15s;background:var(--accent-primary);color:#fff;border-radius:var(--radius-md) 0 0 var(--radius-md);">
-          👨‍👩‍👧 학부모
-        </button>
-        <button id="subtab-teacher" onclick="switchSendSubtab('teacher')"
-          style="flex:1;height:38px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all 0.15s;background:transparent;color:var(--text-secondary);border-radius:0 var(--radius-md) var(--radius-md) 0;">
-          👩‍🏫 교직원
-        </button>
-      </div>
-
-      <!-- STEP 1: 기관 리스트 뷰 -->
-      <div id="view-orgs">
-        <div class="sec-head">
-          <div class="sec-title-wrap">
-            <div class="sec-bar"></div>
-            <div class="sec-title" id="orgListTitle">기관 리스트 — 학부모 초대</div>
-          </div>
-          <div class="sec-actions">
-            <div class="search-wrap" style="max-width:220px;">
-              <input class="search-inp" id="orgSearch" placeholder="기관명 검색" oninput="filterOrgs()">
-              <button class="search-btn" onclick="filterOrgs()">
-                <svg width="14" height="14" fill="none" stroke="#fff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="info-banner" id="orgInfoBanner">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          기관을 선택하면 해당 기관의 <b>반별 학부모 초대 현황</b>을 확인하고 관리할 수 있습니다.
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;" id="orgCards"></div>
-      </div>
-
-      <!-- STEP 2: 반별 초대 현황 뷰 -->
-      <div id="view-classes" style="display:none">
-        <!-- 브레드크럼 내비 -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-          <button onclick="backToOrgs()" style="display:inline-flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--accent-primary);font-weight:600;padding:4px 0;font-family:inherit;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-            기관 리스트
-          </button>
-          <span style="color:var(--text-muted);font-size:13px;">›</span>
-          <span id="selectedOrgName" style="font-size:13px;font-weight:700;color:var(--text-primary)"></span>
-          <span style="color:var(--text-muted);font-size:13px;">›</span>
-          <span id="selectedSubtabLabel" style="font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;background:#EEF1FD;color:var(--accent-primary)">학부모</span>
-        </div>
-
-        <div class="sec-head">
-          <div class="sec-title-wrap">
-            <div class="sec-bar"></div>
-            <div class="sec-title" id="classSectionTitle">반별 초대 현황</div>
-          </div>
-          <div class="sec-actions">
-            <span id="classTotalBadge" style="font-size:12px;color:var(--text-muted)"></span>
-          </div>
-        </div>
-
-        <div class="info-banner">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          초대할 반의 링크를 활성화하고 주소를 복사하여 공유하세요. 교직원 초대는 1회성 고유 링크가 발급되며, 학부모 초대는 반 마스터 링크로 운영됩니다.
-        </div>
-
-        <!-- 기관 요약 카드 -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
-          <div style="background:var(--bg-surface);border:1.5px solid var(--border-light);border-radius:var(--radius-xl);padding:16px 20px;display:flex;align-items:center;gap:14px;">
-            <div style="width:44px;height:44px;background:#EEF1FD;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">👨‍👩‍👧</div>
-            <div>
-              <div id="orgSumLabel" style="font-size:11.5px;color:var(--text-secondary);font-weight:600;margin-bottom:2px;">총 가입 학부모</div>
-              <div id="orgMemberCount" style="font-size:26px;font-weight:800;color:var(--accent-primary);letter-spacing:-1px;">0<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span></div>
-            </div>
-          </div>
-          <div style="background:var(--bg-surface);border:1.5px solid var(--border-light);border-radius:var(--radius-xl);padding:16px 20px;display:flex;align-items:center;gap:14px;">
-            <div style="width:44px;height:44px;background:#FEF3C7;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">⏳</div>
-            <div>
-              <div style="font-size:11.5px;color:var(--text-secondary);font-weight:600;margin-bottom:2px;">미가입 대기</div>
-              <div id="orgPendingCount" style="font-size:26px;font-weight:800;color:#F59E0B;letter-spacing:-1px;">0<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 반별 카드 리스트 -->
-        <div style="display:flex;flex-direction:column;gap:10px;" id="classCards"></div>
-      </div>
-
+    <div class="filter-bar">
+      <div class="fsel-wrap"><select class="fsel" id="oType" onchange="applyOrgs()"><option value="">기관 유형</option><option value="어린이집">어린이집</option><option value="유치원">유치원</option></select></div>
+      <div class="fsel-wrap"><select class="fsel" id="oStatus" onchange="applyOrgs()"><option value="">전체</option><option value="ok">정상</option><option value="attn">확인 필요</option></select></div>
+      <div class="search-wrap"><input class="search-inp" id="oSearch" placeholder="기관명 검색" onkeydown="if(event.key==='Enter')applyOrgs()"><button class="search-btn" onclick="applyOrgs()"><svg width="14" height="14" fill="none" stroke="#fff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button></div>
+      <button class="filter-reset" onclick="resetOrgs()">초기화</button>
     </div>
-
-    <!-- ══ TAB: 초대 상태 조회 ══ -->
-    <div id="tab-status" style="display:none">
-      <div class="sec-head">
-        <div class="sec-title-wrap"><div class="sec-bar"></div><div class="sec-title">초대 발송 전체 현황</div></div>
-        <div class="sec-actions">
-          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            CSV 내보내기
-          </button>
-        </div>
-      </div>
-
-      <div class="filter-bar">
-        <div class="fsel-wrap">
-          <select class="fsel" id="fClass" onchange="applyStatusFilter()">
-            <option value="">전체 반</option>
-            <option>햇님반</option><option>새싹반</option><option>미소반</option><option>별빛반</option><option>열매반</option>
-          </select>
-        </div>
-        <div class="fsel-wrap">
-          <select class="fsel" id="fType" onchange="applyStatusFilter()">
-            <option value="">초대 유형</option>
-            <option value="parent">학부모</option>
-            <option value="teacher">교직원</option>
-          </select>
-        </div>
-        <div class="fsel-wrap">
-          <select class="fsel" id="fStatus" onchange="applyStatusFilter()">
-            <option value="">전체 상태</option>
-            <option value="active">초대 중</option>
-            <option value="used">가입 완료</option>
-            <option value="expired">만료</option>
-            <option value="stopped">중단</option>
-          </select>
-        </div>
-        <div class="search-wrap">
-          <input class="search-inp" id="fSearch" placeholder="이름, 기관명 검색" onkeydown="if(event.key==='Enter')applyStatusFilter()">
-          <button class="search-btn" onclick="applyStatusFilter()">
-            <svg width="14" height="14" fill="none" stroke="#fff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          </button>
-        </div>
-        <button class="filter-reset" onclick="resetFilter()">초기화</button>
-      </div>
-
-      <div class="table-card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="chkAll" onchange="toggleAll(this)" style="cursor:pointer"></th>
-                <th>상태</th>
-                <th>초대 유형</th>
-                <th>기관명</th>
-                <th>반 이름</th>
-                <th>수신자</th>
-                <th>발송 채널</th>
-                <th>발송일시</th>
-                <th>가입일시</th>
-                <th>초대 링크</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody id="statusTbody"></tbody>
-          </table>
-        </div>
-        <div class="tbl-note">
-          · 만료된 링크는 재발송 탭에서 처리하세요. · 가입 완료 건은 [내보내기] 처리 가능합니다.
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: 재발송/만료 처리 ══ -->
-    <div id="tab-resend" style="display:none">
-      <div class="sec-head">
-        <div class="sec-title-wrap"><div class="sec-bar"></div><div class="sec-title">재발송 / 만료 처리 대상</div></div>
-        <div class="sec-actions">
-          <button class="btn btn-warn btn-sm" onclick="bulkExpire()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-            선택 일괄 만료
-          </button>
-          <button class="btn btn-primary btn-sm" onclick="bulkResend()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            선택 일괄 재발송
-          </button>
-        </div>
-      </div>
-
-      <div class="warn-banner info-banner" style="margin-bottom:14px">
-        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        재발송 시 기존 링크는 즉시 만료 처리됩니다. 수신자에게 새 링크가 발송됩니다.
-      </div>
-
-      <div class="table-card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="chkAllR" onchange="toggleAllR(this)" style="cursor:pointer"></th>
-                <th>상태</th>
-                <th>초대 유형</th>
-                <th>기관명</th>
-                <th>반 이름</th>
-                <th>수신자</th>
-                <th>발송 채널</th>
-                <th>발송일시</th>
-                <th>만료/중단 일시</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody id="resendTbody"></tbody>
-          </table>
-        </div>
-      </div>
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>기관명</th><th>학부모</th><th>교직원</th><th>확인 필요</th><th>최근 활동</th><th>관리</th></tr></thead>
+        <tbody id="oTbody"></tbody>
+      </table></div>
+      <div class="tbl-note">학부모 = 가입 명수 · 초대중 반 수 (반 단위 마스터 링크) · 교직원 = 대기 건 · 완료 명</div>
     </div>
 
   </div><!-- /content -->
@@ -607,23 +416,11 @@ tbody tr:hover { background:#FBFCFF; }
 <div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this)closeDrawer()">
   <div class="drawer">
     <div class="drawer-hd">
-      <div class="drawer-title" id="drawerTitle">초대 상세</div>
+      <div style="display:flex;align-items:center;gap:10px;min-width:0"><button class="btn btn-ghost btn-sm" id="drawerBack" style="display:none" onclick="backToOrg()">‹ 기관 상세</button><div class="drawer-title" id="drawerTitle">초대 상세</div></div>
       <button class="drawer-x" onclick="closeDrawer()">✕</button>
     </div>
     <div class="drawer-body" id="drawerBody"></div>
     <div class="drawer-foot" id="drawerFoot"></div>
-  </div>
-</div>
-
-<!-- ══ CLASS DETAIL DRAWER ══ -->
-<div class="drawer-overlay" id="classDrawerOverlay" onclick="if(event.target===this)closeClassDrawer()">
-  <div class="drawer">
-    <div class="drawer-hd">
-      <div class="drawer-title" id="classDrawerTitle">반 초대 관리</div>
-      <button class="drawer-x" onclick="closeClassDrawer()">✕</button>
-    </div>
-    <div class="drawer-body" id="classDrawerBody"></div>
-    <div class="drawer-foot" id="classDrawerFoot"></div>
   </div>
 </div>
 
@@ -643,866 +440,470 @@ tbody tr:hover { background:#FBFCFF; }
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
+<script>
+// ══════════════════════════════════════════════════════════════════
+// 초대 관리 (슈퍼관리자): 전체 초대 현황 조회 + 예외 처리
+//  - 학부모: 반 단위 마스터 링크 (status: none/active/stopped/expired, '가입 완료' 없음)
+//  - 교직원: 개인별 1회성 링크   (status: pending/used/expired/cancelled)
+//  - 재발송 = 동일 링크 재전달(링크·만료일·상태 유지) / 재생성 = 기존 링크 무효화 + 신규 발급
+// ══════════════════════════════════════════════════════════════════
+const ME = '슈퍼관리자';
+const PARENT_DAYS = 30, TEACHER_DAYS = 7, EXTEND_DAYS = 7;
+const pad = n => String(n).padStart(2,'0');
+const isoDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayISO = () => isoDate(new Date());
+const parseISO = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (iso,n) => { const d = parseISO(iso); d.setDate(d.getDate()+n); return isoDate(d); };
+const diffDays = (a,b) => Math.round((parseISO(a) - parseISO(b)) / 86400000);
+const nowDT = () => { const d = new Date(); return `${isoDate(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const dispD  = s => s ? s.replace(/-/g,'.') : '-';
+const dispDT = s => s ? s.replace('T',' ').replace(/-/g,'.') : '-';
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const newLink = () => 'https://kids.school.com/' + Math.random().toString(36).slice(2,8);
+const normUrl = l => /^https?:\/\//i.test(l) ? l : 'https://' + l;       // 이미 https:// 가 있으면 다시 붙이지 않음
+const TODAY = todayISO();
+
 const ORGS = [
-  { id:1, name:'행복어린이집', type:'어린이집', region:'서울 강남구', director:'김원장', totalClasses:5, activeClasses:3, totalMembers:33, pendingMembers:7 },
-  { id:2, name:'해오름유치원',  type:'유치원',   region:'서울 송파구', director:'이원장', totalClasses:4, activeClasses:4, totalMembers:48, pendingMembers:5 },
-  { id:3, name:'새봄어린이집',  type:'어린이집', region:'경기 성남시', director:'박원장', totalClasses:3, activeClasses:1, totalMembers:12, pendingMembers:3 },
-  { id:4, name:'햇살유치원',    type:'유치원',   region:'서울 마포구', director:'최원장', totalClasses:6, activeClasses:2, totalMembers:24, pendingMembers:9 },
-  { id:5, name:'푸른숲어린이집',type:'어린이집', region:'인천 연수구', director:'정원장', totalClasses:3, activeClasses:0, totalMembers:0,  pendingMembers:0 },
+  {id:1, name:'행복어린이집', type:'어린이집',   director:'김태훈'},
+  {id:2, name:'해오름유치원', type:'유치원',   director:'이정숙'},
+  {id:3, name:'새봄어린이집', type:'어린이집',   director:'박영호'},
+  {id:4, name:'햇살유치원', type:'유치원',     director:'최미경'},
+  {id:5, name:'푸른숲어린이집', type:'어린이집', director:'정수민'},
 ];
+const orgOf = id => ORGS.find(o=>o.id===id);
 
-const ALL_CLASSES = {
-  1: [
-    { id:101, orgId:1, name:'햇님반', teacher:'김지은', memberCount:15, capacity:20,
-      status:'active', link:'https://kids.school.com/x8D9s', toggleOn:true,
-      members:[
-        {name:'이해연', child:'이지우', date:'2026-01-15 09:23', av:'#4361EE,#7C3AED', vc:'이'},
-        {name:'박수진', child:'박민준', date:'2026-01-20 14:05', av:'#10B981,#3B82F6', vc:'박'},
-        {name:'최현우', child:'최수아', date:'2026-02-03 11:32', av:'#F59E0B,#EF4444', vc:'최'},
-        {name:'김아영', child:'김도윤', date:'2026-02-08 16:44', av:'#8B5CF6,#A78BFA', vc:'김'},
-        {name:'정수진', child:'정하린', date:'2026-02-12 10:15', av:'#EC4899,#F43F5E', vc:'정'},
-      ]
-    },
-    { id:102, orgId:1, name:'새싹반', teacher:'이수아', memberCount:10, capacity:18,
-      status:'active', link:'https://kids.school.com/m3Kp1', toggleOn:true,
-      members:[
-        {name:'오민지', child:'오서준', date:'2026-01-18 13:20', av:'#06B6D4,#0EA5E9', vc:'오'},
-        {name:'강유진', child:'강예린', date:'2026-02-05 09:10', av:'#4361EE,#7C3AED', vc:'강'},
-      ]
-    },
-    { id:103, orgId:1, name:'미소반', teacher:'박민준', memberCount:8, capacity:15,
-      status:'active', link:'https://kids.school.com/q7Rt2', toggleOn:true,
-      members:[{name:'윤채원', child:'윤지호', date:'2026-01-22 15:50', av:'#10B981,#3B82F6', vc:'윤'}]
-    },
-    { id:104, orgId:1, name:'별빛반', teacher:'최지영', memberCount:0, capacity:16, status:'stopped', link:'', toggleOn:false, members:[] },
-    { id:105, orgId:1, name:'열매반', teacher:'정다혜', memberCount:0, capacity:14, status:'none',    link:'', toggleOn:false, members:[] },
-  ],
-  2: [
-    { id:201, orgId:2, name:'꽃잎반', teacher:'한소희', memberCount:18, capacity:20, status:'active', link:'https://kids.school.com/f1Lo4', toggleOn:true,
-      members:[{name:'나에리', child:'나하윤', date:'2026-01-10 10:00', av:'#EC4899,#F43F5E', vc:'나'}]
-    },
-    { id:202, orgId:2, name:'나비반', teacher:'오준석', memberCount:12, capacity:18, status:'active', link:'https://kids.school.com/n2Mb6', toggleOn:true, members:[] },
-    { id:203, orgId:2, name:'무지개반', teacher:'서지현', memberCount:10, capacity:20, status:'active', link:'https://kids.school.com/r3Nc8', toggleOn:true, members:[] },
-    { id:204, orgId:2, name:'달님반', teacher:'장민호', memberCount:8, capacity:16, status:'active', link:'https://kids.school.com/d4Od0', toggleOn:true, members:[] },
-  ],
-  3: [
-    { id:301, orgId:3, name:'토끼반', teacher:'임수연', memberCount:7, capacity:15, status:'active', link:'https://kids.school.com/t5Pe2', toggleOn:true, members:[] },
-    { id:302, orgId:3, name:'곰돌이반', teacher:'조현준', memberCount:5, capacity:12, status:'stopped', link:'', toggleOn:false, members:[] },
-    { id:303, orgId:3, name:'사자반', teacher:'윤다인', memberCount:0, capacity:14, status:'none', link:'', toggleOn:false, members:[] },
-  ],
-  4: [
-    { id:401, orgId:4, name:'파랑반', teacher:'강지훈', memberCount:10, capacity:18, status:'active', link:'https://kids.school.com/b6Qf4', toggleOn:true, members:[] },
-    { id:402, orgId:4, name:'초록반', teacher:'황소연', memberCount:8, capacity:15, status:'active', link:'https://kids.school.com/g7Rg6', toggleOn:true, members:[] },
-    { id:403, orgId:4, name:'노랑반', teacher:'신민재', memberCount:6, capacity:14, status:'stopped', link:'', toggleOn:false, members:[] },
-    { id:404, orgId:4, name:'빨강반', teacher:'류지은', memberCount:0, capacity:12, status:'none', link:'', toggleOn:false, members:[] },
-    { id:405, orgId:4, name:'보라반', teacher:'문성호', memberCount:0, capacity:15, status:'none', link:'', toggleOn:false, members:[] },
-    { id:406, orgId:4, name:'주황반', teacher:'안지현', memberCount:0, capacity:13, status:'none', link:'', toggleOn:false, members:[] },
-  ],
-  5: [
-    { id:501, orgId:5, name:'꿈나무반', teacher:'배현우', memberCount:0, capacity:15, status:'none', link:'', toggleOn:false, members:[] },
-    { id:502, orgId:5, name:'씨앗반', teacher:'권수아', memberCount:0, capacity:12, status:'none', link:'', toggleOn:false, members:[] },
-    { id:503, orgId:5, name:'새싹반', teacher:'홍민준', memberCount:0, capacity:14, status:'none', link:'', toggleOn:false, members:[] },
-  ],
-};
+const PSTAT = {none:'초대 전', active:'초대 가능', stopped:'초대 중단', expired:'만료'};
+const PCLS  = {none:'s-none', active:'s-active', stopped:'s-stopped', expired:'s-expired'};
+const TSTAT = {pending:'초대 중', used:'가입 완료', expired:'만료', cancelled:'취소'};
+const TCLS  = {pending:'s-pending', used:'s-used', expired:'s-expired', cancelled:'s-cancel'};
+const pBadge = s => `<span class="status-badge ${PCLS[s]}"><span class="sdot"></span>${PSTAT[s]}</span>`;
+const tBadge = s => `<span class="status-badge ${TCLS[s]}"><span class="sdot"></span>${TSTAT[s]}</span>`;
 
-// 교직원 초대 데이터 (기관별, 반-역할 단위)
-const TEACHER_INVITATIONS = {
-  1: [
-    { id:'t101', orgId:1, cls:'새싹반', role:'담임교사',  invitedBy:'김원장', sentAt:'2026-02-20', status:'pending', dDay:4,  name:'', link:'kids.school.com/tc1Aa' },
-    { id:'t102', orgId:1, cls:'구름반', role:'담임교사',  invitedBy:'김원장', sentAt:'2026-02-20', status:'pending', dDay:3,  name:'', link:'kids.school.com/tc2Bb' },
-    { id:'t103', orgId:1, cls:'햇님반', role:'담임교사',  invitedBy:'김원장', sentAt:'2026-02-20', status:'pending', dDay:2,  name:'', link:'kids.school.com/tc3Cc' },
-    { id:'t104', orgId:1, cls:'새싹반', role:'보조교사',  invitedBy:'김원장', sentAt:'2026-02-20', status:'expired', dDay:-4, name:'', link:'kids.school.com/tc4Dd' },
-    { id:'t105', orgId:1, cls:'미소반', role:'담임교사',  invitedBy:'김원장', sentAt:'2026-02-18', status:'used',    dDay:0,  name:'한소희', link:'kids.school.com/tc5Ee' },
-  ],
-  2: [
-    { id:'t201', orgId:2, cls:'꽃잎반', role:'담임교사',  invitedBy:'이원장', sentAt:'2026-02-22', status:'pending', dDay:6,  name:'', link:'kids.school.com/tc6Ff' },
-    { id:'t202', orgId:2, cls:'나비반', role:'보조교사',  invitedBy:'이원장', sentAt:'2026-02-21', status:'pending', dDay:5,  name:'', link:'kids.school.com/tc7Gg' },
-    { id:'t203', orgId:2, cls:'무지개반', role:'담임교사', invitedBy:'이원장', sentAt:'2026-02-15', status:'expired', dDay:-2, name:'', link:'kids.school.com/tc8Hh' },
-  ],
-  3: [
-    { id:'t301', orgId:3, cls:'토끼반', role:'담임교사',  invitedBy:'박원장', sentAt:'2026-02-19', status:'pending', dDay:3, name:'', link:'kids.school.com/tc9Ii' },
-  ],
-  4: [],
-  5: [],
-};
-
-// 현재 선택된 서브탭 ('parent' | 'teacher')
-let sendSubtab = 'parent';
-
-// 현재 선택된 기관
-let selectedOrgId = null;
-
-// CLASSES는 동적으로 현재 기관 기준으로 참조
-function getClasses() { return ALL_CLASSES[selectedOrgId] || []; }
-function getTeacherInvites() { return TEACHER_INVITATIONS[selectedOrgId] || []; }
-
-const INVITATIONS = [
-  {id:1, status:'active',  type:'parent',  org:'행복어린이집', cls:'햇님반',  name:'이해연', channel:'카카오',  sentAt:'2026-01-14 10:00', joinedAt:'2026-01-15 09:23', link:'kids.school.com/x8D9s', _sel:false},
-  {id:2, status:'active',  type:'parent',  org:'행복어린이집', cls:'햇님반',  name:'박수진', channel:'문자',    sentAt:'2026-01-19 11:30', joinedAt:'2026-01-20 14:05', link:'kids.school.com/x8D9s', _sel:false},
-  {id:3, status:'active',  type:'parent',  org:'행복어린이집', cls:'새싹반',  name:'오민지', channel:'카카오',  sentAt:'2026-01-17 09:00', joinedAt:'2026-01-18 13:20', link:'kids.school.com/m3Kp1', _sel:false},
-  {id:4, status:'used',    type:'parent',  org:'해오름유치원', cls:'별빛반',  name:'김아름', channel:'링크복사', sentAt:'2026-02-01 14:00', joinedAt:'2026-02-03 08:45', link:'kids.school.com/b5Lk8', _sel:false},
-  {id:5, status:'used',    type:'teacher', org:'해오름유치원', cls:'별빛반',  name:'한수진', channel:'문자',    sentAt:'2026-02-10 16:00', joinedAt:'2026-02-11 10:30', link:'kids.school.com/t9Mn3', _sel:false},
-  {id:6, status:'expired', type:'parent',  org:'새봄어린이집', cls:'미소반',  name:'정유리', channel:'카카오',  sentAt:'2025-12-20 09:00', joinedAt:'',               link:'kids.school.com/e2Pk7', _sel:false},
-  {id:7, status:'expired', type:'parent',  org:'새봄어린이집', cls:'미소반',  name:'최민재', channel:'문자',    sentAt:'2025-12-21 10:00', joinedAt:'',               link:'kids.school.com/r4Qn5', _sel:false},
-  {id:8, status:'stopped', type:'parent',  org:'행복어린이집', cls:'별빛반',  name:'이준호', channel:'카카오',  sentAt:'2026-01-05 15:00', joinedAt:'',               link:'kids.school.com/s6Ro1', _sel:false},
-  {id:9, status:'active',  type:'teacher', org:'행복어린이집', cls:'햇님반',  name:'김지은', channel:'링크복사', sentAt:'2026-02-15 11:00', joinedAt:'2026-02-16 09:00', link:'kids.school.com/te8Ux', _sel:false},
-  {id:10,status:'expired', type:'parent',  org:'해오름유치원', cls:'열매반',  name:'박하은', channel:'문자',    sentAt:'2025-11-30 09:00', joinedAt:'',               link:'kids.school.com/ex3Vw', _sel:false},
-  {id:11,status:'stopped', type:'parent',  org:'새봄어린이집', cls:'별빛반',  name:'강민수', channel:'카카오',  sentAt:'2026-01-10 14:00', joinedAt:'',               link:'kids.school.com/st7Yz', _sel:false},
-  {id:12,status:'used',    type:'parent',  org:'해오름유치원', cls:'햇님반',  name:'윤지혜', channel:'카카오',  sentAt:'2026-02-07 10:00', joinedAt:'2026-02-08 16:44', link:'kids.school.com/ud4Pw', _sel:false},
+// ── 샘플 데이터 (날짜는 오늘 기준 상대값으로 생성) ─────────────────────
+// [orgId, 반, 담임, 링크상태, 재원원아, 가입멤버, 생성(며칠 전), 만료(오늘 기준 ±일)]
+const PSEED = [
+  [1,'햇님반','김지은','active', 20,15, 60, 30],
+  [1,'새싹반','이수아','active', 18,10, 55, 25],
+  [1,'미소반','박민준','active', 15, 8, 50,  4],
+  [1,'별빛반','최지영','stopped',16, 6, 70, 10],
+  [1,'열매반','정다혜','none',   14, 0,  0,  0],
+  [2,'꽃잎반','한소희','active', 20,18, 80, 20],
+  [2,'나비반','오준석','active', 18,12, 75,  2],
+  [2,'무지개반','서지현','expired',20,10, 90, -3],
+  [2,'달님반','장민호','stopped',16, 8, 85,-10],
+  [3,'토끼반','임수연','active', 15, 7, 40, 18],
+  [3,'곰돌이반','조현준','stopped',12, 5, 45, 12],
+  [3,'사자반','윤다인','none',   14, 0,  0,  0],
+  [4,'파랑반','강지훈','active', 18,10, 33, 27],
+  [4,'초록반','황소연','active', 15, 8, 30,  9],
+  [4,'노랑반','신민재','stopped',14, 6, 62, 15],
+  [4,'빨강반','류지은','expired',12, 3, 70, -5],
+  [4,'보라반','문성호','none',   15, 0,  0,  0],
+  [4,'주황반','안지현','none',   13, 0,  0,  0],
+  [5,'꿈나무반','배현우','none',  15, 0,  0,  0],
+  [5,'씨앗반','권수아','none',    12, 0,  0,  0],
+  [5,'새싹반','홍민준','active', 14, 2, 14, 16],
 ];
+const P_NAMES = ['이해연','박수진','최현우','김아영','정수진','오민지','강유진','윤채원','나에리','서지아','한가은','조은서','임나래','신보라','문지현','배소영','권예은','노하나','류세아','홍미래'];
+const C_NAMES = ['이지우','박민준','최수아','김도윤','정하린','오서준','강예린','윤지호','나하윤','서도현','한서윤','조시우','임하준','신유나','문지안','배서연','권하율','노지후','류아린','홍도하'];
+const AV = ['#4361EE,#7C3AED','#10B981,#3B82F6','#F59E0B,#EF4444','#8B5CF6,#A78BFA','#EC4899,#F43F5E','#06B6D4,#0EA5E9'];
 
-let curRows = [...INVITATIONS];
-let pendingCmAction = null;
-let pendingCmIdx = null;
-
-// ── RENDER ORG CARDS ──────────────────────────────────────────────────────────
-function renderOrgCards(list) {
-  const orgs = list || ORGS;
-  const container = document.getElementById('orgCards');
-  const typeColors = { '어린이집':'#EDE9FE,#5B21B6', '유치원':'#D1FAE5,#065F46' };
-  container.innerHTML = orgs.map(o => {
-    const activeRatio = o.totalClasses > 0 ? Math.round((o.activeClasses/o.totalClasses)*100) : 0;
-    const joinRatio   = (o.totalMembers + o.pendingMembers) > 0
-      ? Math.round(o.totalMembers/(o.totalMembers+o.pendingMembers)*100) : 0;
-    const typeColor = o.type === '어린이집' ? {bg:'#EDE9FE',txt:'#5B21B6'} : {bg:'#D1FAE5',txt:'#065F46'};
-    return `
-    <div class="table-card" style="padding:18px 20px;cursor:pointer;transition:box-shadow 0.15s;" 
-         onclick="enterOrg(${o.id})"
-         onmouseenter="this.style.boxShadow='var(--shadow-md)'"
-         onmouseleave="this.style.boxShadow='var(--shadow-sm)'">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:46px;height:46px;background:linear-gradient(135deg,#4361EE,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏫</div>
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
-            <span style="font-size:15px;font-weight:800;">${o.name}</span>
-            <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;background:${typeColor.bg};color:${typeColor.txt}">${o.type}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;color:var(--text-muted);">📍 ${o.region}</span>
-            <span style="font-size:12px;color:var(--text-muted);">👤 원장: ${o.director}</span>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:24px;flex-shrink:0;">
-          <div style="text-align:center;">
-            <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;">전체 반</div>
-            <div style="font-size:17px;font-weight:800;color:var(--text-primary)">${o.totalClasses}<span style="font-size:11px;font-weight:500;color:var(--text-muted)">개</span></div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;">초대 활성</div>
-            <div style="font-size:17px;font-weight:800;color:#4361EE">${o.activeClasses}<span style="font-size:11px;font-weight:500;color:var(--text-muted)">개</span></div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;">가입 학부모</div>
-            <div style="font-size:17px;font-weight:800;color:#10B981">${o.totalMembers}<span style="font-size:11px;font-weight:500;color:var(--text-muted)">명</span></div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;">미가입</div>
-            <div style="font-size:17px;font-weight:800;color:#F59E0B">${o.pendingMembers}<span style="font-size:11px;font-weight:500;color:var(--text-muted)">명</span></div>
-          </div>
-          <svg width="18" height="18" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </div>
-      </div>
-    </div>`;
-  }).join('') || '<div style="text-align:center;padding:40px;color:var(--text-muted)">검색 결과가 없습니다.</div>';
-}
-
-function switchSendSubtab(tab) {
-  sendSubtab = tab;
-  const isParent = tab === 'parent';
-  // 버튼 스타일
-  document.getElementById('subtab-parent').style.background  = isParent ? 'var(--accent-primary)' : 'transparent';
-  document.getElementById('subtab-parent').style.color       = isParent ? '#fff' : 'var(--text-secondary)';
-  document.getElementById('subtab-teacher').style.background = !isParent ? 'var(--accent-primary)' : 'transparent';
-  document.getElementById('subtab-teacher').style.color      = !isParent ? '#fff' : 'var(--text-secondary)';
-// 안내 문구 (제목 변경)
-  document.getElementById('orgListTitle').textContent = isParent
-    ? '기관 리스트 — 학부모 초대' : '기관 리스트 — 교직원 초대';
-
-  // 배너 내용 전체 덮어쓰기 (중복 노출 방지)
-  const banner = document.getElementById('orgInfoBanner');
-  if (banner) {
-    banner.innerHTML = `
-      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      기관을 선택하면 해당 기관의 <b>${isParent ? '반별 학부모 초대 현황' : '교직원 초대 현황'}</b>을 확인하고 관리할 수 있습니다.
-    `;
+const PARENT_LINKS = PSEED.map((r,i)=>{
+  const [orgId,cls,teacher,status,children,joined,createdAgo,expOff] = r;
+  const has = status!=='none';
+  const createdAt = has ? addDays(TODAY,-createdAgo) : '';
+  const expiresAt = has ? addDays(TODAY,expOff) : '';
+  const members = [];
+  for(let k=0;k<joined;k++){
+    const days = Math.max(0, diffDays(TODAY,createdAt));
+    members.push({id:`m${i}_${k}`, name:P_NAMES[(i*3+k)%P_NAMES.length], child:C_NAMES[(i*5+k)%C_NAMES.length],
+      joinedAt:addDays(createdAt, Math.min(days, Math.floor(k*days/Math.max(1,joined)))), status:'active', av:AV[k%AV.length]});
   }
-  // 기관 뷰 초기화
-  if (document.getElementById('view-classes').style.display !== 'none') {
-    backToOrgs();
-  }
-  renderOrgCards();
-}
-
-function filterOrgs() {
-  const q = document.getElementById('orgSearch').value.trim().toLowerCase();
-  renderOrgCards(q ? ORGS.filter(o => o.name.includes(q) || o.region.includes(q) || o.type.includes(q)) : ORGS);
-}
-
-function enterOrg(orgId) {
-  selectedOrgId = orgId;
-  const org = ORGS.find(o => o.id === orgId);
-  const isParent = sendSubtab === 'parent';
-  document.getElementById('selectedOrgName').textContent = org.name;
-  document.getElementById('selectedSubtabLabel').textContent = isParent ? '학부모' : '교직원';
-  document.getElementById('selectedSubtabLabel').style.background = isParent ? '#EEF1FD' : '#EDE9FE';
-  document.getElementById('selectedSubtabLabel').style.color = isParent ? 'var(--accent-primary)' : '#5B21B6';
-
-  if (isParent) {
-    document.getElementById('classSectionTitle').textContent = org.name + ' 반별 초대 현황';
-    document.getElementById('classTotalBadge').innerHTML = `전체 반 <b style="color:var(--text-primary)">${org.totalClasses}개</b>`;
-    document.getElementById('orgSumLabel').textContent = '총 가입 학부모';
-    document.getElementById('orgMemberCount').innerHTML = `${org.totalMembers}<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span>`;
-    document.getElementById('orgPendingCount').innerHTML = `${org.pendingMembers}<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span>`;
-  } else {
-    const invites = TEACHER_INVITATIONS[orgId] || [];
-    const joined  = invites.filter(x => x.status === 'used').length;
-    const pending = invites.filter(x => x.status === 'pending').length;
-    document.getElementById('classSectionTitle').textContent = org.name + ' 교직원 초대 현황';
-    document.getElementById('classTotalBadge').innerHTML = `초대 발송 <b style="color:var(--text-primary)">${invites.length}건</b>`;
-    document.getElementById('orgSumLabel').textContent = '총 가입 교직원';
-    document.getElementById('orgMemberCount').innerHTML = `${joined}<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span>`;
-    document.getElementById('orgPendingCount').innerHTML = `${pending}<span style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-left:4px;">명</span>`;
-  }
-
-  document.getElementById('view-orgs').style.display = 'none';
-  document.getElementById('view-classes').style.display = '';
-  if (isParent) renderClassCards();
-  else renderTeacherInviteList();
-}
-
-function backToOrgs() {
-  selectedOrgId = null;
-  document.getElementById('view-classes').style.display = 'none';
-  document.getElementById('view-orgs').style.display = '';
-}
-
-// ── RENDER TEACHER INVITE LIST ────────────────────────────────────────────────
-function renderTeacherInviteList() {
-  const invites = getTeacherInvites();
-  const container = document.getElementById('classCards');
-
-  const dDayBadge = (inv) => {
-    if (inv.status === 'expired') return `<span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;background:#FEE2E2;color:#991B1B;">만료</span>`;
-    if (inv.status === 'used')    return `<span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;background:#D1FAE5;color:#065F46;">가입완료</span>`;
-    const d = inv.dDay;
-    const col = d <= 1 ? '#EF4444' : d <= 3 ? '#F59E0B' : '#4361EE';
-    return `<span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;background:${col}18;color:${col};">D-${d}</span>`;
-  };
-
-  if (!invites.length) {
-    container.innerHTML = `<div class="table-card" style="padding:40px;text-align:center;color:var(--text-muted)">
-      <div style="font-size:28px;margin-bottom:8px;opacity:.4">👩‍🏫</div>
-      <div style="font-size:13.5px;font-weight:600;color:var(--text-secondary)">교직원 초대 내역이 없습니다</div>
-      <div style="font-size:12px;margin-top:4px">하단 버튼으로 새 초대 링크를 발송하세요</div>
-    </div>`;
-  } else {
-    container.innerHTML = invites.map(inv => {
-      const isExpired = inv.status === 'expired';
-      const isUsed    = inv.status === 'used';
-      const cardBg    = isExpired ? 'background:#F9FAFB;' : '';
-      let actionArea  = '';
-
-      if (isUsed) {
-        actionArea = `<div style="margin-top:10px;padding:8px 12px;background:#D1FAE5;border-radius:var(--radius-md);display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#065F46;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-          ${inv.name} 교사 가입 완료
-        </div>`;
-      } else if (isExpired) {
-        actionArea = `
-          <div style="margin-top:10px;padding:8px 12px;background:#F3F4F6;border-radius:var(--radius-md);display:flex;align-items:center;gap:8px;">
-            <svg width="14" height="14" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-            <span style="font-size:11.5px;color:var(--text-muted);text-decoration:line-through;flex:1">${inv.link}</span>
-          </div>
-          <div style="margin-top:8px;font-size:11.5px;color:var(--text-muted);padding:0 2px">${inv.sentAt} 만료 · 26일 후 삭제 예정</div>
-          <button class="btn btn-primary" style="margin-top:8px;width:100%;justify-content:center;" onclick="event.stopPropagation();regenTeacherLink('${inv.id}')">
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            초대 링크 재생성
-          </button>`;
-      } else {
-        actionArea = `
-          <div style="margin-top:10px;display:flex;gap:8px;">
-            <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="event.stopPropagation();cancelTeacherInvite('${inv.id}')">취소</button>
-            <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="event.stopPropagation();resendTeacherInvite('${inv.id}')">재발송</button>
-          </div>`;
-      }
-
-      return `
-      <div class="table-card" style="padding:16px 20px;${cardBg}">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:40px;height:40px;background:${isExpired?'#F3F4F6':'linear-gradient(135deg,#4361EE,#7C3AED)'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">${isExpired?'<svg width="18" height="18" fill="none" stroke="#9CA3AF" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>':'👩‍🏫'}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <span style="font-size:14px;font-weight:800;color:${isExpired?'var(--text-muted)':'var(--text-primary)'};">${inv.cls} - ${inv.role}</span>
-              ${dDayBadge(inv)}
-            </div>
-            <div style="display:flex;align-items:center;gap:14px;">
-              <span style="font-size:12px;color:var(--text-muted);">초대한 사람: ${inv.invitedBy}</span>
-              <span style="font-size:12px;color:var(--text-muted);">${inv.sentAt} 발송</span>
-            </div>
-          </div>
-        </div>
-        ${actionArea}
-      </div>`;
-    }).join('');
-  }
-
-  // 하단 전체 재발송 버튼
-  const pending = invites.filter(x => x.status === 'pending');
-  container.innerHTML += `
-    <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px;">
-      <button class="btn btn-ghost" style="height:44px;justify-content:center;border:1.5px dashed var(--border-medium);color:var(--text-secondary);" onclick="showToast('가입코드 생성 기능은 준비 중입니다.',false)">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        가입코드 생성하기
-      </button>
-      <button class="btn btn-primary btn-lg" style="height:44px;justify-content:center;" onclick="bulkResendTeacher()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-        전체 링크 재발송 (${pending.length}건)
-      </button>
-      <div class="info-banner" style="margin-top:4px">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        초대 링크를 재생성하면 기존에 공유된 링크는 더 이상 사용할 수 없습니다. 재생성하여 새로운 초대링크로 반초대를 진행해주세요.
-      </div>
-    </div>`;
-}
-
-function regenTeacherLink(id) {
-  showToast('교직원 초대 링크가 재생성되었습니다.');
-  const inv = Object.values(TEACHER_INVITATIONS).flat().find(x => x.id === id);
-  if (inv) { inv.status = 'pending'; inv.dDay = 7; inv.sentAt = '2026-03-10'; }
-  renderTeacherInviteList();
-}
-function cancelTeacherInvite(id) {
-  const inv = Object.values(TEACHER_INVITATIONS).flat().find(x => x.id === id);
-  if (inv) inv.status = 'expired';
-  showToast('초대가 취소되었습니다.');
-  renderTeacherInviteList();
-}
-function resendTeacherInvite(id) {
-  showToast('재발송 완료되었습니다. 기존 링크는 만료 처리됩니다.');
-}
-function bulkResendTeacher() {
-  const invites = getTeacherInvites().filter(x => x.status === 'pending');
-  showToast(`전체 ${invites.length}건 재발송 완료`);
-}
-
-// ── RENDER CLASS CARDS ────────────────────────────────────────────────────────
-function renderClassCards() {
-  const CLASSES = getClasses();
-  const container = document.getElementById('classCards');
-  container.innerHTML = CLASSES.map(c => {
-    const pct = c.capacity > 0 ? Math.round((c.memberCount / c.capacity) * 100) : 0;
-    const isActive = c.status === 'active';
-    const isStopped = c.status === 'stopped';
-    const isNone = c.status === 'none';
-
-    let statusHtml = '';
-    let linkAreaHtml = '';
-
-    if (isActive) {
-      statusHtml = `<span style="font-size:12px;font-weight:700;color:#4361EE">· 초대 가능</span>`;
-      linkAreaHtml = `
-        <div class="link-box" style="margin-top:10px;">
-          <svg width="14" height="14" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-          <span class="link-box-url">${c.link}</span>
-          <button class="copy-btn" onclick="event.stopPropagation();copyLink('${c.link}')">
-            <svg width="12" height="12" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-          </button>
-        </div>`;
-    } else if (isStopped) {
-      statusHtml = `<span style="font-size:12px;font-weight:700;color:var(--text-muted)">· 초대 중단</span>`;
-      linkAreaHtml = `
-        <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;justify-content:center;" onclick="event.stopPropagation();regenLink(${c.id})">
-          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          초대 링크 재생성
-        </button>`;
-    } else {
-      statusHtml = `<span style="font-size:12px;font-weight:700;color:var(--text-muted)">· 초대 전</span>`;
-      linkAreaHtml = `
-        <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center;border:1.5px dashed var(--border-medium);" onclick="event.stopPropagation();genLink(${c.id})">
-          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          초대 링크 생성하기
-        </button>`;
-    }
-
-    const cardBg = (isStopped || isNone) ? 'background:#F9FAFB;opacity:0.85;' : '';
-
-    return `
-    <div class="table-card" style="padding:16px 20px;cursor:pointer;${cardBg}" onclick="openClassDrawer(${c.id})">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
-        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-          <div style="width:40px;height:40px;background:linear-gradient(135deg,#4361EE,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🏫</div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-              <span style="font-size:14px;font-weight:800;">${c.name}</span>
-              ${statusHtml}
-            </div>
-            <div style="font-size:12px;color:var(--text-muted);">담임: ${c.teacher} · 가입멤버 <b style="color:var(--text-primary)">${c.memberCount}명</b> / ${c.capacity}명</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-          <div style="text-align:right">
-            <div class="prog-wrap">
-              <div class="prog-bar" style="width:80px;"><div class="prog-fill" style="width:${pct}%;background:${isActive?'#4361EE':'#D1D5DB'}"></div></div>
-              <span class="prog-text">${pct}%</span>
-            </div>
-          </div>
-          <label class="toggle" onclick="event.stopPropagation()" title="초대 링크 활성화">
-            <input type="checkbox" ${c.toggleOn?'checked':''} onchange="toggleClass(${c.id},this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-          <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </div>
-      </div>
-      ${linkAreaHtml}
-    </div>`;
-  }).join('');
-}
-
-// ── RENDER STATUS TABLE ───────────────────────────────────────────────────────
-const stBadge = {
-  active:  '<span class="status-badge s-active"><span class="sdot"></span>초대 중</span>',
-  used:    '<span class="status-badge s-used"><span class="sdot"></span>가입 완료</span>',
-  expired: '<span class="status-badge s-expired"><span class="sdot"></span>만료</span>',
-  stopped: '<span class="status-badge s-stopped"><span class="sdot"></span>중단</span>',
-};
-const chBadge = {
-  '카카오':'<span class="route-tag r-kakao">카카오</span>',
-  '문자':'<span class="route-tag r-sms">문자</span>',
-  '링크복사':'<span class="route-tag r-link">링크복사</span>',
-};
-
-function buildStatusRow(r) {
-  const mgmt = r.status === 'used'
-    ? `<button class="btn btn-danger btn-sm" onclick="openExpelConfirm(${r.id})">내보내기</button>`
-    : r.status === 'active'
-    ? `<div style="display:flex;gap:5px;">
-        <button class="btn btn-warn btn-sm" onclick="openExpireConfirm(${r.id})">만료처리</button>
-        <button class="btn btn-ghost btn-sm" onclick="openResendConfirm(${r.id})">재발송</button>
-      </div>`
-    : `<button class="btn btn-primary btn-sm" onclick="openResendConfirm(${r.id})">재발송</button>`;
-
-  return `<tr id="row-${r.id}">
-    <td><input type="checkbox" ${r._sel?'checked':''} onchange="toggleRow(r.id,this.checked)" style="cursor:pointer"></td>
-    <td>${stBadge[r.status]||''}</td>
-    <td><span class="type-badge ${r.type==='parent'?'t-parent':'t-teacher'}">${r.type==='parent'?'학부모':'교직원'}</span></td>
-    <td style="font-weight:500">${r.org}</td>
-    <td><span style="background:#EEF1FD;color:var(--accent-primary);padding:2px 8px;border-radius:5px;font-size:12px;font-weight:700">${r.cls}</span></td>
-    <td style="font-weight:600">${r.name}</td>
-    <td>${chBadge[r.channel]||r.channel}</td>
-    <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-secondary)">${r.sentAt}</td>
-    <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:${r.joinedAt?'#10B981':'var(--text-muted)'}">${r.joinedAt||'—'}</td>
-    <td>
-      <div class="link-cell">
-        <span class="link-url ${r.status==='expired'||r.status==='stopped'?'expired-link':''}">${r.link}</span>
-        ${r.status==='active'||r.status==='used'?`<button class="copy-btn" onclick="copyLink('${r.link}')"><svg width="11" height="11" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>`:''}
-      </div>
-    </td>
-    <td>${mgmt}</td>
-  </tr>`;
-}
-
-function renderStatusTable(data) {
-  const el = document.getElementById('statusTbody');
-  el.innerHTML = data.length
-    ? data.map(r => buildStatusRow(r)).join('')
-    : '<tr><td colspan="11" style="text-align:center;padding:36px;color:var(--text-muted)">검색 결과가 없습니다.</td></tr>';
-}
-
-function buildResendRow(r) {
-  const expiredAt = r.status === 'expired' ? r.sentAt.replace('2025','2026') : r.sentAt;
-  return `<tr id="rowr-${r.id}">
-    <td><input type="checkbox" ${r._sel?'checked':''} onchange="toggleRowR(${r.id},this.checked)" style="cursor:pointer"></td>
-    <td>${stBadge[r.status]||''}</td>
-    <td><span class="type-badge ${r.type==='parent'?'t-parent':'t-teacher'}">${r.type==='parent'?'학부모':'교직원'}</span></td>
-    <td style="font-weight:500">${r.org}</td>
-    <td><span style="background:#EEF1FD;color:var(--accent-primary);padding:2px 8px;border-radius:5px;font-size:12px;font-weight:700">${r.cls}</span></td>
-    <td style="font-weight:600">${r.name}</td>
-    <td>${chBadge[r.channel]||r.channel}</td>
-    <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-secondary)">${r.sentAt}</td>
-    <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--red)">${expiredAt}</td>
-    <td>
-      <div style="display:flex;gap:5px;">
-        <button class="btn btn-primary btn-sm" onclick="openResendConfirm(${r.id})">재발송</button>
-      </div>
-    </td>
-  </tr>`;
-}
-
-function renderResendTable() {
-  const el = document.getElementById('resendTbody');
-  const targets = INVITATIONS.filter(r => r.status === 'expired' || r.status === 'stopped');
-  el.innerHTML = targets.length
-    ? targets.map(r => buildResendRow(r)).join('')
-    : '<tr><td colspan="10" style="text-align:center;padding:36px;color:var(--text-muted)">재발송 대상이 없습니다.</td></tr>';
-}
-
-// ── FILTERS ───────────────────────────────────────────────────────────────────
-function applyStatusFilter() {
-  const cls = document.getElementById('fClass').value;
-  const type = document.getElementById('fType').value;
-  const st = document.getElementById('fStatus').value;
-  const q = document.getElementById('fSearch').value.trim().toLowerCase();
-  curRows = INVITATIONS.filter(r =>
-    (!cls || r.cls === cls) &&
-    (!type || r.type === type) &&
-    (!st || r.status === st) &&
-    (!q || r.name.toLowerCase().includes(q) || r.org.toLowerCase().includes(q))
-  );
-  renderStatusTable(curRows);
-}
-
-function resetFilter() {
-  document.getElementById('fClass').value = '';
-  document.getElementById('fType').value = '';
-  document.getElementById('fStatus').value = '';
-  document.getElementById('fSearch').value = '';
-  curRows = [...INVITATIONS];
-  renderStatusTable(curRows);
-}
-
-function toggleAll(cb) { INVITATIONS.forEach(r => r._sel = cb.checked); renderStatusTable(curRows); }
-function toggleRow(id, v) { const r = INVITATIONS.find(x => x.id === id); if(r) r._sel = v; }
-function toggleAllR(cb) { INVITATIONS.filter(r=>r.status==='expired'||r.status==='stopped').forEach(r=>r._sel=cb.checked); renderResendTable(); }
-function toggleRowR(id, v) { const r = INVITATIONS.find(x => x.id === id); if(r) r._sel = v; }
-
-// ── TABS ──────────────────────────────────────────────────────────────────────
-function switchTab(name, el) {
-  ['send','status','resend'].forEach(t => {
-    document.getElementById('tab-'+t).style.display = (t===name) ? '' : 'none';
-  });
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-// ── CLASS TOGGLE ──────────────────────────────────────────────────────────────
-function findClass(id) {
-  for (const arr of Object.values(ALL_CLASSES)) {
-    const c = arr.find(x => x.id === id);
-    if (c) return c;
-  }
-  return null;
-}
-function toggleClass(id, on) {
-  const c = findClass(id);
-  if (!c) return;
-  if (!on) {
-    c.toggleOn = false;
-    c.status = c.status === 'active' ? 'stopped' : c.status;
-    showToast(c.name + ' 초대 링크가 비활성화되었습니다.');
-  } else {
-    c.toggleOn = true;
-    if (c.link) c.status = 'active';
-    showToast(c.name + ' 초대 링크가 활성화되었습니다.');
-  }
-  renderClassCards();
-}
-
-// ── LINK ACTIONS ──────────────────────────────────────────────────────────────
-function copyLink(link) {
-  navigator.clipboard.writeText('https://'+link).catch(()=>{});
-  showToast('링크가 복사되었습니다.');
-}
-
-function genLink(id) {
-  const c = findClass(id);
-  if (!c) return;
-  const hash = Math.random().toString(36).substr(2, 6);
-  c.link = `kids.school.com/${hash}`;
-  c.status = 'active';
-  c.toggleOn = true;
-  showToast(c.name + ' 초대 링크가 생성되었습니다.');
-  renderClassCards();
-}
-
-function regenLink(id) {
-  const c = findClass(id);
-  if (!c) return;
-  pendingCmAction = 'regen';
-  pendingCmIdx = id;
-  document.getElementById('cmIcon').textContent = '🔄';
-  document.getElementById('cmIcon').style.background = '#EEF1FD';
-  document.getElementById('cmTitle').textContent = `"${c.name}" 초대 링크를 재생성하시겠습니까?`;
-  document.getElementById('cmDesc').innerHTML = `기존 링크는 즉시 만료 처리됩니다.<br>새 링크 생성 후 학부모에게 다시 공유해주세요.`;
-  document.getElementById('cmOk').className = 'cm-btn cm-ok-primary';
-  document.getElementById('cmOk').textContent = '재생성';
-  document.getElementById('cmOverlay').classList.add('show');
-}
-
-// ── RESEND / EXPIRE CONFIRM ────────────────────────────────────────────────────
-function openResendConfirm(id) {
-  const r = INVITATIONS.find(x => x.id === id);
-  pendingCmAction = 'resend'; pendingCmIdx = id;
-  document.getElementById('cmIcon').textContent = '📨';
-  document.getElementById('cmIcon').style.background = '#EEF1FD';
-  document.getElementById('cmTitle').textContent = `"${r.name}" 님에게 재발송하시겠습니까?`;
-  document.getElementById('cmDesc').innerHTML = `기존 링크는 즉시 만료되며 새 초대 링크가 발송됩니다.<br>발송 채널: <b>${r.channel}</b>`;
-  document.getElementById('cmOk').className = 'cm-btn cm-ok-primary';
-  document.getElementById('cmOk').textContent = '재발송';
-  document.getElementById('cmOverlay').classList.add('show');
-}
-
-function openExpireConfirm(id) {
-  const r = INVITATIONS.find(x => x.id === id);
-  pendingCmAction = 'expire'; pendingCmIdx = id;
-  document.getElementById('cmIcon').textContent = '⏹️';
-  document.getElementById('cmIcon').style.background = '#FEF3C7';
-  document.getElementById('cmTitle').textContent = `"${r.name}" 초대 링크를 만료 처리하시겠습니까?`;
-  document.getElementById('cmDesc').innerHTML = `해당 링크로는 더 이상 가입할 수 없습니다.<br>추후 재발송이 필요하면 재발송 탭에서 처리하세요.`;
-  document.getElementById('cmOk').className = 'cm-btn cm-ok-warn';
-  document.getElementById('cmOk').textContent = '만료 처리';
-  document.getElementById('cmOverlay').classList.add('show');
-}
-
-function openExpelConfirm(id) {
-  const r = INVITATIONS.find(x => x.id === id);
-  pendingCmAction = 'expel'; pendingCmIdx = id;
-  document.getElementById('cmIcon').textContent = '🚫';
-  document.getElementById('cmIcon').style.background = '#FEE2E2';
-  document.getElementById('cmTitle').textContent = `"${r.name}" 님을 내보내시겠습니까?`;
-  document.getElementById('cmDesc').innerHTML = `해당 학부모를 가입 명단에서 제외합니다.<br>삭제 후 재가입을 위해서는 초대 링크를 다시 공유해야 합니다.`;
-  document.getElementById('cmOk').className = 'cm-btn cm-ok-danger';
-  document.getElementById('cmOk').textContent = '내보내기';
-  document.getElementById('cmOverlay').classList.add('show');
-}
-
-function bulkExpire() {
-  const sel = INVITATIONS.filter(r => r._sel && (r.status==='expired'||r.status==='stopped'));
-  if (!sel.length) { showToast('선택된 항목이 없습니다.', false); return; }
-  sel.forEach(r => r.status = 'expired');
-  showToast(sel.length + '건 만료 처리 완료');
-  renderResendTable();
-}
-
-function bulkResend() {
-  const sel = INVITATIONS.filter(r => r._sel && (r.status==='expired'||r.status==='stopped'));
-  if (!sel.length) { showToast('선택된 항목이 없습니다.', false); return; }
-  showToast(sel.length + '건 재발송 완료');
-}
-
-// ── EXEC CONFIRM ──────────────────────────────────────────────────────────────
-function execCm() {
-  if (pendingCmAction === 'resend') {
-    const r = INVITATIONS.find(x => x.id === pendingCmIdx);
-    showToast(`"${r.name}" 님에게 재발송 완료`);
-  } else if (pendingCmAction === 'expire') {
-    const r = INVITATIONS.find(x => x.id === pendingCmIdx);
-    r.status = 'expired';
-    showToast('만료 처리되었습니다.');
-    renderStatusTable(curRows);
-    renderResendTable();
-  } else if (pendingCmAction === 'expel') {
-    const idx = INVITATIONS.findIndex(x => x.id === pendingCmIdx);
-    if (idx > -1) INVITATIONS.splice(idx, 1);
-    curRows = curRows.filter(x => x.id !== pendingCmIdx);
-    showToast('내보내기 처리 완료');
-    renderStatusTable(curRows);
-  } else if (pendingCmAction === 'regen') {
-    const c = findClass(pendingCmIdx);
-    const hash = Math.random().toString(36).substr(2, 6);
-    c.link = `kids.school.com/${hash}`;
-    c.status = 'active';
-    c.toggleOn = true;
-    showToast(c.name + ' 초대 링크가 재생성되었습니다.');
-    renderClassCards();
-  }
-  closeCm();
-}
-
-function closeCm() { document.getElementById('cmOverlay').classList.remove('show'); }
-
-// ── CLASS DRAWER ──────────────────────────────────────────────────────────────
-function openClassDrawer(id) {
-  const c = findClass(id);
-  if (!c) return;
-  document.getElementById('classDrawerTitle').textContent = c.name + ' 초대 관리';
-
-  const isActive = c.status === 'active';
-  const isStopped = c.status === 'stopped';
-  const isNone = c.status === 'none';
-  const pct = c.capacity > 0 ? Math.round((c.memberCount / c.capacity) * 100) : 0;
-
-  let linkSection = '';
-  if (isActive) {
-    linkSection = `
-      <div class="info-banner" style="margin-bottom:12px">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        반 마스터 링크가 활성화되어 있습니다. 학부모에게 공유하세요.
-      </div>
-      <div class="link-box" style="margin-bottom:12px">
-        <svg width="14" height="14" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span class="link-box-url">${c.link}</span>
-        <button class="copy-btn" onclick="copyLink('${c.link}')">
-          <svg width="12" height="12" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-        </button>
-      </div>`;
-  } else if (isStopped) {
-    linkSection = `
-      <div class="link-box expired" style="margin-bottom:12px">
-        <svg width="14" height="14" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span class="link-box-url">${c.name} 초대링크 만료</span>
-      </div>
-      <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-bottom:12px" onclick="regenLink(${c.id});closeClassDrawer()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        초대 링크 재생성
-      </button>`;
-  } else {
-    linkSection = `
-      <div class="link-box" style="margin-bottom:12px;border-style:dashed;">
-        <svg width="14" height="14" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span class="link-box-url" style="color:var(--text-muted)">${c.name} 초대링크가 없습니다.</span>
-      </div>
-      <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-bottom:4px" onclick="genLink(${c.id});closeClassDrawer()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        초대 링크 생성하기
-      </button>
-      <div style="text-align:center;font-size:11.5px;color:var(--text-muted);margin-bottom:12px">초대 링크를 생성하여 학부모 초대를 시작하세요</div>`;
-  }
-
-  const memberHtml = c.members.length
-    ? c.members.map(m => `
-        <div class="member-item">
-          <div class="member-av" style="background:linear-gradient(135deg,${m.av})">${m.vc}</div>
-          <div class="member-info">
-            <div class="member-name">${m.name}</div>
-            <div class="member-meta">자녀: ${m.child}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="member-date">${m.date.split(' ')[0]}</div>
-            <button class="btn btn-danger btn-sm" onclick="showToast('내보내기 처리되었습니다.')">내보내기</button>
-          </div>
-        </div>`).join('')
-    : `<div class="empty-state" style="padding:28px 0">
-        <div class="empty-icon">👥</div>
-        <div class="empty-text">아직 가입한 멤버가 없습니다</div>
-        <div class="empty-sub">초대 링크를 공유하여 멤버를 초대해보세요.</div>
-      </div>`;
-
-  document.getElementById('classDrawerBody').innerHTML = `
-    <div class="drawer-section">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="width:40px;height:40px;background:linear-gradient(135deg,#4361EE,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏫</div>
-        <div>
-          <div style="font-size:15px;font-weight:800">${c.name}</div>
-          <div style="font-size:12px;color:var(--text-muted)">담임교사: ${c.teacher}</div>
-        </div>
-        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-          <span style="font-size:12px;color:var(--text-secondary)">초대 링크 활성화</span>
-          <label class="toggle">
-            <input type="checkbox" ${c.toggleOn?'checked':''} onchange="toggleClass(${c.id},this.checked);renderClassDrawer(${c.id})">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-        <div style="background:#F4F5F7;border-radius:8px;padding:10px 14px;">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">가입 멤버</div>
-          <div style="font-size:18px;font-weight:800;color:var(--accent-primary)">${c.memberCount}<span style="font-size:12px;font-weight:500;color:var(--text-secondary)">명</span></div>
-        </div>
-        <div style="background:#F4F5F7;border-radius:8px;padding:10px 14px;">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">가입율</div>
-          <div style="font-size:18px;font-weight:800;color:#10B981">${pct}<span style="font-size:12px;font-weight:500;color:var(--text-secondary)">%</span></div>
-        </div>
-      </div>
-      ${linkSection}
-    </div>
-    <div class="drawer-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="drawer-sec-title" style="margin-bottom:0">가입 멤버 ${c.memberCount}명</div>
-        ${c.members.length ? `<button class="btn btn-ghost btn-sm">
-          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          명단 다운로드
-        </button>` : ''}
-      </div>
-      <div class="member-list">${memberHtml}</div>
-    </div>`;
-
-  document.getElementById('classDrawerFoot').innerHTML = `
-    <button class="btn btn-ghost" onclick="closeClassDrawer()">닫기</button>
-    ${isActive ? `<button class="btn btn-warn" onclick="regenLink(${c.id});closeClassDrawer()">링크 재생성</button>` : ''}`;
-
-  document.getElementById('classDrawerOverlay').classList.add('show');
-}
-
-function closeClassDrawer() {
-  document.getElementById('classDrawerOverlay').classList.remove('show');
-}
-
-// ── DETAIL DRAWER (invitation) ────────────────────────────────────────────────
-function openDrawer(id) {
-  const r = INVITATIONS.find(x => x.id === id);
-  if (!r) return;
-  document.getElementById('drawerTitle').textContent = '초대 상세';
-  document.getElementById('drawerBody').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-sec-title">수신자 정보</div>
-      <div class="drawer-grid">
-        <div class="drawer-field"><div class="drawer-label">이름</div><div class="drawer-val">${r.name}</div></div>
-        <div class="drawer-field"><div class="drawer-label">초대 유형</div><div class="drawer-val"><span class="type-badge ${r.type==='parent'?'t-parent':'t-teacher'}">${r.type==='parent'?'학부모':'교직원'}</span></div></div>
-        <div class="drawer-field"><div class="drawer-label">기관명</div><div class="drawer-val">${r.org}</div></div>
-        <div class="drawer-field"><div class="drawer-label">소속 반</div><div class="drawer-val">${r.cls}</div></div>
-      </div>
-    </div>
-    <div class="drawer-section">
-      <div class="drawer-sec-title">발송 정보</div>
-      <div class="drawer-grid">
-        <div class="drawer-field"><div class="drawer-label">발송 채널</div><div class="drawer-val">${chBadge[r.channel]||r.channel}</div></div>
-        <div class="drawer-field"><div class="drawer-label">상태</div><div class="drawer-val">${stBadge[r.status]||r.status}</div></div>
-        <div class="drawer-field"><div class="drawer-label">발송 일시</div><div class="drawer-val" style="font-family:'JetBrains Mono',monospace;font-size:12px">${r.sentAt}</div></div>
-        <div class="drawer-field"><div class="drawer-label">가입 일시</div><div class="drawer-val" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${r.joinedAt?'#10B981':'var(--text-muted)'}">${r.joinedAt||'—'}</div></div>
-      </div>
-    </div>
-    <div class="drawer-section">
-      <div class="drawer-sec-title">초대 링크</div>
-      <div class="link-box ${r.status==='expired'||r.status==='stopped'?'expired':''}">
-        <svg width="14" height="14" fill="none" stroke="${r.status==='expired'||r.status==='stopped'?'var(--text-muted)':'var(--accent-primary)'}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span class="link-box-url">${r.link}</span>
-        ${r.status==='active'||r.status==='used'?`<button class="copy-btn" onclick="copyLink('${r.link}')"><svg width="12" height="12" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>`:''}
-      </div>
-    </div>`;
-
-  document.getElementById('drawerFoot').innerHTML = `
-    <button class="btn btn-ghost" onclick="closeDrawer()">닫기</button>
-    ${r.status==='active'?`<button class="btn btn-warn" onclick="openExpireConfirm(${r.id});closeDrawer()">만료 처리</button>`:''}
-    ${r.status==='active'||r.status==='expired'||r.status==='stopped'?`<button class="btn btn-primary" onclick="openResendConfirm(${r.id});closeDrawer()">재발송</button>`:''}
-    ${r.status==='used'?`<button class="btn btn-danger" onclick="openExpelConfirm(${r.id});closeDrawer()">내보내기</button>`:''}`;
-
-  document.getElementById('drawerOverlay').classList.add('show');
-}
-
-function closeDrawer() { document.getElementById('drawerOverlay').classList.remove('show'); }
-
-// ── EXPORT CSV (mock) ─────────────────────────────────────────────────────────
-function exportCSV() { showToast('CSV 파일이 다운로드되었습니다.'); }
-
-// ── SIDEBAR SUB MENU ──────────────────────────────────────────────────────────
-function toggleSubNav(el, subId) {
-  var sub = document.getElementById(subId);
-  if (!sub) return;
-  var isOpen = sub.style.display === 'block';
-  sub.style.display = isOpen ? 'none' : 'block';
-  var chev = el.querySelector('.nav-chevron');
-  if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-function showToast(msg, ok=true) {
-  const w = document.getElementById('toastWrap'), t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = `<svg width="16" height="16" fill="none" stroke="${ok?'#10B981':'#F59E0B'}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${msg}`;
-  w.appendChild(t);
-  setTimeout(() => { t.style.transition='opacity 0.3s'; t.style.opacity='0'; setTimeout(()=>t.remove(), 350); }, 3000);
-}
-
-// ── INIT ───────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  renderOrgCards();
-  renderStatusTable(INVITATIONS);
-  renderResendTable();
+  const org = orgOf(orgId), history = [];
+  if(has) history.push({at:createdAt+'T09:10', by:`${teacher} 선생님`, action:'링크 생성'});
+  if(status==='stopped') history.push({at:addDays(TODAY,-3)+'T14:20', by:`${org.director} 원장`, action:'링크 중단'});
+  if(status==='expired') history.push({at:expiresAt+'T00:00', by:'시스템', action:'유효기간 만료'});
+  return {id:'p'+(i+1), orgId, org:org.name, cls, teacher, status, children, link: has?`https://kids.school.com/pl${i+1}${['Ax','Bk','Cm','Dn'][i%4]}${9-i%9}`:'',
+    createdAt, expiresAt, members, invalidLinks:[], history};
 });
+// 샘플: 연결 해제 이력이 있는 멤버 / 슈퍼관리자 처리 이력
+(function(){
+  const p = PARENT_LINKS[0];
+  p.members.push({id:'m0_x', name:'백지윤', child:'백서아', joinedAt:addDays(p.createdAt,3), status:'disconnected', disconnectedAt:addDays(TODAY,-9), av:AV[2]});
+  p.history.push({at:addDays(TODAY,-9)+'T11:05', by:`${p.teacher} 선생님`, action:'학부모 백지윤 기관 연결 해제'});
+  const q = PARENT_LINKS[6];
+  q.invalidLinks.push({link:'https://kids.school.com/old7Qz', at:addDays(TODAY,-12)+'T14:32'});
+  q.history.push({at:addDays(TODAY,-12)+'T14:20', by:`${orgOf(2).director} 원장`, action:'링크 중단'});
+  q.history.push({at:addDays(TODAY,-12)+'T14:32', by:ME, action:'링크 재생성'});
+})();
+
+const CLS_BY_ORG = {};
+PSEED.forEach(r=>(CLS_BY_ORG[r[0]] = CLS_BY_ORG[r[0]] || []).push({cls:r[1], teacher:r[2]}));
+const ROLES = ['담임교사','보조교사','방과후교사'];
+const T_NAMES = ['한소희','오지훈','서하윤','문채원','배도현','권나연','노승우','류지안','홍태윤','안유나','송민호','조하린','임재윤'];
+const T_STS = ['pending','used','expired','cancelled','pending','used','pending','expired'];
+const TEACHER_INVITES = [];
+for(let i=0;i<28;i++){
+  const orgId = (i%5)+1, org = orgOf(orgId), list = CLS_BY_ORG[orgId], c = list[i%list.length];
+  const role = ROLES[(i>>1)%ROLES.length]; let status = T_STS[i%8];
+  if(orgId===5 && (status==='expired' || status==='cancelled')) status = i%2 ? 'used' : 'pending';   // 샘플: 푸른숲어린이집은 이상 없음(정상)
+  const ago = status==='pending' ? i%6 : status==='used' ? 3+(i%15) : status==='expired' ? 9+(i%10) : 1+(i%6);
+  const issuedAt = addDays(TODAY,-ago), expiresAt = addDays(issuedAt,TEACHER_DAYS);
+  const invitedBy = role==='보조교사' ? `${c.teacher} 선생님` : `${org.director} 원장`;
+  const nm = T_NAMES[i%T_NAMES.length];
+  const target = i%3===2 ? '미지정 (링크 공유)' : `${nm} (010-****-${1000+((i*137)%9000)})`;
+  const t = {id:'t'+(i+1), orgId, org:org.name, cls:c.cls, role, target, invitedBy, issuedAt, expiresAt, status,
+    link:`https://kids.school.com/tc${i+1}${['Qa','Wb','Ec','Rd'][i%4]}${(i*7)%10}`, joinedName:'', joinedAt:'', resendCount:0, lastResentAt:'', invalidLinks:[], history:[]};
+  t.history.push({at:issuedAt+'T10:00', by:invitedBy, action:'초대 발급'});
+  if(status==='used'){ t.joinedName = nm; t.joinedAt = addDays(issuedAt, 1+(i%3)); t.history.push({at:t.joinedAt+'T15:40', by:nm, action:'가입 완료'}); }
+  if(status==='expired') t.history.push({at:expiresAt+'T00:00', by:'시스템', action:'유효기간 만료'});
+  if(status==='cancelled') t.history.push({at:addDays(issuedAt,1)+'T13:15', by:invitedBy, action:'초대 취소'});
+  if(status==='pending' && i%4===0){ t.resendCount = 1; t.lastResentAt = addDays(issuedAt,1)+'T09:30'; t.history.push({at:t.lastResentAt, by:invitedBy, action:'재발송 처리'}); }
+  TEACHER_INVITES.push(t);
+}
+// 샘플: 슈퍼관리자 재생성 이력이 있는 건
+(function(){ const t = TEACHER_INVITES.find(x=>x.status==='pending'); t.invalidLinks.push({link:'https://kids.school.com/oldTc1', at:addDays(TODAY,-1)+'T16:02'}); t.history.push({at:addDays(TODAY,-1)+'T16:02', by:ME, action:'링크 재생성'}); })();
+
+// 유효기간이 지난 유효 링크는 자동 만료 처리
+(function autoExpire(){
+  PARENT_LINKS.forEach(p=>{ if(p.status==='active' && p.expiresAt < TODAY){ p.status='expired'; p.history.push({at:p.expiresAt+'T00:00', by:'시스템', action:'유효기간 만료'}); } });
+  TEACHER_INVITES.forEach(t=>{ if(t.status==='pending' && t.expiresAt < TODAY){ t.status='expired'; t.history.push({at:t.expiresAt+'T00:00', by:'시스템', action:'유효기간 만료'}); } });
+})();
+
+const joinedCount = p => p.members.filter(m=>m.status==='active').length;
+const findP = id => PARENT_LINKS.find(x=>x.id===id);
+const findT = id => TEACHER_INVITES.find(x=>x.id===id);
+const addHistory = (item, by, action) => item.history.push({at:nowDT(), by, action});
+const ddayLabel = (exp, valid) => { if(!valid || !exp) return ''; const n = diffDays(exp,TODAY); const col = n<=1?'#EF4444':n<=3?'#F59E0B':'#6B7280'; return `<span style="font-size:11px;font-weight:700;color:${col};margin-left:6px">${n===0?'D-day':'D-'+n}</span>`; };
+
+// ── 상태 ───────────────────────────────────────────────────────────
+let orgRows = [];
+let drawerRef = null;     // {orgId, tab:'parent'|'teacher', sub:null|{kind,id}, f:{pStatus,tRole,tStatus}}
+const $ = id => document.getElementById(id);
+const mmdd = s => s ? s.slice(5,10).replace('-','.') : '-';
+
+// ── 기관 단위 집계 ─────────────────────────────────────────────────
+function attentionOf(orgId){
+  const a = [];
+  PARENT_LINKS.filter(p=>p.orgId===orgId).forEach(p=>{
+    if(p.status==='expired') a.push({kind:'parent', id:p.id, label:`${p.cls} 링크 만료`});
+    else if(p.status==='stopped') a.push({kind:'parent', id:p.id, label:`${p.cls} 초대 중단`});
+  });
+  TEACHER_INVITES.filter(t=>t.orgId===orgId).forEach(t=>{
+    if(t.status==='expired') a.push({kind:'teacher', id:t.id, label:`${t.cls} ${t.role} 초대 만료`});
+    else if(t.status==='cancelled') a.push({kind:'teacher', id:t.id, label:`${t.cls} ${t.role} 초대 취소`});
+  });
+  return a;
+}
+function orgStats(org){
+  const ps = PARENT_LINKS.filter(p=>p.orgId===org.id), ts = TEACHER_INVITES.filter(t=>t.orgId===org.id);
+  const times = ps.concat(ts).flatMap(x=>x.history.map(h=>h.at));
+  return {
+    pClasses: ps.length, pActive: ps.filter(p=>p.status==='active').length,
+    pJoined: ps.reduce((s,p)=>s+joinedCount(p),0),
+    tPending: ts.filter(t=>t.status==='pending').length, tUsed: ts.filter(t=>t.status==='used').length, tTotal: ts.length,
+    attn: attentionOf(org.id), last: times.length ? times.sort().slice(-1)[0].slice(0,10) : ''
+  };
+}
+
+// ── KPI ────────────────────────────────────────────────────────────
+function renderKpi(){
+  const tp = TEACHER_INVITES.filter(t=>t.status==='pending').length;
+  const pj = PARENT_LINKS.reduce((s,p)=>s+joinedCount(p),0);
+  const pa = PARENT_LINKS.filter(p=>p.status==='active').length;
+  const attn = ORGS.reduce((s,o)=>s+attentionOf(o.id).length, 0);
+  $('kpiTPending').textContent = tp; $('kpiPJoined').textContent = pj; $('kpiPActive').textContent = pa; $('kpiAttn').textContent = attn;
+}
+function refreshAll(){ renderKpi(); applyOrgs(); if(drawerRef) renderDrawer(); }
+
+// ── 메인: 기관 목록 (기관 1곳 = 1행) ───────────────────────────────
+function applyOrgs(){
+  const type = $('oType').value, st = $('oStatus').value, q = $('oSearch').value.trim().toLowerCase();
+  orgRows = ORGS.map(o=>({o, s:orgStats(o)}))
+    .filter(r=>(!type||r.o.type===type) && (!st || (st==='attn' ? r.s.attn.length>0 : r.s.attn.length===0)) && (!q || r.o.name.toLowerCase().includes(q)))
+    .sort((a,b)=>b.s.attn.length-a.s.attn.length || a.o.id-b.o.id);
+  renderOrgTable();
+}
+function resetOrgs(){ ['oType','oStatus','oSearch'].forEach(i=>$(i).value=''); applyOrgs(); }
+function renderOrgTable(){
+  $('oTbody').innerHTML = orgRows.length ? orgRows.map(({o,s})=>`
+    <tr style="cursor:pointer" onclick="openOrg(${o.id})">
+      <td><span style="font-weight:700">${esc(o.name)}</span> <span style="font-size:11px;color:var(--text-muted);margin-left:4px">${esc(o.type)}</span></td>
+      <td>가입 <b>${s.pJoined}</b> · 초대중 <b>${s.pActive}</b>반</td>
+      <td>대기 <b>${s.tPending}</b> · 완료 <b>${s.tUsed}</b></td>
+      <td>${s.attn.length ? `<span class="status-badge s-pending"><span class="sdot"></span>${s.attn.length}건</span>` : '<span style="color:var(--text-muted)">-</span>'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px">${mmdd(s.last)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openOrg(${o.id})">상세</button></td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--text-muted)">조건에 맞는 기관이 없습니다.</td></tr>';
+  $('oCount').textContent = `총 ${orgRows.length}곳`;
+}
+
+// ── 링크 복사 ──────────────────────────────────────────────────────
+function copyLink(link){
+  const url = normUrl(link);                      // 정상 URL 그대로 복사
+  window.__lastCopied = url;
+  const done = () => showToast('링크가 복사되었습니다.');
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done).catch(()=>{ fallbackCopy(url); done(); }); }
+  else { fallbackCopy(url); done(); }
+}
+function fallbackCopy(text){ try{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }catch(e){} }
+
+// ── CSV ────────────────────────────────────────────────────────────
+function toCsv(rows){ return '﻿' + rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n'); }
+function downloadCsv(name, rows){
+  const csv = toCsv(rows); window.__lastCsv = {name, csv};
+  if(window.__noDownload) return;
+  try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }catch(e){}
+}
+function exportListCsv(){
+  downloadCsv(`기관별초대현황_${TODAY}.csv`, [['기관명','기관 유형','학부모 가입(명)','학부모 초대중(반)','교직원 대기(건)','교직원 완료(명)','확인 필요(건)','최근 활동']].concat(orgRows.map(({o,s})=>[o.name,o.type,s.pJoined,s.pActive,s.tPending,s.tUsed,s.attn.length,dispD(s.last)])));
+  showToast('CSV 파일이 다운로드되었습니다.');
+}
+function exportOrgCsv(orgId, tab){
+  const org = orgOf(orgId); if(!org) return;
+  if(tab==='parent'){
+    const rows = PARENT_LINKS.filter(p=>p.orgId===orgId && (!drawerRef||!drawerRef.f.pStatus||p.status===drawerRef.f.pStatus));
+    downloadCsv(`${org.name}_학부모초대_${TODAY}.csv`, [['반','담임교사','링크 상태','가입 학부모(명)','링크 생성일','링크 만료일']].concat(rows.map(p=>[p.cls,p.teacher,PSTAT[p.status],joinedCount(p),dispD(p.createdAt),dispD(p.expiresAt)])));
+  } else {
+    const rows = TEACHER_INVITES.filter(t=>t.orgId===orgId && (!drawerRef||!drawerRef.f.tRole||t.role===drawerRef.f.tRole) && (!drawerRef||!drawerRef.f.tStatus||t.status===drawerRef.f.tStatus));
+    downloadCsv(`${org.name}_교직원초대_${TODAY}.csv`, [['역할','반','수신자/초대 대상','초대한 사람','발급일','만료일','상태']].concat(rows.map(t=>[t.role,t.cls,t.target,t.invitedBy,dispD(t.issuedAt),dispD(t.expiresAt),TSTAT[t.status]])));
+  }
+  showToast('CSV 파일이 다운로드되었습니다.');
+}
+function exportMembersCsv(id){
+  const p = findP(id); if(!p) return;
+  downloadCsv(`${p.org}_${p.cls}_가입멤버_${TODAY}.csv`, [['학부모명','연결 원아','가입일','상태']].concat(p.members.map(m=>[m.name,m.child,dispD(m.joinedAt),m.status==='active'?'가입':'기관 연결 해제'])));
+  showToast('가입 멤버 명단 CSV가 다운로드되었습니다.');
+}
+
+// ── 확인 모달 ──────────────────────────────────────────────────────
+let cmCb = null;
+function askConfirm(o){
+  cmCb = o.onOk;
+  $('cmIcon').textContent = o.icon; $('cmIcon').style.background = o.bg;
+  $('cmTitle').textContent = o.title; $('cmDesc').innerHTML = o.desc;
+  $('cmOk').className = 'cm-btn ' + o.cls; $('cmOk').textContent = o.ok;
+  $('cmOverlay').classList.add('show');
+}
+function execCm(){ const cb = cmCb; closeCm(); if(cb) cb(); }
+function closeCm(){ cmCb = null; $('cmOverlay').classList.remove('show'); }
+
+// ── 학부모(마스터 링크) 처리 ───────────────────────────────────────
+function parentStop(id){
+  const p = findP(id); if(!p || p.status!=='active') return;
+  askConfirm({icon:'⏸️', bg:'#FEF3C7', title:`"${p.org} ${p.cls}" 링크를 중단하시겠습니까?`, desc:'중단 중에는 해당 링크로 신규 가입을 할 수 없습니다.<br>필요 시 다시 활성화할 수 있습니다.', ok:'링크 중단', cls:'cm-ok-warn',
+    onOk:()=>{ p.status='stopped'; addHistory(p, ME, '링크 중단'); showToast('링크가 중단되었습니다.'); refreshAll(); }});
+}
+function parentReactivate(id){
+  const p = findP(id); if(!p || p.status!=='stopped') return;
+  if(p.expiresAt < TODAY){ showToast('유효기간이 지나 활성화할 수 없습니다. 링크를 재생성하세요.', false); return; }
+  p.status='active'; addHistory(p, ME, '링크 재활성화'); showToast('링크가 다시 활성화되었습니다.'); refreshAll();
+}
+function parentExtend(id){
+  const p = findP(id); if(!p || p.status!=='active') return;
+  p.expiresAt = addDays(p.expiresAt, EXTEND_DAYS); addHistory(p, ME, `유효기간 +${EXTEND_DAYS}일 연장 (${dispD(p.expiresAt)}까지)`);
+  showToast(`유효기간이 ${dispD(p.expiresAt)}까지 연장되었습니다.`); refreshAll();
+}
+function parentRegen(id){
+  const p = findP(id); if(!p || p.status==='none') return;
+  askConfirm({icon:'🔄', bg:'#EEF1FD', title:`"${p.org} ${p.cls}" 링크를 재생성하시겠습니까?`, desc:'기존 링크는 <b>즉시 무효화</b>되고 새 링크와 만료일이 발급됩니다.<br>새 링크를 학부모에게 다시 공유해야 합니다.', ok:'링크 재생성', cls:'cm-ok-primary',
+    onOk:()=>{ if(p.link) p.invalidLinks.push({link:p.link, at:nowDT()}); p.link=newLink(); p.createdAt=TODAY; p.expiresAt=addDays(TODAY,PARENT_DAYS); p.status='active';
+      addHistory(p, ME, '링크 재생성'); showToast('새 링크가 생성되었습니다. 기존 링크는 무효화되었습니다.'); refreshAll(); }});
+}
+function memberDisconnect(pid, mid){
+  const p = findP(pid), m = p && p.members.find(x=>x.id===mid); if(!m || m.status!=='active') return;
+  askConfirm({icon:'🔗', bg:'#FEE2E2', title:`"${m.name}" 님을 기관 연결 해제하시겠습니까?`, desc:`${esc(m.name)}(연결 원아: ${esc(m.child)})과(와) ${esc(p.org)}의 연결이 해제됩니다.<br><b>회원 계정 자체는 삭제되지 않습니다.</b>`, ok:'기관 연결 해제', cls:'cm-ok-danger',
+    onOk:()=>{ m.status='disconnected'; m.disconnectedAt=TODAY; addHistory(p, ME, `학부모 ${m.name} 기관 연결 해제`); showToast('기관 연결이 해제되었습니다.'); refreshAll(); }});
+}
+
+// ── 교직원(1회성 링크) 처리 ────────────────────────────────────────
+function teacherResend(id){
+  const t = findT(id); if(!t || t.status!=='pending') return;
+  t.resendCount++; t.lastResentAt = nowDT(); addHistory(t, ME, '재발송 처리');       // 링크·만료일·상태는 그대로 유지
+  showToast('재발송 처리되었습니다. (기존 링크·만료일 유지)'); refreshAll();
+}
+function teacherExtend(id){
+  const t = findT(id); if(!t || t.status!=='pending') return;
+  t.expiresAt = addDays(t.expiresAt, EXTEND_DAYS); addHistory(t, ME, `유효기간 +${EXTEND_DAYS}일 연장 (${dispD(t.expiresAt)}까지)`);
+  showToast(`유효기간이 ${dispD(t.expiresAt)}까지 연장되었습니다.`); refreshAll();
+}
+function teacherCancel(id){
+  const t = findT(id); if(!t || t.status!=='pending') return;
+  askConfirm({icon:'🚫', bg:'#FEE2E2', title:`"${t.org} ${t.cls} ${t.role}" 초대를 취소하시겠습니까?`, desc:'취소하면 해당 링크로 가입할 수 없습니다.<br>취소는 만료와 별도 상태로 기록되며, 필요 시 링크를 재생성할 수 있습니다.', ok:'초대 취소', cls:'cm-ok-danger',
+    onOk:()=>{ t.status='cancelled'; addHistory(t, ME, '초대 취소'); showToast('초대가 취소되었습니다.'); refreshAll(); }});
+}
+function teacherRegen(id){
+  const t = findT(id); if(!t || (t.status!=='expired' && t.status!=='cancelled')) return;
+  askConfirm({icon:'🔄', bg:'#EEF1FD', title:`"${t.org} ${t.cls} ${t.role}" 링크를 재생성하시겠습니까?`, desc:`기존 링크는 <b>즉시 무효화</b>되고 새 링크가 발급됩니다.<br>상태는 <b>초대 중</b>으로 변경되며 만료일이 ${TEACHER_DAYS}일 후로 재설정됩니다.`, ok:'링크 재생성', cls:'cm-ok-primary',
+    onOk:()=>{ t.invalidLinks.push({link:t.link, at:nowDT()}); t.link=newLink(); t.issuedAt=TODAY; t.expiresAt=addDays(TODAY,TEACHER_DAYS); t.status='pending';
+      addHistory(t, ME, '링크 재생성'); showToast('새 링크가 생성되었습니다. 기존 링크는 무효화되었습니다.'); refreshAll(); }});
+}
+
+// ── 상세 드로어 ────────────────────────────────────────────────────
+const copyIcon = `<svg width="11" height="11" fill="none" stroke="var(--accent-primary)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
+const linkSvg = c => `<svg width="14" height="14" fill="none" stroke="${c}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`;
+function field(label, val, mono){ return `<div class="drawer-field"><div class="drawer-label">${label}</div><div class="drawer-val" ${mono?'style="font-family:\'JetBrains Mono\',monospace;font-size:12px"':''}>${val}</div></div>`; }
+function linkSection(item, valid, emptyMsg){
+  if(!item.link) return `<div class="link-box" style="border-style:dashed"><span class="link-box-url" style="color:var(--text-muted)">${emptyMsg}</span></div>`;
+  const inv = item.invalidLinks.length ? `<div style="margin-top:10px"><div class="drawer-label" style="margin-bottom:4px">무효화된 이전 링크 (${item.invalidLinks.length})</div>${item.invalidLinks.map(x=>`<div class="link-box expired" style="margin-bottom:4px;padding:6px 10px"><span class="link-box-url" style="font-size:11px">${esc(x.link)}</span><span style="font-size:10.5px;color:var(--text-muted);white-space:nowrap">${dispDT(x.at)}</span></div>`).join('')}</div>` : '';
+  return `<div class="link-box ${valid?'':'expired'}" id="drawerLinkBox">${linkSvg(valid?'var(--accent-primary)':'var(--text-muted)')}<span class="link-box-url" id="drawerLink">${esc(item.link)}</span>
+    <button class="copy-btn" title="링크 복사" onclick="copyLink('${esc(item.link)}')">${copyIcon}</button></div>
+    ${valid?'':'<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px">현재 사용할 수 없는 링크입니다. 필요하면 링크를 재생성하세요.</div>'}${inv}`;
+}
+function historySection(item){
+  const list = item.history.map((h,i)=>({...h,i})).sort((a,b)=>b.at.localeCompare(a.at) || b.i-a.i);
+  return `<div class="drawer-section"><div class="drawer-sec-title">처리 이력</div>${list.length ? `<div id="historyList">${list.map(h=>`
+    <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:12.5px">
+      <div style="width:112px;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${dispDT(h.at)}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700">${esc(h.by)}</div><div style="color:var(--text-secondary)">${esc(h.action)}</div></div></div>`).join('')}</div>` : '<div style="font-size:12.5px;color:var(--text-muted)">처리 이력이 없습니다.</div>'}</div>`;
+}
+// ── 드로어: 기관 상세 → (학부모 반 / 교직원 초대) 상세 ─────────────
+function openOrg(orgId, tab){ drawerRef = {orgId, tab: tab||'parent', sub:null, f:{pStatus:'', tRole:'', tStatus:''}}; renderDrawer(); $('drawerOverlay').classList.add('show'); }
+function openDrawer(kind, id){            // 항목(반/초대건) 상세로 바로 진입 (뒤로가기 = 기관 상세)
+  const it = kind==='parent' ? findP(id) : findT(id); if(!it) return;
+  drawerRef = {orgId:it.orgId, tab:kind, sub:{kind,id}, f:{pStatus:'', tRole:'', tStatus:''}}; renderDrawer(); $('drawerOverlay').classList.add('show');
+}
+function closeDrawer(){ drawerRef = null; $('drawerOverlay').classList.remove('show'); }
+function backToOrg(){ if(drawerRef){ drawerRef.sub = null; renderDrawer(); } }
+function setDrawerTab(tab){ drawerRef.tab = tab; renderDrawer(); }
+function setDrawerFilter(k, v){ drawerRef.f[k] = v; renderDrawer(); }
+function renderDrawer(){
+  if(!drawerRef) return;
+  $('drawerBack').style.display = drawerRef.sub ? '' : 'none';
+  if(drawerRef.sub){
+    const {kind,id} = drawerRef.sub;
+    return kind==='parent' ? renderParentDrawer(findP(id)) : renderTeacherDrawer(findT(id));
+  }
+  renderOrgDrawer();
+}
+function orgParentList(){ const f = drawerRef.f; return PARENT_LINKS.filter(p=>p.orgId===drawerRef.orgId && (!f.pStatus||p.status===f.pStatus)); }
+function orgTeacherList(){ const f = drawerRef.f; return TEACHER_INVITES.filter(t=>t.orgId===drawerRef.orgId && (!f.tRole||t.role===f.tRole) && (!f.tStatus||t.status===f.tStatus)); }
+function renderOrgDrawer(){
+  const org = orgOf(drawerRef.orgId), s = orgStats(org), tab = drawerRef.tab, f = drawerRef.f;
+  $('drawerTitle').textContent = `${org.name} 초대 현황`;
+  const selOpt = (v,cur,t)=>`<option value="${v}" ${v===cur?'selected':''}>${t}</option>`;
+  const attn = s.attn.length ? `<div class="info-banner warn-banner" style="margin-bottom:0;display:block"><b>확인 필요 ${s.attn.length}건</b>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">${s.attn.map(a=>`<button class="btn btn-sm" style="background:#fff;border:1px solid #FDE68A;color:#92400E" onclick="openDrawer('${a.kind}','${a.id}')">${esc(a.label)}</button>`).join('')}</div></div>` : '';
+  let list;
+  if(tab==='parent'){
+    const rows = orgParentList();
+    list = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div class="fsel-wrap"><select class="fsel" onchange="setDrawerFilter('pStatus',this.value)">${selOpt('',f.pStatus,'전체 링크 상태')}${Object.entries(PSTAT).map(([k,v])=>selOpt(k,f.pStatus,v)).join('')}</select></div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="exportOrgCsv(${org.id},'parent')">CSV 다운로드</button></div>
+      <div style="overflow-x:auto"><table id="dParentTable"><thead><tr><th>반</th><th>링크 상태</th><th>가입 학부모</th><th>관리</th></tr></thead><tbody>
+      ${rows.length ? rows.map(p=>`<tr style="cursor:pointer" onclick="openDrawer('parent','${p.id}')"><td style="font-weight:700">${esc(p.cls)}</td><td>${pBadge(p.status)}</td><td>${joinedCount(p)}명</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDrawer('parent','${p.id}')">상세</button></td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--text-muted)">해당하는 반이 없습니다.</td></tr>'}
+      </tbody></table></div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px">단위: 반 마스터 링크 · 가입 학부모는 가입 후 자녀정보를 입력한 명수</div>`;
+  } else {
+    const rows = orgTeacherList();
+    list = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="fsel-wrap"><select class="fsel" style="min-width:104px" onchange="setDrawerFilter('tRole',this.value)">${selOpt('',f.tRole,'전체 역할')}${ROLES.map(r=>selOpt(r,f.tRole,r)).join('')}</select></div>
+        <div class="fsel-wrap"><select class="fsel" style="min-width:104px" onchange="setDrawerFilter('tStatus',this.value)">${selOpt('',f.tStatus,'전체 상태')}${Object.entries(TSTAT).map(([k,v])=>selOpt(k,f.tStatus,v)).join('')}</select></div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="exportOrgCsv(${org.id},'teacher')">CSV 다운로드</button></div>
+      <div style="overflow-x:auto"><table id="dTeacherTable"><thead><tr><th>역할</th><th>반</th><th>상태</th><th>발급일</th><th>만료일</th><th>관리</th></tr></thead><tbody>
+      ${rows.length ? rows.map(t=>`<tr style="cursor:pointer" onclick="openDrawer('teacher','${t.id}')"><td style="font-weight:700">${esc(t.role)}</td><td>${esc(t.cls)}</td><td>${tBadge(t.status)}</td>
+        <td>${mmdd(t.issuedAt)}</td><td>${t.status==='used'?'-':mmdd(t.expiresAt)}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDrawer('teacher','${t.id}')">상세</button></td></tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--text-muted)">해당하는 초대가 없습니다.</td></tr>'}
+      </tbody></table></div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px">단위: 개인별 1회용 초대 건</div>`;
+  }
+  $('drawerBody').innerHTML = `
+    <div class="drawer-section"><div class="drawer-sec-title">전체 초대 현황</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:#F4F5F7;border-radius:8px;padding:12px 14px"><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">학부모 (반 ${s.pClasses}개)</div><div style="font-size:15px;font-weight:800">가입 ${s.pJoined}명 · 초대중 ${s.pActive}반</div></div>
+        <div style="background:#F4F5F7;border-radius:8px;padding:12px 14px"><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">교직원 (전체 ${s.tTotal}건)</div><div style="font-size:15px;font-weight:800">대기 ${s.tPending}건 · 완료 ${s.tUsed}명</div></div>
+      </div>
+      ${attn ? `<div style="margin-top:12px">${attn}</div>` : ''}
+    </div>
+    <div class="drawer-section" style="padding-top:8px">
+      <div class="tab-bar" style="margin-bottom:14px">
+        <div class="tab ${tab==='parent'?'active':''}" id="dTabParent" onclick="setDrawerTab('parent')">학부모 <span class="tab-count">${s.pClasses}</span></div>
+        <div class="tab ${tab==='teacher'?'active':''}" id="dTabTeacher" onclick="setDrawerTab('teacher')">교직원 <span class="tab-count">${s.tTotal}</span></div>
+      </div>${list}
+    </div>`;
+  $('drawerFoot').innerHTML = `<button class="btn btn-ghost" onclick="closeDrawer()">닫기</button>`;
+}
+
+function renderParentDrawer(p){
+  if(!p) return;
+  $('drawerTitle').textContent = `${p.org} · ${p.cls} 학부모 초대`;
+  const members = [...p.members].sort((a,b)=>b.joinedAt.localeCompare(a.joinedAt));
+  const memberHtml = members.length ? members.map(m=>`
+    <div class="member-item" data-member="${m.id}" style="${m.status!=='active'?'opacity:.55':''}">
+      <div class="member-av" style="background:linear-gradient(135deg,${m.av})">${esc(m.name[0])}</div>
+      <div class="member-info"><div class="member-name">${esc(m.name)}</div><div class="member-meta">연결 원아: ${esc(m.child)}</div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="member-date">${dispD(m.joinedAt)}</div>
+        ${m.status==='active' ? '<span class="status-badge s-active"><span class="sdot"></span>가입</span>' : '<span class="status-badge s-stopped"><span class="sdot"></span>연결 해제</span>'}
+        ${m.status==='active' ? `<button class="btn btn-danger btn-sm" onclick="memberDisconnect('${p.id}','${m.id}')">기관 연결 해제</button>` : `<span style="font-size:11px;color:var(--text-muted);white-space:nowrap">${dispD(m.disconnectedAt)}</span>`}
+      </div></div>`).join('')
+    : `<div class="empty-state" style="padding:28px 0"><div class="empty-icon">👥</div><div class="empty-text">아직 가입한 학부모가 없습니다.</div></div>`;
+  $('drawerBody').innerHTML = `
+    <div class="drawer-section"><div class="drawer-sec-title">기본 정보</div><div class="drawer-grid">
+      ${field('기관명', esc(p.org))}${field('반명', esc(p.cls))}${field('담임교사', esc(p.teacher))}${field('링크 상태', pBadge(p.status))}
+      ${field('링크 생성일', dispD(p.createdAt), true)}${field('링크 만료일', dispD(p.expiresAt)+ddayLabel(p.expiresAt,p.status==='active'), true)}
+      ${field('가입 학부모', `${joinedCount(p)}명`)}
+    </div></div>
+    <div class="drawer-section"><div class="drawer-sec-title">초대 링크 (반 마스터 링크)</div>
+      ${linkSection(p, p.status==='active', '아직 링크가 생성되지 않았습니다. (초대 링크는 앱에서 생성됩니다)')}
+    </div>
+    <div class="drawer-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div class="drawer-sec-title" style="margin-bottom:0">가입 학부모 ${joinedCount(p)}명</div>
+        ${p.members.length?`<button class="btn btn-ghost btn-sm" onclick="exportMembersCsv('${p.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>명단 다운로드</button>`:''}</div>
+      <div class="member-list" id="memberList">${memberHtml}</div>
+    </div>
+    ${historySection(p)}`;
+  const acts = {
+    active:  `<button class="btn btn-warn" onclick="parentStop('${p.id}')">링크 중단</button><button class="btn btn-ghost" onclick="parentExtend('${p.id}')">유효기간 연장 (+${EXTEND_DAYS}일)</button><button class="btn btn-primary" onclick="parentRegen('${p.id}')">링크 재생성</button>`,
+    stopped: `<button class="btn btn-ghost" onclick="parentReactivate('${p.id}')">다시 활성화</button><button class="btn btn-primary" onclick="parentRegen('${p.id}')">링크 재생성</button>`,
+    expired: `<button class="btn btn-primary" onclick="parentRegen('${p.id}')">링크 재생성</button>`,
+    none: ''
+  }[p.status];
+  $('drawerFoot').innerHTML = `<button class="btn btn-ghost" onclick="closeDrawer()">닫기</button>${acts}`;
+}
+function renderTeacherDrawer(t){
+  if(!t) return;
+  $('drawerTitle').textContent = `${t.org} · ${t.cls} ${t.role} 초대`;
+  $('drawerBody').innerHTML = `
+    <div class="drawer-section"><div class="drawer-sec-title">초대 정보</div><div class="drawer-grid">
+      ${field('기관명', esc(t.org))}${field('반', esc(t.cls))}${field('역할', esc(t.role))}${field('상태', tBadge(t.status))}
+      ${field('수신자/초대 대상', esc(t.target))}${field('초대한 사람', esc(t.invitedBy))}
+      ${field('발급일', dispD(t.issuedAt), true)}${field('만료일', dispD(t.expiresAt)+ddayLabel(t.expiresAt,t.status==='pending'), true)}
+      ${t.status==='used' ? field('가입자', esc(t.joinedName))+field('가입일', dispD(t.joinedAt), true) : ''}
+      ${field('재발송', t.resendCount ? `${t.resendCount}회 · 최근 ${dispDT(t.lastResentAt)}` : '없음')}
+    </div></div>
+    <div class="drawer-section"><div class="drawer-sec-title">초대 링크 (1회성)</div>
+      ${linkSection(t, t.status==='pending', '링크 없음')}
+    </div>
+    ${historySection(t)}`;
+  const acts = {
+    pending:   `<button class="btn btn-ghost" onclick="teacherResend('${t.id}')">재발송</button><button class="btn btn-ghost" onclick="teacherExtend('${t.id}')">유효기간 연장 (+${EXTEND_DAYS}일)</button><button class="btn btn-danger" onclick="teacherCancel('${t.id}')">초대 취소</button>`,
+    used:      '',
+    expired:   `<button class="btn btn-primary" onclick="teacherRegen('${t.id}')">링크 재생성</button>`,
+    cancelled: `<button class="btn btn-primary" onclick="teacherRegen('${t.id}')">링크 재생성</button>`
+  }[t.status];
+  $('drawerFoot').innerHTML = `<button class="btn btn-ghost" onclick="closeDrawer()">닫기</button>${acts}`;
+}
+
+// ── 공통 ───────────────────────────────────────────────────────────
+function toggleSubNav(el, subId){
+  const sub = document.getElementById(subId); if(!sub) return;
+  const isOpen = sub.style.display === 'block';
+  sub.style.display = isOpen ? 'none' : 'block';
+  const chev = el.querySelector('.nav-chevron'); if(chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
+function showToast(msg, ok=true){
+  const w = $('toastWrap'), t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<svg width="16" height="16" fill="none" stroke="${ok?'#10B981':'#F59E0B'}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity 0.3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),350); }, 3000);
+}
+
+window.addEventListener('DOMContentLoaded', () => { renderKpi(); applyOrgs(); });
+
 </script>
+<script src="nav-links.js"></script>
 </body>
 </html>

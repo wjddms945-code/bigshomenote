@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알림장 관리자 — 서비스 초대관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-base:#F4F5F7; --bg-surface:#FFFFFF;
+  --bg-sidebar:#1A1D2E; --bg-sidebar-hover:#252840; --bg-sidebar-active:#2E3250;
+  --accent-primary:#4361EE; --accent-primary-light:#EEF1FD;
+  --text-primary:#1A1D2E; --text-secondary:#6B7280; --text-muted:#9CA3AF; --text-sidebar:#C5C9D6;
+  --border-light:#E5E7EB; --border-medium:#D1D5DB;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.05); --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12); --shadow-modal:0 20px 60px rgba(0,0,0,0.18);
+  --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-xl:16px;
+  --sidebar-width:240px; --header-height:60px;
+  --green:#10B981; --red:#EF4444; --yellow:#F59E0B; --purple:#8B5CF6;
+}
+body { font-family:'Pretendard',-apple-system,sans-serif; background:var(--bg-base); color:var(--text-primary); font-size:14px; line-height:1.5; min-height:100vh; display:flex; }
+
+/* ── SIDEBAR ── */
+.sidebar { width:var(--sidebar-width); min-height:100vh; background:var(--bg-sidebar); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+.sidebar-logo { height:var(--header-height); display:flex; align-items:center; padding:0 20px; gap:10px; border-bottom:1px solid rgba(255,255,255,0.06); flex-shrink:0; }
+.logo-icon { width:32px; height:32px; background:var(--accent-primary); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:16px; }
+.logo-text { font-size:14px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+.logo-badge { font-size:10px; font-weight:500; color:var(--accent-primary); background:rgba(67,97,238,0.15); padding:2px 6px; border-radius:4px; margin-left:auto; }
+.sidebar-nav { flex:1; padding:12px 0; overflow-y:auto; }
+.nav-section-title { font-size:10px; font-weight:600; color:rgba(197,201,214,0.4); letter-spacing:1px; text-transform:uppercase; padding:12px 20px 6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 20px; color:var(--text-sidebar); cursor:pointer; font-size:13.5px; font-weight:400; transition:all 0.15s; position:relative; }
+.nav-item:hover { background:var(--bg-sidebar-hover); color:#fff; }
+.nav-item.active { background:var(--bg-sidebar-active); color:#fff; font-weight:500; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent-primary); border-radius:0 2px 2px 0; }
+.nav-icon { width:18px; height:18px; opacity:.75; flex-shrink:0; }
+.nav-item.active .nav-icon, .nav-item:hover .nav-icon { opacity:1; }
+.nav-badge { margin-left:auto; background:var(--accent-primary); color:#fff; font-size:10px; font-weight:600; padding:1px 6px; border-radius:10px; }
+.nav-badge.red { background:#EF4444; }
+.nav-sub { background:rgba(0,0,0,0.15); overflow:hidden; }
+.nav-sub .nav-item { padding-left:44px; font-size:13px; }
+.nav-sub .nav-item.active { background:rgba(67,97,238,0.22); color:#fff; font-weight:600; }
+.nav-sub .nav-item.active::before { display:none; }
+.sidebar-footer { padding:16px 20px; border-top:1px solid rgba(255,255,255,0.06); }
+.sidebar-user { display:flex; align-items:center; gap:10px; padding:8px; border-radius:var(--radius-md); cursor:pointer; transition:background 0.15s; }
+.sidebar-user:hover { background:var(--bg-sidebar-hover); }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#4361EE,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.user-name { font-size:13px; font-weight:600; color:#fff; }
+.user-role { font-size:11px; color:rgba(197,201,214,0.6); }
+
+/* ── MAIN ── */
+.main { margin-left:var(--sidebar-width); flex:1; display:flex; flex-direction:column; min-width:0; }
+.topbar { height:var(--header-height); background:var(--bg-surface); border-bottom:1px solid var(--border-light); display:flex; align-items:center; padding:0 24px; position:sticky; top:0; z-index:50; box-shadow:var(--shadow-sm); gap:8px; }
+.breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); }
+.breadcrumb-sep { color:var(--text-muted); }
+.breadcrumb-current { color:var(--text-primary); font-weight:600; }
+.topbar-actions { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.icon-btn { width:34px; height:34px; border:1px solid var(--border-light); border-radius:var(--radius-md); background:var(--bg-surface); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); transition:all 0.15s; position:relative; }
+.icon-btn:hover { background:var(--bg-base); }
+.notif-dot { position:absolute; top:6px; right:6px; width:6px; height:6px; background:#EF4444; border-radius:50%; border:1.5px solid #fff; }
+.topbar-divider { width:1px; height:20px; background:var(--border-light); margin:0 4px; }
+.topbar-profile { display:flex; align-items:center; gap:8px; padding:4px 10px; border-radius:var(--radius-md); cursor:pointer; transition:background 0.15s; }
+.topbar-profile:hover { background:var(--bg-base); }
+.profile-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#4361EE,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
+.profile-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+.content { padding:24px; flex:1; }
+
+/* ── KPI ── */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.kpi-card { background:var(--bg-surface); border:1.5px solid var(--border-light); border-radius:var(--radius-xl); padding:18px 20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; transition:all 0.18s; }
+.kpi-card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.kpi-top-bar { position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-label { font-size:11.5px; font-weight:600; color:var(--text-secondary); margin-bottom:8px; }
+.kpi-num { font-size:30px; font-weight:800; letter-spacing:-1.5px; line-height:1; margin-bottom:6px; }
+.kpi-sub { font-size:11.5px; color:var(--text-muted); }
+
+/* ── TABS ── */
+.tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border-light); margin-bottom:20px; }
+.tab { padding:10px 20px; font-size:13.5px; font-weight:500; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; display:flex; align-items:center; gap:6px; }
+.tab:hover { color:var(--text-primary); }
+.tab.active { color:var(--accent-primary); font-weight:700; border-bottom-color:var(--accent-primary); }
+.tab-count { font-size:11px; font-weight:700; padding:1px 6px; border-radius:10px; background:var(--accent-primary-light); color:var(--accent-primary); }
+.tab.active .tab-count { background:var(--accent-primary); color:#fff; }
+
+/* ── SECTION HEADER ── */
+.sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.sec-title-wrap { display:flex; align-items:center; gap:8px; }
+.sec-bar { width:4px; height:18px; background:var(--accent-primary); border-radius:2px; flex-shrink:0; }
+.sec-title { font-size:15px; font-weight:800; letter-spacing:-0.2px; }
+.sec-actions { display:flex; gap:8px; align-items:center; }
+
+/* ── FILTER BAR ── */
+.filter-bar { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; background:var(--bg-surface); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:12px 16px; }
+.fsel-wrap { position:relative; }
+.fsel-wrap::after { content:''; position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text-muted); }
+.fsel { height:34px; padding:0 28px 0 11px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); font-size:12.5px; background:var(--bg-surface); appearance:none; font-family:inherit; cursor:pointer; color:var(--text-primary); min-width:120px; transition:border 0.15s; }
+.fsel:focus { outline:none; border-color:var(--accent-primary); }
+.search-wrap { display:flex; align-items:center; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-surface); height:34px; flex:1; max-width:280px; overflow:hidden; transition:border 0.15s; }
+.search-wrap:focus-within { border-color:var(--accent-primary); }
+.search-inp { flex:1; border:none; padding:0 11px; font-size:12.5px; outline:none; font-family:inherit; color:var(--text-primary); }
+.search-btn { width:36px; height:34px; background:var(--accent-primary); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
+.search-btn:hover { background:#3251D5; }
+.filter-reset { height:34px; padding:0 12px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-surface); font-size:12px; font-family:inherit; cursor:pointer; color:var(--text-secondary); transition:all 0.15s; }
+.filter-reset:hover { background:var(--bg-base); }
+.filter-actions { margin-left:auto; display:flex; gap:8px; }
+
+/* ── TABLE ── */
+.table-card { background:var(--bg-surface); border:1px solid var(--border-light); border-radius:var(--radius-xl); overflow:hidden; box-shadow:var(--shadow-sm); }
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+thead th { padding:10px 12px; font-size:11.5px; font-weight:700; color:var(--text-muted); text-align:left; border-bottom:1.5px solid var(--border-light); white-space:nowrap; background:#FAFAFA; letter-spacing:0.3px; }
+thead th:first-child { padding-left:16px; }
+tbody td { padding:12px; font-size:13px; border-bottom:1px solid var(--border-light); vertical-align:middle; }
+tbody td:first-child { padding-left:16px; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:#FBFCFF; }
+.tbl-note { padding:12px 18px; font-size:11.5px; color:var(--text-muted); border-top:1px solid var(--border-light); line-height:1.9; }
+
+/* ── BADGES ── */
+.status-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:700; white-space:nowrap; }
+.sdot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.s-active  { background:#D1FAE5; color:#065F46; } .s-active .sdot  { background:#10B981; }
+.s-expired { background:#FEE2E2; color:#991B1B; } .s-expired .sdot { background:#EF4444; }
+.s-used    { background:#DBEAFE; color:#1E40AF; } .s-used .sdot    { background:#3B82F6; }
+.s-pending { background:#FEF3C7; color:#92400E; } .s-pending .sdot { background:#F59E0B; }
+.s-stopped { background:#F3F4F6; color:#374151; } .s-stopped .sdot { background:#9CA3AF; }
+.type-badge { padding:2px 8px; border-radius:5px; font-size:11px; font-weight:700; }
+.t-teacher { background:#DBEAFE; color:#1E40AF; }
+.t-parent  { background:#EDE9FE; color:#5B21B6; }
+.route-tag { font-size:11px; font-weight:600; padding:2px 7px; border-radius:5px; }
+.r-kakao { background:#FEF3C7; color:#92400E; }
+.r-sms   { background:#D1FAE5; color:#065F46; }
+.r-link  { background:#DBEAFE; color:#1E40AF; }
+
+/* ── ACTION BUTTONS ── */
+.btn { height:32px; padding:0 14px; border-radius:var(--radius-md); font-size:12px; font-weight:700; cursor:pointer; border:none; font-family:inherit; transition:all 0.15s; display:inline-flex; align-items:center; gap:5px; }
+.btn-primary { background:var(--accent-primary); color:#fff; }
+.btn-primary:hover { background:#3251D5; }
+.btn-ghost { background:#F3F4F6; color:#374151; border:1px solid var(--border-light); }
+.btn-ghost:hover { background:#E5E7EB; }
+.btn-danger { background:#FEE2E2; color:#991B1B; }
+.btn-danger:hover { background:#fca5a5; }
+.btn-warn { background:#FEF3C7; color:#92400E; }
+.btn-warn:hover { background:#fde68a; }
+.btn-sm { height:28px; padding:0 10px; font-size:11.5px; }
+.btn-lg { height:38px; padding:0 20px; font-size:13.5px; }
+
+/* ── LINK CELL ── */
+.link-cell { display:flex; align-items:center; gap:6px; max-width:220px; }
+.link-url { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+.copy-btn { flex-shrink:0; width:24px; height:24px; background:var(--accent-primary-light); border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.copy-btn:hover { background:var(--accent-primary); }
+.copy-btn:hover svg { stroke:#fff; }
+.expired-link { color:var(--text-muted); font-size:11.5px; font-style:italic; }
+
+/* ── PROGRESS BAR ── */
+.prog-wrap { display:flex; align-items:center; gap:8px; }
+.prog-bar { flex:1; height:5px; background:#E5E7EB; border-radius:3px; overflow:hidden; min-width:60px; }
+.prog-fill { height:100%; border-radius:3px; transition:width 0.3s; }
+.prog-text { font-size:11.5px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+
+/* ── TOGGLE ── */
+.toggle { position:relative; width:36px; height:20px; cursor:pointer; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:#D1D5DB; border-radius:20px; transition:0.2s; }
+.toggle-slider::before { content:''; position:absolute; width:14px; height:14px; left:3px; top:3px; background:#fff; border-radius:50%; transition:0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+.toggle input:checked + .toggle-slider { background:var(--accent-primary); }
+.toggle input:checked + .toggle-slider::before { transform:translateX(16px); }
+
+/* ── DETAIL DRAWER ── */
+.drawer-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,28,0.32); backdrop-filter:blur(2px); z-index:1000; align-items:flex-start; justify-content:flex-end; }
+.drawer-overlay.show { display:flex; }
+.drawer { width:520px; height:100vh; background:#fff; box-shadow:-4px 0 24px rgba(0,0,0,0.10); display:flex; flex-direction:column; animation:slideIn 0.24s cubic-bezier(0.34,1.08,0.64,1); border-left:1px solid var(--border-light); }
+@keyframes slideIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+.drawer-hd { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border-light); flex-shrink:0; }
+.drawer-title { font-size:15px; font-weight:700; }
+.drawer-x { width:28px; height:28px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--text-muted); transition:all 0.15s; }
+.drawer-x:hover { background:#F3F4F6; color:var(--text-primary); }
+.drawer-body { flex:1; overflow-y:auto; padding:0; }
+.drawer-body::-webkit-scrollbar { width:3px; }
+.drawer-body::-webkit-scrollbar-thumb { background:#E5E7EB; border-radius:4px; }
+.drawer-section { padding:16px 20px; border-bottom:1px solid var(--border-light); }
+.drawer-section:last-child { border-bottom:none; }
+.drawer-sec-title { font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; }
+.drawer-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.drawer-field { display:flex; flex-direction:column; gap:4px; }
+.drawer-field.full { grid-column:1/-1; }
+.drawer-label { font-size:11px; color:var(--text-muted); font-weight:500; }
+.drawer-val { font-size:13px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:6px; }
+.drawer-foot { padding:14px 20px; border-top:1px solid var(--border-light); display:flex; gap:8px; justify-content:flex-end; flex-shrink:0; background:#fff; }
+
+/* ── MEMBER LIST IN DRAWER ── */
+.member-list { display:flex; flex-direction:column; }
+.member-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #F3F4F6; }
+.member-item:last-child { border-bottom:none; }
+.member-av { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; flex-shrink:0; }
+.member-info { flex:1; min-width:0; }
+.member-name { font-size:13px; font-weight:600; }
+.member-meta { font-size:11px; color:var(--text-muted); }
+.member-date { font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+
+/* ── LINK BOX ── */
+.link-box { background:#F4F5F7; border:1px solid var(--border-light); border-radius:var(--radius-md); padding:10px 14px; display:flex; align-items:center; gap:10px; }
+.link-box-url { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent-primary); flex:1; word-break:break-all; }
+.link-box.expired { opacity:.5; }
+.link-box.expired .link-box-url { color:var(--text-muted); text-decoration:line-through; }
+
+/* ── STATUS INFO CARD ── */
+.info-banner { display:flex; align-items:flex-start; gap:10px; background:#EEF1FD; border:1px solid #C7D2FB; border-radius:var(--radius-md); padding:10px 14px; font-size:12.5px; color:#3730A3; line-height:1.6; margin-bottom:14px; }
+.warn-banner { background:#FEF3C7; border-color:#FDE68A; color:#92400E; }
+
+/* ── CONFIRM MODAL ── */
+.cm-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,28,0.5); backdrop-filter:blur(4px); z-index:2000; align-items:center; justify-content:center; }
+.cm-overlay.show { display:flex; }
+.cm-box { background:#fff; border-radius:var(--radius-xl); width:400px; padding:28px; box-shadow:var(--shadow-modal); animation:popIn 0.22s cubic-bezier(0.34,1.1,0.64,1); }
+@keyframes popIn { from { transform:scale(0.92) translateY(12px); opacity:0; } to { transform:scale(1) translateY(0); opacity:1; } }
+.cm-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:14px; }
+.cm-title { font-size:16px; font-weight:800; margin-bottom:8px; }
+.cm-desc { font-size:13px; color:var(--text-secondary); line-height:1.65; margin-bottom:20px; }
+.cm-btns { display:flex; gap:8px; justify-content:flex-end; }
+.cm-btn { height:38px; padding:0 18px; border-radius:var(--radius-md); font-size:13px; font-weight:700; cursor:pointer; border:none; font-family:inherit; transition:all 0.15s; }
+.cm-cancel { background:#F3F4F6; color:#374151; } .cm-cancel:hover { background:#E5E7EB; }
+.cm-ok-danger { background:#EF4444; color:#fff; } .cm-ok-danger:hover { background:#dc2626; }
+.cm-ok-primary { background:var(--accent-primary); color:#fff; } .cm-ok-primary:hover { background:#3251D5; }
+.cm-ok-warn { background:#F59E0B; color:#fff; } .cm-ok-warn:hover { background:#D97706; }
+
+/* ── TOAST ── */
+.toast-wrap { position:fixed; bottom:24px; right:24px; z-index:3000; display:flex; flex-direction:column; gap:8px; }
+.toast { display:flex; align-items:center; gap:10px; padding:12px 18px; background:#1A1D2E; color:#fff; border-radius:var(--radius-lg); font-size:13px; font-weight:500; box-shadow:var(--shadow-lg); min-width:240px; animation:toastIn 0.22s ease; }
+@keyframes toastIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+
+/* ── EMPTY STATE ── */
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px; color:var(--text-muted); gap:8px; }
+.empty-icon { font-size:36px; margin-bottom:4px; opacity:.5; }
+.empty-text { font-size:13.5px; font-weight:600; color:var(--text-secondary); }
+.empty-sub { font-size:12px; }
+
+/* 사이드바 내의 a 태그 스타일 초기화 */
+.nav-sub a.nav-item {
+  text-decoration: none; /* 밑줄 제거 */
+  color: var(--text-sidebar); /* 기존 사이드바 글자색 유지 */
+  display: block; /* 클릭 영역을 가로로 꽉 차게 설정 */
+}
+
+/* 마우스를 올렸을 때나 활성화되었을 때 스타일 */
+.nav-sub a.nav-item:hover {
+  color: #ffffff; /* 마우스 올리면 흰색으로 */
+}
+
+.nav-sub a.nav-item.active {
+  color: #ffffff; /* 활성화된 메뉴는 흰색 유지 */
+  background-color: var(--bg-sidebar-active); /* 배경색 강조 */
+}
+
+/* ── 초대 관리 추가 (기존 토큰 재사용) ── */
+.s-none   { background:#fff; color:#6B7280; border:1px dashed #D1D5DB; } .s-none .sdot { background:#D1D5DB; }
+.s-cancel { background:#E5E7EB; color:#374151; } .s-cancel .sdot { background:#6B7280; }
+.pagination-area { display:flex; align-items:center; justify-content:space-between; padding:13px 20px; border-top:1px solid var(--border-light); gap:12px; flex-wrap:wrap; }
+.pg-info { font-size:12.5px; color:var(--text-secondary); }
+.pagination { display:flex; align-items:center; gap:3px; }
+.pg-btn { min-width:30px; height:30px; padding:0 6px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light); border-radius:var(--radius-sm); font-size:12.5px; cursor:pointer; color:var(--text-secondary); background:var(--bg-surface); transition:all .15s; font-family:inherit; }
+.pg-btn:hover { background:var(--bg-base); color:var(--text-primary); }
+.pg-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-weight:700; }
+.pg-btn:disabled { opacity:.38; cursor:not-allowed; }
+.drawer { width:640px; max-width:100vw; }
+
+/* ── 서비스 초대관리 ── */
+.kpi-click { cursor:pointer; }
+.kpi-card.sel { border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(67,97,238,0.12); }
+.fdate { min-width:0; padding:0 8px; }
+.fm-box { width:480px; max-width:calc(100vw - 32px); max-height:92vh; overflow-y:auto; }
+.fm-field { margin-bottom:12px; }
+.fm-field > label { display:block; font-size:12px; font-weight:700; color:#374151; margin-bottom:5px; }
+.req { color:#EF4444; }
+.fm-inp { width:100%; height:36px; padding:0 11px; border:1.5px solid var(--border-medium); border-radius:var(--radius-md); font-size:13px; font-family:inherit; color:var(--text-primary); }
+.fm-inp:focus { outline:none; border-color:var(--accent-primary); }
+.fm-err { font-size:11.5px; color:#EF4444; margin-top:4px; min-height:0; }
+.fm-radio { display:flex; gap:18px; font-size:13px; }
+.fm-radio label { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.fm-note { font-size:11.5px; color:var(--text-muted); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏫</div>
+    <div class="logo-text">알림장 Admin</div>
+    <div class="logo-badge">v2.4</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인</div>
+    <div class="nav-item " onclick="location.href='dashboard.html'" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      Home (대시보드)
+    </div>
+
+    <div class="nav-section-title">관리</div>
+
+<div class="nav-item" onclick="location.href='common-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+  공통관리
+</div>
+
+    <div class="nav-item " onclick="toggleSubNav(this,'sub-member')" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+      회원/승인관리
+      <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">3</span>
+      <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="nav-sub" id="sub-member" style="display:none">
+      <div class="nav-item " onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
+      <div class="nav-item " onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
+    </div>
+
+    <div class="nav-item active" onclick="toggleSubNav(this,'sub-org')" style="cursor:pointer">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      기관/승인관리
+      <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
+      <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="nav-sub" id="sub-org" style="display:block">
+      <div class="nav-item " onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
+      <div class="nav-item " onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
+      <div class="nav-item " onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+      <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0;transform:rotate(90deg)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      <div id="sub-invite" style="display:block;background:rgba(0,0,0,0.12)">
+        <div class="nav-item active" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+        <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+      </div>
+    </div>
+
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
+</div>
+
+<div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+  운영도구
+</div>
+
+<div class="nav-item" onclick="location.href='site-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+  사이트관리
+</div>
+
+<div class="nav-item" onclick="location.href='stats-admin.html'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  통계관리
+</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user" onclick="showToast('프로필 설정 화면으로 이동합니다.')" style="cursor:pointer">
+      <div class="user-avatar">관</div>
+      <div class="user-info" style="flex:1;min-width:0">
+        <div class="user-name">슈퍼 관리자</div>
+        <div class="user-role">admin@kidkids.kr</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="breadcrumb">
+      <span>기관/승인관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>초대관리</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">서비스 초대관리</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+      <button class="icon-btn" style="position:relative"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="notif-dot"></span></button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-profile">
+        <div class="profile-avatar">관</div>
+        <span style="font-size:13px;font-weight:600;color:var(--text-primary)">슈퍼 관리자</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- 상단: 화면명 + 서비스 초대하기 -->
+    <div class="sec-head" style="margin-bottom:6px">
+      <div class="sec-title-wrap"><div class="sec-bar"></div><div class="sec-title" style="font-size:18px">서비스 초대관리</div></div>
+      <div class="sec-actions"><button class="btn btn-primary btn-lg" id="btnInvite" onclick="openInviteModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 5v14M5 12h14"/></svg>서비스 초대하기</button></div>
+    </div>
+    <div style="font-size:12.5px;color:var(--text-secondary);margin:0 0 18px 12px">NEW 알림장 서비스를 아직 이용하지 않는 기관에 가입 초대장을 발송하고, 발송 및 가입 진행 현황을 관리합니다.</div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-click" id="kpi_all" onclick="kpiFilter('')"><div class="kpi-top-bar" style="background:#4361EE"></div><div class="kpi-label">전체 발송</div><div class="kpi-num" id="kpiAll" style="color:#4361EE">0</div><div class="kpi-sub" id="kpiAllSub">건</div></div>
+      <div class="kpi-card kpi-click" id="kpi_pending" onclick="kpiFilter('pending')"><div class="kpi-top-bar" style="background:#F59E0B"></div><div class="kpi-label">수락 대기</div><div class="kpi-num" id="kpiPending" style="color:#F59E0B">0</div><div class="kpi-sub">건</div></div>
+      <div class="kpi-card kpi-click" id="kpi_joined" onclick="kpiFilter('joined')"><div class="kpi-top-bar" style="background:#10B981"></div><div class="kpi-label">가입 완료</div><div class="kpi-num" id="kpiJoined" style="color:#10B981">0</div><div class="kpi-sub">건</div></div>
+      <div class="kpi-card kpi-click" id="kpi_expired" onclick="kpiFilter('expired')"><div class="kpi-top-bar" style="background:#EF4444"></div><div class="kpi-label">기간 만료</div><div class="kpi-num" id="kpiExpired" style="color:#EF4444">0</div><div class="kpi-sub">건</div></div>
+    </div>
+
+    <!-- 검색 / 필터 -->
+    <div class="filter-bar">
+      <div class="search-wrap"><input class="search-inp" id="fOrg" placeholder="기관명 검색" onkeydown="if(event.key==='Enter')applyInv()"><button class="search-btn" title="검색" onclick="applyInv()"><svg width="14" height="14" fill="none" stroke="#fff" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button></div>
+      <div class="fsel-wrap" id="fTypeWrap" style="display:none"><select class="fsel" id="fType" onchange="applyInv()"><option value="">기관 유형</option></select></div>
+      <div class="fsel-wrap"><select class="fsel" id="fStatus" onchange="applyInv()"><option value="">초대 상태 전체</option><option value="pending">수락 대기</option><option value="joined">가입 완료</option><option value="expired">기간 만료</option><option value="cancelled">취소</option></select></div>
+      <span style="font-size:12px;color:var(--text-secondary);margin-left:4px">발송일</span>
+      <input type="date" class="fsel fdate" id="fFrom" onchange="applyInv()">
+      <span style="color:var(--text-muted)">~</span>
+      <input type="date" class="fsel fdate" id="fTo" onchange="applyInv()">
+      <button class="btn btn-primary" style="height:34px" onclick="applyInv()">검색</button>
+      <button class="filter-reset" onclick="resetInv()">초기화</button>
+      <span id="invCount" style="margin-left:auto;font-size:12px;color:var(--text-muted)"></span>
+    </div>
+
+    <!-- 초대 내역 -->
+    <div class="table-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>기관명</th><th>대표자</th><th>연락처</th><th>발송 수단</th><th>발송일</th><th>초대 상태</th><th>가입 완료일</th><th>관리</th></tr></thead>
+        <tbody id="invTbody"></tbody>
+      </table></div>
+      <div id="invEmpty" class="empty-state" style="display:none"><div class="empty-icon">✉️</div><div class="empty-text" id="invEmptyText"></div><div class="empty-sub" id="invEmptySub"></div></div>
+      <div class="tbl-note">서비스 초대와 기관 가입 승인은 별도 절차입니다. 초대 수락·가입만으로 기관이 자동 승인되지 않으며, 가입 후 승인은 <b>기관 승인 관리</b>에서 처리합니다. 초대 유효기간과 가입 완료 판정 기준은 확정 전이라 샘플 상태값으로 표시합니다.</div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══ 초대 상세 DRAWER ══ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this)closeDrawer()">
+  <div class="drawer">
+    <div class="drawer-hd"><div class="drawer-title" id="drawerTitle">초대 상세</div><button class="drawer-x" onclick="closeDrawer()">✕</button></div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-foot" id="drawerFoot"></div>
+  </div>
+</div>
+
+<!-- ══ 서비스 초대하기 MODAL ══ -->
+<div class="cm-overlay" id="fmOverlay" onclick="if(event.target===this)closeInviteModal()">
+  <div class="cm-box fm-box">
+    <div class="cm-title" style="font-size:17px">서비스 초대하기</div>
+    <div class="cm-desc" style="margin-bottom:14px">NEW 알림장 서비스를 이용하지 않는 기관의 대표자(원장)에게 가입 초대장을 발송합니다.</div>
+    <div class="fm-field"><label>기관명 <b class="req">*</b></label><input class="fm-inp" id="fmOrg" maxlength="50" placeholder="예) 햇살 어린이집" oninput="fmDupCheck()"><div class="fm-err" id="errOrg"></div></div>
+    <div id="fmDup" class="info-banner warn-banner" style="display:none"></div>
+    <div class="fm-field"><label>대표자명 <b class="req">*</b></label><input class="fm-inp" id="fmName" maxlength="20" placeholder="초대를 받을 대표자(원장) 이름"><div class="fm-err" id="errName"></div></div>
+    <div class="fm-field"><label>발송 수단 <b class="req">*</b></label>
+      <div class="fm-radio"><label><input type="radio" name="fmVia" value="이메일" checked onchange="fmViaChange()"> 이메일</label><label><input type="radio" name="fmVia" value="SMS" onchange="fmViaChange()"> SMS</label></div></div>
+    <div class="fm-field"><label>이메일 <b class="req" id="reqEmail">*</b></label><input class="fm-inp" id="fmEmail" maxlength="80" placeholder="name@example.com"><div class="fm-err" id="errEmail"></div></div>
+    <div class="fm-field"><label>휴대폰 <b class="req" id="reqPhone" style="display:none">*</b></label><input class="fm-inp" id="fmPhone" maxlength="13" placeholder="010-0000-0000"><div class="fm-err" id="errPhone"></div></div>
+    <div class="fm-note">프로토타입에서는 실제 이메일/SMS가 발송되지 않고 발송 완료 처리만 됩니다. 초대 수락만으로 기관 가입이 자동 승인되지 않으며, 가입 후 승인은 기관 승인 관리 정책을 따릅니다.</div>
+    <div class="cm-btns" style="margin-top:16px">
+      <button class="cm-btn cm-cancel" onclick="closeInviteModal()">취소</button>
+      <button class="cm-btn cm-ok-primary" id="fmSend" onclick="submitInvite()">초대 발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="cm-overlay" id="cmOverlay" onclick="if(event.target===this)closeCm()" style="z-index:2100">
+  <div class="cm-box">
+    <div class="cm-icon" id="cmIcon"></div>
+    <div class="cm-title" id="cmTitle"></div>
+    <div class="cm-desc" id="cmDesc"></div>
+    <div class="cm-btns">
+      <button class="cm-btn cm-cancel" onclick="closeCm()">취소</button>
+      <button class="cm-btn" id="cmOk" onclick="execCm()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// 서비스 초대관리 (슈퍼관리자 프로토타입)
+//  - NEW 알림장 서비스 미이용 기관에 가입 초대장 발송 + 발송/가입 진행 현황 관리 (기관 가입 승인은 별도: 기관 승인 관리)
+//  - 실제 이메일/SMS 발송·API·DB 연동 없음. 상태/유효기간/가입 판정 기준은 확정 전이라 샘플 상태값 사용
+//  - status: pending(수락 대기) / joined(가입 완료) / expired(기간 만료) / cancelled(취소)
+//  - 가입 완료 판정은 향후 실제 가입정보(joinedAt, orgId)와 연결 → 현재는 joinedAt 샘플값
+// ══════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ST = {
+  pending:   { label:'수락 대기', cls:'s-pending', desc:'초대 발송 후 가입이 완료되지 않은 상태입니다.' },
+  joined:    { label:'가입 완료', cls:'s-active',  desc:'초대 대상이 가입 절차를 완료한 상태입니다. 기관 가입 승인은 기관 승인 관리에서 별도로 처리됩니다.' },
+  expired:   { label:'기간 만료', cls:'s-expired', desc:'초대 유효기간이 경과한 상태입니다. 새 초대 발송 방식으로 처리합니다.' },
+  cancelled: { label:'취소',      cls:'s-cancel',  desc:'관리자가 초대를 취소한 상태입니다. 재발송할 수 없습니다.' },
+};
+
+// 샘플 초대 이력 (최신순 정렬은 화면에서 처리)
+const INVITES = [
+  { id:1,  org:'햇살 어린이집',   name:'김지연', email:'jy.kim@sunshine-kids.kr', phone:'',              via:'이메일', sentAt:'2026-11-12 10:20', status:'pending', resends:[] },
+  { id:2,  org:'별빛 유치원',     name:'박서준', email:'',                        phone:'010-3456-7788', via:'SMS',    sentAt:'2026-11-10 15:05', status:'pending', resends:['2026-11-13 09:30'] },
+  { id:3,  org:'푸른숲 어린이집', name:'이하늘', email:'sky@bluewood.or.kr',      phone:'',              via:'이메일', sentAt:'2026-11-03 11:40', status:'joined',  joinedAt:'2026-11-05 14:12', resends:[] },
+  { id:4,  org:'달님 유치원',     name:'최민아', email:'',                        phone:'010-2211-9034', via:'SMS',    sentAt:'2026-10-28 09:10', status:'joined',  joinedAt:'2026-10-28 18:45', resends:[] },
+  { id:5,  org:'새싹 어린이집',   name:'정다은', email:'daeun@saessak.kr',        phone:'',              via:'이메일', sentAt:'2026-10-15 13:00', status:'expired', resends:[] },
+  { id:6,  org:'무지개 어린이집', name:'한유진', email:'',                        phone:'010-7788-1200', via:'SMS',    sentAt:'2026-10-09 16:22', status:'cancelled', cancelledAt:'2026-10-11 10:03', resends:[] },
+  { id:7,  org:'꿈나라 유치원',   name:'오세훈', email:'ohsh@dreamland.kr',       phone:'',              via:'이메일', sentAt:'2026-09-30 10:00', status:'expired', resends:[] },
+  { id:8,  org:'해님 어린이집',   name:'윤지아', email:'',                        phone:'010-9090-3344', via:'SMS',    sentAt:'2026-09-21 14:30', status:'joined',  joinedAt:'2026-09-23 10:05', resends:[] },
+  { id:9,  org:'우리들 어린이집', name:'강태민', email:'tm.kang@urideul.kr',      phone:'',              via:'이메일', sentAt:'2026-09-12 09:45', status:'pending', resends:[] },
+  { id:10, org:'구름 유치원',     name:'신혜원', email:'hw.shin@cloudkg.kr',      phone:'',              via:'이메일', sentAt:'2026-08-29 11:15', status:'cancelled', cancelledAt:'2026-09-01 09:20', resends:[] },
+  { id:11, org:'새싹 어린이집',   name:'정다은', email:'daeun@saessak.kr',        phone:'',              via:'이메일', sentAt:'2026-11-14 09:00', status:'pending', resends:[] },
+  { id:12, org:'은하 유치원',     name:'조은서', email:'',                        phone:'010-5566-7788', via:'SMS',    sentAt:'2026-11-14 13:40', status:'pending', resends:[] },
+];
+let nextId = 13;
+
+const lastSent = r => (r.resends.length ? r.resends[r.resends.length - 1] : r.sentAt);
+const contactOf = r => r.via === 'SMS' ? r.phone : r.email;
+const typeOf = n => /유치원\s*$/.test(n) ? '유치원' : /어린이집\s*$/.test(n) ? '어린이집' : '';   // 기관명에서 확인되는 유형만 사용(임의 구분값 없음)
+const norm = s => String(s).replace(/\s+/g, '').toLowerCase();
+function nowStr() { const d = new Date(), p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+
+// ── KPI ────────────────────────────────────────────────────────────
+function renderKpi() {
+  const c = s => INVITES.filter(r => r.status === s).length;
+  $('kpiAll').textContent = INVITES.length;               // 취소 건 포함 (이력 전체)
+  $('kpiAllSub').textContent = '건 · 취소 ' + c('cancelled') + '건 포함';
+  $('kpiPending').textContent = c('pending'); $('kpiJoined').textContent = c('joined'); $('kpiExpired').textContent = c('expired');
+  const cur = $('fStatus').value;
+  ['all','pending','joined','expired'].forEach(k => $('kpi_' + k).classList.toggle('sel', (k === 'all' ? '' : k) === cur));
+}
+function kpiFilter(s) { $('fStatus').value = s; applyInv(); }
+
+// ── 필터 / 목록 ────────────────────────────────────────────────────
+function buildTypeFilter() {                              // 실제 데이터에 존재하는 유형만 노출
+  const types = [...new Set(INVITES.map(r => typeOf(r.org)).filter(Boolean))].sort();
+  const sel = $('fType'), cur = sel.value;
+  sel.innerHTML = '<option value="">기관 유형</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+  sel.value = types.includes(cur) ? cur : '';
+  $('fTypeWrap').style.display = types.length ? '' : 'none';
+}
+function getFiltered() {
+  const q = norm($('fOrg').value), tp = $('fType').value, st = $('fStatus').value, from = $('fFrom').value, to = $('fTo').value;
+  return INVITES.filter(r => {
+    if (q && !norm(r.org).includes(q)) return false;
+    if (tp && typeOf(r.org) !== tp) return false;
+    if (st && r.status !== st) return false;
+    const d = r.sentAt.slice(0, 10);
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    return true;
+  }).sort((a, b) => lastSent(b).localeCompare(lastSent(a)) || b.id - a.id);
+}
+function applyInv() {
+  buildTypeFilter();
+  const rows = getFiltered();
+  $('invCount').textContent = '총 ' + rows.length + '건';
+  $('invTbody').innerHTML = rows.map(rowHtml).join('');
+  const none = rows.length === 0, any = INVITES.length > 0;
+  $('invEmpty').style.display = none ? 'flex' : 'none';
+  $('invTbody').closest('.table-wrap').style.display = none ? 'none' : '';
+  $('invEmptyText').textContent = any ? '조건에 맞는 초대 내역이 없습니다.' : '발송한 서비스 초대가 없습니다.';
+  $('invEmptySub').textContent = any ? '검색어·필터를 변경하거나 초기화해 주세요.' : '우측 상단 「서비스 초대하기」로 첫 초대를 발송해 보세요.';
+  renderKpi();
+}
+function resetInv() { $('fOrg').value = ''; $('fType').value = ''; $('fStatus').value = ''; $('fFrom').value = ''; $('fTo').value = ''; applyInv(); }
+function actionBtns(r) {
+  let h = `<button class="btn btn-ghost btn-sm" onclick="openDetail(${r.id})">상세</button>`;
+  if (r.status === 'pending') h += ` <button class="btn btn-primary btn-sm" onclick="resendInvite(${r.id})">재발송</button> <button class="btn btn-danger btn-sm" onclick="cancelInvite(${r.id})">취소</button>`;
+  else if (r.status === 'expired') h += ` <button class="btn btn-primary btn-sm" onclick="reinvite(${r.id})">새 초대</button>`;
+  return h;
+}
+function rowHtml(r) {
+  const s = ST[r.status], t = typeOf(r.org), via = r.via === 'SMS' ? 'r-sms' : 'r-link';
+  return `<tr data-id="${r.id}">
+    <td><div style="font-weight:700">${esc(r.org)}</div>${t ? `<div style="font-size:11px;color:var(--text-muted)">${t}</div>` : ''}</td>
+    <td>${esc(r.name)}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${esc(contactOf(r))}</td>
+    <td><span class="route-tag ${via}">${r.via}</span></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap">${r.sentAt}${r.resends.length ? `<div style="font-size:10.5px;color:var(--text-muted)">재발송 ${r.resends.length}회 · ${r.resends[r.resends.length - 1].slice(0, 10)}</div>` : ''}</td>
+    <td><span class="status-badge ${s.cls}"><span class="sdot"></span>${s.label}</span></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap">${r.joinedAt ? r.joinedAt : '<span style="color:var(--text-muted)">—</span>'}</td>
+    <td style="white-space:nowrap">${actionBtns(r)}</td>
+  </tr>`;
+}
+
+// ── 상세 ───────────────────────────────────────────────────────────
+let detailId = null;
+function logOf(r) {                                       // 초대 처리 내역(이력은 삭제하지 않음) — 최신순
+  const L = [{ at: r.sentAt, text: '초대 발송 (' + r.via + ' · ' + contactOf(r) + ')' }];
+  r.resends.forEach(a => L.push({ at: a, text: '초대 재발송 (' + r.via + ')' }));
+  if (r.joinedAt) L.push({ at: r.joinedAt, text: '초대 대상이 가입을 완료함' });
+  if (r.cancelledAt) L.push({ at: r.cancelledAt, text: '관리자가 초대를 취소함' });
+  if (r.status === 'expired') L.push({ at: '', text: '초대 유효기간 경과로 기간 만료 처리' });
+  return L.sort((a, b) => (b.at || '9').localeCompare(a.at || '9'));
+}
+function openDetail(id) {
+  const r = INVITES.find(x => x.id === id); if (!r) return; detailId = id;
+  const s = ST[r.status], t = typeOf(r.org);
+  const f = (l, v, full) => `<div class="drawer-field${full ? ' full' : ''}"><div class="drawer-label">${l}</div><div class="drawer-val">${v}</div></div>`;
+  $('drawerTitle').textContent = '초대 상세 — ' + r.org;
+  $('drawerBody').innerHTML = `
+    <div class="drawer-section">
+      <div class="info-banner${r.status === 'expired' || r.status === 'cancelled' ? ' warn-banner' : ''}"><span>ℹ️</span><span><b>${s.label}</b> — ${s.desc}</span></div>
+      <div class="drawer-sec-title">초대 정보</div>
+      <div class="drawer-grid">
+        ${f('기관명', esc(r.org) + (t ? ` <span class="type-badge t-teacher">${t}</span>` : ''), true)}
+        ${f('대표자명', esc(r.name))}
+        ${f('발송 수단', `<span class="route-tag ${r.via === 'SMS' ? 'r-sms' : 'r-link'}">${r.via}</span>`)}
+        ${f('이메일', r.email ? esc(r.email) : '<span style="color:var(--text-muted)">—</span>')}
+        ${f('휴대폰', r.phone ? esc(r.phone) : '<span style="color:var(--text-muted)">—</span>')}
+        ${f('발송일', r.sentAt)}
+        ${f('초대 상태', `<span class="status-badge ${s.cls}"><span class="sdot"></span>${s.label}</span>`)}
+        ${f('가입 완료일', r.joinedAt || '<span style="color:var(--text-muted)">—</span>')}
+        ${f('유효기간', '<span style="color:var(--text-muted)">미정 (확정 전)</span>')}
+      </div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-sec-title">초대 처리 내역</div>
+      <div class="member-list">${logOf(r).map(x => `<div class="member-item"><div class="member-info"><div class="member-name" style="font-weight:500">${esc(x.text)}</div></div><div class="member-date">${x.at || '—'}</div></div>`).join('')}</div>
+    </div>
+    <div class="drawer-section"><div class="tbl-note" style="border:none;padding:0">서비스 초대와 기관 가입 승인은 별도 절차입니다. 가입 후 승인은 기관 승인 관리에서 처리되며, 이 화면에서는 승인 처리를 하지 않습니다.</div></div>`;
+  let foot = '<button class="btn btn-ghost" onclick="closeDrawer()">닫기</button>';
+  if (r.status === 'pending') foot += ` <button class="btn btn-danger" onclick="cancelInvite(${r.id})">초대 취소</button> <button class="btn btn-primary" onclick="resendInvite(${r.id})">재발송</button>`;
+  else if (r.status === 'expired') foot += ` <button class="btn btn-primary" onclick="reinvite(${r.id})">새 초대 발송</button>`;
+  $('drawerFoot').innerHTML = foot;
+  $('drawerOverlay').classList.add('show');
+}
+function closeDrawer() { detailId = null; $('drawerOverlay').classList.remove('show'); }
+
+// ── 재발송 / 취소 / 새 초대 ────────────────────────────────────────
+function resendInvite(id) {
+  const r = INVITES.find(x => x.id === id); if (!r || r.status !== 'pending') return;
+  askConfirm({ icon:'📨', bg:'#DBEAFE', title:'초대를 재발송할까요?', desc:`<b>${esc(r.org)}</b> ${esc(r.name)} 대표자에게 ${r.via}로 초대를 다시 발송합니다.<br>(프로토타입: 실제 발송은 이루어지지 않습니다)`, ok:'재발송', cls:'cm-ok-primary',
+    onOk() { r.resends.push(nowStr()); showToast('초대를 재발송했습니다.'); applyInv(); if (detailId === id) openDetail(id); } });
+}
+function cancelInvite(id) {
+  const r = INVITES.find(x => x.id === id); if (!r || r.status !== 'pending') return;
+  askConfirm({ icon:'🚫', bg:'#FEE2E2', title:'초대를 취소할까요?', desc:`<b>${esc(r.org)}</b> 초대를 취소합니다. 취소된 초대는 재발송할 수 없으며, 이력은 삭제되지 않고 유지됩니다.`, ok:'초대 취소', cls:'cm-ok-danger',
+    onOk() { r.status = 'cancelled'; r.cancelledAt = nowStr(); showToast('초대가 취소되었습니다.'); applyInv(); if (detailId === id) openDetail(id); } });
+}
+function reinvite(id) {                                   // 기간 만료 → 새 초대 발송 방식
+  const r = INVITES.find(x => x.id === id); if (!r || r.status !== 'expired') return;
+  closeDrawer(); openInviteModal({ org:r.org, name:r.name, email:r.email, phone:r.phone, via:r.via, fromExpired:true });
+}
+
+// ── 서비스 초대하기 모달 ───────────────────────────────────────────
+let fmFromExpired = false;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^01[016789]-?\d{3,4}-?\d{4}$/;
+function fmtPhone(v) { const d = v.replace(/\D/g, ''); return d.length === 11 ? d.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3') : d.length === 10 ? d.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') : v; }
+function openInviteModal(p) {
+  p = p || {}; fmFromExpired = !!p.fromExpired;
+  $('fmOrg').value = p.org || ''; $('fmName').value = p.name || ''; $('fmEmail').value = p.email || ''; $('fmPhone').value = p.phone || '';
+  document.querySelector('input[name=fmVia][value="' + (p.via || '이메일') + '"]').checked = true;
+  ['Org','Name','Email','Phone'].forEach(k => $('err' + k).textContent = '');
+  fmViaChange(); fmDupCheck();
+  $('fmOverlay').classList.add('show'); setTimeout(() => $('fmOrg').focus(), 0);
+}
+function closeInviteModal() { $('fmOverlay').classList.remove('show'); }
+function fmVia() { return document.querySelector('input[name=fmVia]:checked').value; }
+function fmViaChange() { const sms = fmVia() === 'SMS'; $('reqEmail').style.display = sms ? 'none' : ''; $('reqPhone').style.display = sms ? '' : 'none'; }
+function fmDupCheck() {                                   // 기존 초대 이력 안내 (중복 발송 확인)
+  const q = norm($('fmOrg').value), box = $('fmDup');
+  const hist = q ? INVITES.filter(r => norm(r.org) === q).sort((a, b) => lastSent(b).localeCompare(lastSent(a))) : [];
+  if (!hist.length) { box.style.display = 'none'; return; }
+  box.style.display = 'flex';
+  box.innerHTML = '<span>⚠️</span><span><b>기존 초대 이력 ' + hist.length + '건</b>이 있는 기관입니다.<br>' +
+    hist.slice(0, 3).map(r => `${r.sentAt.slice(0, 10)} · ${ST[r.status].label} · ${esc(r.name)}`).join('<br>') +
+    (hist.some(r => r.status === 'pending') ? '<br>수락 대기 중인 초대가 있습니다. 재발송으로 처리할 수 있습니다.' : '') +
+    (hist.some(r => r.status === 'joined') ? '<br>이미 가입 완료된 이력이 있습니다.' : '') + '</span>';
+}
+function validateInvite() {
+  const org = $('fmOrg').value.trim(), name = $('fmName').value.trim(), email = $('fmEmail').value.trim(), phone = $('fmPhone').value.trim(), via = fmVia();
+  const err = { Org:'', Name:'', Email:'', Phone:'' };
+  if (!org) err.Org = '기관명을 입력해 주세요.';
+  if (!name) err.Name = '대표자명을 입력해 주세요.';
+  if (via === '이메일' && !email) err.Email = '이메일 발송을 선택한 경우 이메일은 필수입니다.';
+  else if (email && !EMAIL_RE.test(email)) err.Email = '이메일 형식이 올바르지 않습니다.';
+  if (via === 'SMS' && !phone) err.Phone = 'SMS 발송을 선택한 경우 휴대폰은 필수입니다.';
+  else if (phone && !PHONE_RE.test(phone)) err.Phone = '휴대폰 형식이 올바르지 않습니다. (예: 010-1234-5678)';
+  Object.keys(err).forEach(k => $('err' + k).textContent = err[k]);
+  return Object.values(err).every(v => !v) ? { org, name, email, phone: phone ? fmtPhone(phone) : '', via } : null;
+}
+function submitInvite() {
+  const v = validateInvite(); if (!v) return;
+  const hist = INVITES.filter(r => norm(r.org) === norm(v.org));
+  if (hist.length && !fmFromExpired) {
+    askConfirm({ icon:'⚠️', bg:'#FEF3C7', title:'이미 초대 이력이 있는 기관입니다', desc:`<b>${esc(v.org)}</b>의 기존 초대 ${hist.length}건(최근: ${ST[hist.sort((a, b) => lastSent(b).localeCompare(lastSent(a)))[0].status].label})이 있습니다.<br>중복 발송이 아닌지 확인해 주세요. 그래도 새 초대를 발송하시겠습니까?`, ok:'새 초대 발송', cls:'cm-ok-warn', onOk() { doSend(v); } });
+    return;
+  }
+  doSend(v);
+}
+function doSend(v) {
+  INVITES.unshift({ id: nextId++, org: v.org, name: v.name, email: v.email, phone: v.phone, via: v.via, sentAt: nowStr(), status: 'pending', resends: [] });
+  closeInviteModal();
+  $('fOrg').value = ''; $('fType').value = ''; $('fStatus').value = ''; $('fFrom').value = ''; $('fTo').value = '';   // 신규 건이 보이도록 조건 해제
+  applyInv();
+  showToast('초대를 발송했습니다. (프로토타입: 실제 발송 없음)');
+}
+
+// ── 확인 모달 / 공통 ───────────────────────────────────────────────
+let cmCb = null;
+function askConfirm(o) {
+  cmCb = o.onOk;
+  $('cmIcon').textContent = o.icon; $('cmIcon').style.background = o.bg;
+  $('cmTitle').textContent = o.title; $('cmDesc').innerHTML = o.desc;
+  $('cmOk').className = 'cm-btn ' + o.cls; $('cmOk').textContent = o.ok;
+  $('cmOverlay').classList.add('show');
+}
+function execCm() { const cb = cmCb; closeCm(); if (cb) cb(); }
+function closeCm() { cmCb = null; $('cmOverlay').classList.remove('show'); }
+function toggleSubNav(el, subId) {
+  const sub = document.getElementById(subId); if (!sub) return;
+  const isOpen = sub.style.display === 'block';
+  sub.style.display = isOpen ? 'none' : 'block';
+  const chev = el.querySelector('.nav-chevron'); if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
+function showToast(msg, ok = true) {
+  const w = $('toastWrap'), t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<svg width="16" height="16" fill="none" stroke="${ok ? '#10B981' : '#F59E0B'}" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>${esc(msg)}`;
+  w.appendChild(t);
+  setTimeout(() => { t.style.transition = 'opacity 0.3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 350); }, 3000);
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('cmOverlay').classList.contains('show')) closeCm();
+  else if ($('fmOverlay').classList.contains('show')) closeInviteModal();
+  else closeDrawer();
+});
+window.addEventListener('DOMContentLoaded', applyInv);
+</script>
+<script src="nav-links.js"></script>
+</body>
+</html>

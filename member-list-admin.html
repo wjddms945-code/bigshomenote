@@ -156,7 +156,7 @@ body {
 /* ════════════════════════════
    MAIN
 ════════════════════════════ */
-.main { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* ── TOPBAR ── */
 .topbar {
@@ -214,7 +214,7 @@ body {
 ════════════════════════════ */
 .summary-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1.3fr 1fr 1fr 1fr 1.3fr;
+  grid-template-columns: 1.4fr 1.2fr 0.9fr 0.9fr 1.5fr 1.2fr;
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -276,6 +276,15 @@ body {
   text-decoration: none; cursor: pointer;
 }
 .sum-card-link:hover { text-decoration: underline; }
+/* 학부모 카드: 주계정/보조계정 비율 바 */
+.paid-breakdown { display: flex; margin-top: 10px; border-radius: 6px; overflow: hidden; height: 4px; }
+.paid-bar-multi   { background: #8B5CF6; }
+.paid-bar-regular { background: #3B82F6; }
+.paid-sub-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.paid-sub-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+
+.paid-sub-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.paid-sub-num { font-weight: 700; color: var(--text-primary); margin-left: 3px; }
 .trend-up { color: #10B981; font-weight: 600; font-size: 11.5px; }
 .trend-num { display: flex; align-items: center; gap: 3px; }
 
@@ -449,21 +458,21 @@ body {
 
 table {
   width: 100%; border-collapse: collapse;
-  table-layout: fixed; min-width: 1300px;
+  table-layout: fixed; min-width: 1108px;
 }
 th {
   background: #F8F9FB;
-  padding: 9px 12px; text-align: left;
+  padding: 9px 8px; text-align: left;
   font-size: 11px; font-weight: 700;
   color: var(--text-secondary);
   letter-spacing: 0.4px; text-transform: uppercase;
   border-bottom: 1px solid var(--border-light);
   white-space: nowrap;
 }
-th:first-child { padding-left: 20px; }
-td:first-child { padding-left: 20px; }
+th:first-child { padding-left: 12px; }
+td:first-child { padding-left: 12px; }
 td {
-  padding: 12px 12px; font-size: 12.5px;
+  padding: 12px 8px; font-size: 12.5px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-light);
   vertical-align: middle;
@@ -474,21 +483,21 @@ tr:hover td { background: #FAFBFC; }
 tr.row-sel td { background: #EEF1FD; }
 
 /* col widths */
-.c-chk   { width: 38px; }
-.c-stat  { width: 82px; }
-.c-type  { width: 72px; }
-.c-gtype { width: 70px; }
-.c-name  { width: 80px; }
-.c-phone { width: 116px; }
-.c-affil { width: 220px; }
-.c-conn  { width: 64px; }
-.c-role  { width: 72px; }
-.c-pos   { width: 64px; }
-.c-route { width: 90px; }
-.c-login { width: 88px; }
-.c-join  { width: 92px; }
-.c-last  { width: 92px; }
-.c-view  { width: 56px; text-align: center; }
+.c-chk   { width: 30px; }
+.c-stat  { width: 90px; }
+.c-type  { width: 60px; }
+.c-gtype { width: 60px; }
+.c-name  { width: 66px; }
+.c-email { width: 136px; }
+.c-affil { width: 120px; }
+.c-conn  { width: 52px; }
+.c-role  { width: 64px; }
+.c-pos   { width: 58px; }
+.c-route { width: 96px; }
+.c-login { width: 100px; }
+.c-join  { width: 88px; }
+.c-last  { width: 88px; }
+#tbody tr { cursor: pointer; }
 
 /* ── STATUS BADGE ── */
 .sbadge {
@@ -538,6 +547,7 @@ tr.row-sel td { background: #EEF1FD; }
 .affil-sub  { font-size: 11.5px; color: var(--text-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── PHONE ── */
+.email-txt { font-size: 12px; color: var(--text-primary); }
 .phone-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px; color: var(--text-primary);
@@ -752,8 +762,6 @@ tr.row-sel td { background: #EEF1FD; }
 }
 .dpa-list   { background: #F3F4F6; color: #374151; }
 .dpa-list:hover { background: #E5E7EB; }
-.dpa-stop   { background: #1A1D2E; color: #fff; }
-.dpa-stop:hover { background: #2E3250; }
 .dpa-out    { background: #EF4444; color: #fff; }
 .dpa-out:hover { background: #DC2626; }
 .dpa-edit   { background: #6B7280; color: #fff; }
@@ -814,7 +822,8 @@ tr.row-sel td { background: #EEF1FD; }
   border-radius: 12px; overflow: hidden; width: 100%;
   border-collapse: collapse;
 }
-.dp2-info-table td {
+.dp2-info-table { min-width: 0; table-layout: auto; }
+.dp2-info-table td { white-space: normal; overflow: visible; word-break: keep-all;
   padding: 11px 18px; font-size: 13px;
   border-bottom: 1px solid #F3F4F6;
   border-right: 1px solid #F3F4F6;
@@ -827,6 +836,18 @@ tr.row-sel td { background: #EEF1FD; }
 }
 .dp2-info-table td.val { font-weight: 500; color: #1A1D2E; }
 .dp2-info-table td:last-child { border-right: none; }
+.wd-overlay { position: fixed; inset: 0; background: rgba(17,24,39,.45); display: none; align-items: center; justify-content: center; z-index: 1500; }
+.wd-overlay.show { display: flex; }
+.wd-modal { width: 460px; max-width: calc(100vw - 32px); background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.wd-title { font-size: 16px; font-weight: 700; color: #1A1D2E; }
+.wd-target { margin-top: 6px; font-size: 13px; color: #6B7280; }
+.wd-target b { color: #1A1D2E; }
+.wd-info { margin-top: 14px; padding: 10px 12px; background: #FEF2F2; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #991B1B; }
+.wd-label { margin-top: 16px; font-size: 12.5px; font-weight: 600; color: #374151; }
+.wd-textarea { width: 100%; height: 96px; margin-top: 6px; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font: inherit; font-size: 13px; resize: none; box-sizing: border-box; }
+.wd-textarea:focus { outline: none; border-color: #4361EE; box-shadow: 0 0 0 3px rgba(67,97,238,.1); }
+.wd-count { text-align: right; font-size: 11px; color: #9CA3AF; margin-top: 4px; }
+.wd-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
 .dp2-notice {
   font-size: 12px; color: #9CA3AF; margin-top: 8px; margin-left: 2px;
 }
@@ -950,6 +971,27 @@ tr.row-sel td { background: #EEF1FD; }
 .dp2-child-label { font-size: 11px; color: #9CA3AF; margin-bottom: 3px; }
 .dp2-child-val { font-size: 12.5px; font-weight: 500; color: #1A1D2E; }
 .dp2-child-val a { color: #4361EE; text-decoration: none; }
+.dp2-link-btn { margin-left: auto; font-size: 11.5px; font-weight: 600; color: #4361EE; background: #EEF1FD; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.dp2-link-btn:hover { background: #DDE4FB; }
+.fam-head { font-size: 12.5px; font-weight: 700; color: #374151; padding: 12px 0 8px; }
+.fam-head b { color: #4361EE; }
+.fam-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid #E5E7EB; border-radius: 10px; margin-bottom: 8px; background: #fff; }
+.fam-role { width: 56px; flex-shrink: 0; font-size: 13px; font-weight: 700; color: #1A1D2E; }
+.fam-main { flex: 1; min-width: 0; }
+.fam-name { font-size: 13.5px; font-weight: 600; color: #1A1D2E; display: flex; align-items: center; gap: 6px; }
+.fam-sub { margin-top: 4px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #9CA3AF; flex-wrap: wrap; }
+.fam-me { font-size: 10.5px; font-weight: 700; color: #6B7280; background: #F3F4F6; padding: 1px 6px; border-radius: 4px; }
+.fam-primary { font-size: 10.5px; font-weight: 700; color: #4361EE; background: #EEF1FD; padding: 1px 6px; border-radius: 4px; }
+.fam-dday { font-weight: 700; color: #F59E0B; }
+.fam-more { margin-top: 8px; gap: 6px; }
+.fam-btn { flex-shrink: 0; height: 30px; padding: 0 12px; font-size: 12px; font-weight: 600; font-family: inherit; color: #374151; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+.fam-btn:hover { background: #F9FAFB; }
+.fam-danger { color: #DC2626; border-color: #FCA5A5; }
+.fam-danger:hover { background: #FEF2F2; }
+.fam-icon { width: 30px; padding: 0; font-size: 16px; line-height: 1; }
+.fam-ended { background: #F9FAFB; }
+.fam-ended .fam-name { color: #6B7280; }
+.fam-note { margin-top: 6px; padding: 10px 12px; background: #F9FAFB; border-radius: 8px; font-size: 11.5px; line-height: 1.6; color: #6B7280; }
 .dp2-child-val a:hover { text-decoration: underline; }
 
 /* ── 관리자 메모 ── */
@@ -980,6 +1022,14 @@ tr.row-sel td { background: #EEF1FD; }
   cursor: pointer; transition: background 0.15s; font-family: inherit;
 }
 .dp2-memo-save:hover { background: #2E3250; }
+.memo-hist { margin-top: 16px; padding-top: 14px; border-top: 1px solid #F3F4F6; }
+.memo-hist-title { font-size: 12.5px; font-weight: 700; color: #374151; margin-bottom: 10px; }
+.memo-hist-title b { color: #4361EE; }
+.memo-hist-list { max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.memo-hist-item { background: #F9FAFB; border: 1px solid #F3F4F6; border-radius: 8px; padding: 10px 12px; }
+.memo-hist-meta { font-size: 11px; color: #9CA3AF; margin-bottom: 4px; }
+.memo-hist-text { font-size: 12.5px; color: #374151; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.memo-hist-empty { font-size: 12px; color: #9CA3AF; padding: 6px 0; }
 
 /* 상태 뱃지 (인라인) */
 .inline-badge {
@@ -1025,25 +1075,33 @@ tr.row-sel td { background: #EEF1FD; }
 <div class="nav-sub" id="sub-member" style="display:block">
   <div class="nav-item active" onclick="location.href='member-list-admin.html'" style="cursor:pointer">통합회원 조회</div>
   <div class="nav-item" onclick="location.href='member-approval.html'" style="cursor:pointer">가입 승인 관리 <span class="nav-badge">3</span></div>
-  <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer">초대 관리</div>
-  <div class="nav-item" onclick="location.href='member-status-admin.html'" style="cursor:pointer">회원 상태 관리</div>
 </div>
 
 <div class="nav-item" onclick="document.getElementById('sub-org').style.display = document.getElementById('sub-org').style.display === 'block' ? 'none' : 'block'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-  기관관리
+  기관/승인관리
   <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
   <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
 </div>
 <div class="nav-sub" id="sub-org" style="display:none">
   <div class="nav-item" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
   <div class="nav-item" onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
-  <div class="nav-item" onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+  <div id="sub-invite" style="display:none;background:rgba(0,0,0,0.12)">
+    <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+    <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+  </div>
 </div>
 
-<div class="nav-item" style="cursor:default;opacity:0.5">
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
 <div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
@@ -1106,9 +1164,9 @@ tr.row-sel td { background: #EEF1FD; }
     <div class="page-header">
       <div>
         <div class="page-title">통합회원 조회</div>
-        <div class="page-subtitle">알림장 서비스와 연결된 전체 회원을 조회합니다.</div>
+        <div class="page-subtitle">알림장 서비스와 연결된 전체 회원을 조회하고 서비스 상태를 관리합니다.</div>
       </div>
-      <button class="btn btn-secondary" onclick="showToast('엑셀 파일 다운로드를 시작합니다.')">
+      <button class="btn btn-secondary" onclick="exportCsv()">
         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         엑셀 다운로드
       </button>
@@ -1122,21 +1180,18 @@ tr.row-sel td { background: #EEF1FD; }
         <div class="sum-card-label">
           <span class="dot-icon"></span>총 통합회원 수
         </div>
-        <div class="sum-card-num">12,345</div>
+        <div class="sum-card-num" id="kpiTotal">8,440</div>
         <div class="sum-card-footer">
-          <a class="sum-card-link" onclick="showToast('통합회원 관리 화면으로 이동합니다.')">
-            통합회원 관리 바로가기
-            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-          </a>
+          <span style="color:var(--text-muted)">이용중 + 서비스탈퇴</span>
         </div>
       </div>
 
       <!-- 알림장 이용 회원 수 -->
       <div class="sum-card card-inuse" onclick="filterByCard('inuse')">
         <div class="sum-card-label">
-          <span class="dot-icon"></span>알림장 이용 회원 수
+          <span class="dot-icon"></span>이용중 회원 수
         </div>
-        <div class="sum-card-num">8,120</div>
+        <div class="sum-card-num" id="kpiInuse">8,120</div>
         <div class="sum-card-footer">
           <span class="trend-num trend-up">
             <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
@@ -1151,7 +1206,7 @@ tr.row-sel td { background: #EEF1FD; }
         <div class="sum-card-label">
           <span class="dot-icon"></span>기관장 수
         </div>
-        <div class="sum-card-num">230</div>
+        <div class="sum-card-num" id="kpiDirector">230</div>
         <div class="sum-card-footer">
           <span class="trend-num trend-up">
             <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
@@ -1166,7 +1221,7 @@ tr.row-sel td { background: #EEF1FD; }
         <div class="sum-card-label">
           <span class="dot-icon"></span>교사 수
         </div>
-        <div class="sum-card-num">1,000</div>
+        <div class="sum-card-num" id="kpiTeacher">1,000</div>
         <div class="sum-card-footer">
           <span class="trend-num trend-up">
             <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
@@ -1179,26 +1234,34 @@ tr.row-sel td { background: #EEF1FD; }
       <!-- 학부모 -->
       <div class="sum-card card-parent" onclick="filterByCard('parent')">
         <div class="sum-card-label">
-          <span class="dot-icon"></span>학부모 수
+          <span class="dot-icon"></span>이용중 학부모
         </div>
-        <div class="sum-card-num">6,890</div>
-        <div class="sum-card-footer">
-          <span class="trend-num trend-up">
-            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-            8
-          </span>
-          <span style="color:var(--text-muted)">이번 주 신규</span>
+        <div class="sum-card-num" id="parentTotal">6,890</div>
+        <div class="paid-breakdown">
+          <div class="paid-bar-multi" id="parentBarMain" style="width:59.8%"></div>
+          <div class="paid-bar-regular" id="parentBarSub" style="width:40.2%"></div>
+        </div>
+        <div class="paid-sub-row">
+          <div class="paid-sub-item">
+            <span class="paid-sub-dot" style="background:#8B5CF6"></span>
+            <span>주계정</span><span class="paid-sub-num" id="parentMain">4,120</span>
+          </div>
+          <div style="width:1px;height:12px;background:var(--border-light)"></div>
+          <div class="paid-sub-item">
+            <span class="paid-sub-dot" style="background:#3B82F6"></span>
+            <span>보조계정</span><span class="paid-sub-num" id="parentSub">2,770</span>
+          </div>
         </div>
       </div>
 
       <!-- 이용 종료 -->
       <div class="sum-card card-ended" onclick="filterByCard('ended')">
         <div class="sum-card-label">
-          <span class="dot-icon"></span>알림장 이용 종료
+          <span class="dot-icon"></span>서비스탈퇴
         </div>
-        <div class="sum-card-num" style="font-size:22px">320</div>
+        <div class="sum-card-num" id="kpiEnded">320</div>
         <div class="sum-card-footer" style="font-size:11px; color:var(--text-muted); line-height:1.4">
-          졸업 · 퇴소 · 퇴사 · 서비스탈퇴 포함
+          서비스 이용이 종료된 회원
         </div>
       </div>
 
@@ -1209,18 +1272,17 @@ tr.row-sel td { background: #EEF1FD; }
       <div class="filter-row">
         <span class="f-label">상태</span>
         <div class="f-select-wrap">
-          <select class="f-select" id="fStatus" onchange="renderChips()">
+          <select class="f-select" id="fStatus" onchange="applyFilters()">
             <option value="">전체</option>
-            <option value="active">알림장 이용중</option>
-            <option value="ended">알림장 이용 종료</option>
-            <option value="stop">알림장 정지</option>
+            <option value="active">이용중</option>
+            <option value="ended">서비스탈퇴</option>
           </select>
         </div>
 
         <div style="width:16px"></div>
         <span class="f-label">사용자 유형</span>
         <div class="f-select-wrap">
-          <select class="f-select" id="fType" onchange="renderChips(); toggleGuardian()">
+          <select class="f-select" id="fType" onchange="toggleGuardian(); applyFilters()">
             <option value="">전체</option>
             <option value="teacher">교사</option>
             <option value="parent">학부모</option>
@@ -1231,10 +1293,21 @@ tr.row-sel td { background: #EEF1FD; }
         <div style="width:16px"></div>
         <span class="f-label" id="labelGuardian" style="color:var(--text-muted)">보호자 유형</span>
         <div class="f-select-wrap">
-          <select class="f-select" id="fGuardian" onchange="renderChips()" style="opacity:0.45;pointer-events:none">
+          <select class="f-select" id="fGuardian" onchange="applyFilters()" style="opacity:0.45;pointer-events:none">
             <option value="">전체</option>
             <option value="main">주계정</option>
             <option value="family">가족계정</option>
+          </select>
+        </div>
+
+        <div style="width:16px"></div>
+        <span class="f-label">가입경로</span>
+        <div class="f-select-wrap">
+          <select class="f-select" id="fRoute" onchange="applyFilters()">
+            <option value="">전체</option>
+            <option value="기존통합회원">기존통합회원</option>
+            <option value="초대장">초대장</option>
+            <option value="직접가입">직접가입</option>
           </select>
         </div>
       </div>
@@ -1254,6 +1327,12 @@ tr.row-sel td { background: #EEF1FD; }
           </button>
         </div>
 
+        <div style="width:16px"></div>
+        <span class="f-label">탈퇴일</span>
+        <input type="date" class="f-select" id="fOutFrom" onchange="applyFilters()" style="min-width:0;padding:0 8px">
+        <span style="color:var(--text-muted)">~</span>
+        <input type="date" class="f-select" id="fOutTo" onchange="applyFilters()" style="min-width:0;padding:0 8px">
+
         <div style="margin-left:auto; display:flex; gap:8px">
           <button class="btn btn-secondary" onclick="resetFilter()" style="font-size:12px; padding:6px 12px">
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -1269,30 +1348,17 @@ tr.row-sel td { background: #EEF1FD; }
     <!-- ── TABLE CARD ── -->
     <div class="table-card">
       <div class="table-toolbar">
-        <div class="result-info">총 <strong id="resultCount">8,120</strong>건</div>
-        <div class="toolbar-right">
-          <div class="per-page-wrap">
-            <select class="per-page">
-              <option>20개씩</option>
-              <option>50개씩</option>
-              <option>100개씩</option>
-            </select>
-          </div>
-          <button class="btn btn-secondary" style="font-size:12px; padding:6px 12px" onclick="showToast('내보내기 준비 중...')">
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            내보내기
-          </button>
+        <div class="result-info">총 <strong id="resultCount">0</strong>건</div>
         </div>
-      </div>
 
       <div class="tbl-wrap">
         <table>
           <colgroup>
             <col class="c-chk"><col class="c-stat"><col class="c-type">
-            <col class="c-gtype"><col class="c-name"><col class="c-phone">
+            <col class="c-gtype"><col class="c-name"><col class="c-email">
             <col class="c-affil"><col class="c-conn"><col class="c-role">
             <col class="c-pos"><col class="c-route"><col class="c-login">
-            <col class="c-join"><col class="c-last"><col class="c-view">
+            <col class="c-join"><col class="c-last">
           </colgroup>
           <thead>
             <tr>
@@ -1301,16 +1367,15 @@ tr.row-sel td { background: #EEF1FD; }
               <th>유형</th>
               <th>보호자</th>
               <th>이름</th>
-              <th>휴대폰</th>
+              <th>이메일</th>
               <th>대표 소속</th>
-              <th style="text-align:center">연결수</th>
+              <th style="text-align:center" title="교사=연결 반 수 / 학부모=연결 자녀 수">연결수</th>
               <th>역할</th>
               <th>직책</th>
               <th>가입경로</th>
               <th>로그인 수단</th>
               <th>가입일</th>
               <th>최근 이용일</th>
-              <th style="text-align:center">상세</th>
             </tr>
           </thead>
           <tbody id="tbody">
@@ -1320,20 +1385,8 @@ tr.row-sel td { background: #EEF1FD; }
       </div>
 
       <div class="pagination-area">
-        <div class="pg-info">1 – 20 / 총 <span id="pgTotal">8,120</span>건</div>
-        <div class="pagination">
-          <button class="pg-btn" disabled>‹‹</button>
-          <button class="pg-btn" disabled>‹</button>
-          <button class="pg-btn active">1</button>
-          <button class="pg-btn">2</button>
-          <button class="pg-btn">3</button>
-          <button class="pg-btn">4</button>
-          <button class="pg-btn">5</button>
-          <span style="padding:0 4px;color:var(--text-muted);font-size:12px">…</span>
-          <button class="pg-btn">406</button>
-          <button class="pg-btn">›</button>
-          <button class="pg-btn">››</button>
-        </div>
+        <div class="pg-info"><span id="pgTotal">0</span>건 표시</div>
+        <div class="pagination"><button class="pg-btn" disabled>‹</button><button class="pg-btn active">1</button><button class="pg-btn" disabled>›</button></div>
       </div>
     </div>
 
@@ -1352,7 +1405,7 @@ tr.row-sel td { background: #EEF1FD; }
     </div>
     <div class="dp-footer">
       <button class="btn btn-secondary" onclick="closeDetail()">닫기</button>
-      <button class="btn btn-primary" onclick="openDetailPage()" >상태 변경</button>
+      <button class="btn btn-primary" onclick="openDetailPage()">상세 보기</button>
     </div>
   </div>
 </div>
@@ -1363,7 +1416,7 @@ tr.row-sel td { background: #EEF1FD; }
   <!-- 탑바 -->
   <div class="dpage-topbar">
     <div class="dpage-breadcrumb">
-      <a onclick="closeDetailPage()">← 회원/관한관리</a>
+      <a onclick="closeDetailPage()">← 회원/승인관리</a>
       <span>›</span>
       <a onclick="closeDetailPage()">통합회원 조회</a>
       <span>›</span>
@@ -1379,33 +1432,48 @@ tr.row-sel td { background: #EEF1FD; }
 <!-- Toast -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<div class="wd-overlay" id="wdModal">
+  <div class="wd-modal">
+    <div class="wd-title">서비스 탈퇴 처리</div>
+    <div class="wd-target">대상: <b id="wdTarget"></b></div>
+    <div class="wd-info">탈퇴 처리하면 해당 회원은 알림장 서비스를 이용할 수 없으며, 처리 일시·사유·처리자가 기록됩니다.<span id="wdNote"> 학부모는 자녀의 졸업·퇴소 여부와 관계없이 계정 단위로 처리됩니다.</span><br>NEW 알림장 서비스 이용만 종료되며, 키드키즈 통합회원 계정 자체는 탈퇴되지 않습니다.<span id="wdFamNote"></span></div>
+    <div class="wd-label">탈퇴 사유 <span style="color:#DC2626">*</span></div>
+    <textarea class="wd-textarea" id="wdReason" maxlength="200" placeholder="사유를 10자 이상 입력해 주세요." oninput="document.getElementById('wdCount').textContent=this.value.length"></textarea>
+    <div class="wd-count"><span id="wdCount">0</span> / 200자</div>
+    <div class="wd-actions">
+      <button class="btn btn-secondary" onclick="closeWithdraw()">취소</button>
+      <button class="btn btn-primary" style="background:#DC2626;border-color:#DC2626" onclick="submitWithdraw()">서비스 탈퇴 처리</button>
+    </div>
+  </div>
+</div>
+
+<script>
 /* ═══════════════════════════════
    DATA
 ═══════════════════════════════ */
 const ROWS = [
-  { status:'s-active', statusLabel:'재직중', type:'teacher', typeLabel:'교사',
+  { status:'s-active', statusLabel:'이용중', type:'teacher', typeLabel:'교사',
     guardian:'-', name:'지창욱', phone:'010-1234-5678',
     affiliMain:'키드키즈 유치원', affiliSub:'꽃잎반 (2세·담임)',
     conn:2, role:'담임,보조', pos:'부원장', route:'기존통합회원', login:'통합ID',
     join:'2025-03-04', last:'2025-11-01',
     avatar:'#4361EE,#7C3AED', avatarChar:'지'
   },
-  { status:'s-enroll', statusLabel:'재원중', type:'parent', typeLabel:'학부모',
+  { status:'s-active', statusLabel:'이용중', type:'parent', typeLabel:'학부모',
     guardian:'주계정', name:'김정은', phone:'010-1562-5126',
     affiliMain:'새마을 어린이집', affiliSub:'김하윤(꽃잎반·재원) 외 1명',
     conn:2, role:'엄마', pos:'-', route:'초대장', login:'SNS-카카오',
     join:'2025-03-06', last:'2025-11-01',
     avatar:'#F59E0B,#EF4444', avatarChar:'김'
   },
-  { status:'s-enroll', statusLabel:'재원중', type:'parent', typeLabel:'학부모',
+  { status:'s-active', statusLabel:'이용중', type:'parent', typeLabel:'학부모',
     guardian:'가족계정', name:'김민준', phone:'010-4541-4884',
     affiliMain:'새마을 어린이집', affiliSub:'김하윤(꽃잎반·재원) 외 1명',
     conn:2, role:'아빠', pos:'-', route:'직접가입', login:'SNS-네이버',
     join:'2025-03-01', last:'2025-12-01',
     avatar:'#10B981,#3B82F6', avatarChar:'김'
   },
-  { status:'s-active', statusLabel:'재직중', type:'director', typeLabel:'기관장',
+  { status:'s-active', statusLabel:'이용중', type:'director', typeLabel:'기관장',
     guardian:'-', name:'홍기영', phone:'010-8287-1586',
     affiliMain:'행복 어린이집', affiliSub:'기관장',
     conn:'-', role:'기관장', pos:'원장', route:'기존통합회원', login:'통합ID',
@@ -1416,38 +1484,38 @@ const ROWS = [
     guardian:'주계정', name:'이민우', phone:'010-1234-1885',
     affiliMain:'새마을 어린이집', affiliSub:'이기우(꽃잎반·퇴소) 외 1명',
     conn:2, role:'아빠', pos:'-', route:'초대장', login:'SNS-구글',
-    join:'2024-05-24', last:'2025-12-02',
+    join:'2024-05-24', last:'2025-12-02', outDate:'2025-12-03',
     avatar:'#EF4444,#DC2626', avatarChar:'이'
   },
-  { status:'s-grad', statusLabel:'졸업', type:'parent', typeLabel:'학부모',
+  { status:'s-active', statusLabel:'이용중', type:'parent', typeLabel:'학부모',
     guardian:'가족계정', name:'송강', phone:'010-8514-5785',
     affiliMain:'기쁨 어린이집', affiliSub:'송중기(행복반·졸업) 외 1명',
     conn:2, role:'아빠', pos:'-', route:'초대장', login:'SNS-카카오',
     join:'2025-10-11', last:'2025-12-01',
     avatar:'#8B5CF6,#A78BFA', avatarChar:'송'
   },
-  { status:'s-enroll', statusLabel:'재원중', type:'parent', typeLabel:'학부모',
+  { status:'s-active', statusLabel:'이용중', type:'parent', typeLabel:'학부모',
     guardian:'주계정', name:'박지수', phone:'010-3388-9921',
-    affiliMain:'하늘 어린이집', affiliSub:'박민서(별빛반·재원)',
+    affiliMain:'하늘 어린이집', affiliSub:'박민서(별빛반·졸업)',
     conn:1, role:'엄마', pos:'-', route:'직접가입', login:'SNS-애플',
     join:'2024-08-15', last:'2025-12-05',
     avatar:'#EC4899,#F43F5E', avatarChar:'박'
   },
-  { status:'s-leave', statusLabel:'퇴사', type:'teacher', typeLabel:'교사',
+  { status:'s-active', statusLabel:'이용중', type:'teacher', typeLabel:'교사',
     guardian:'-', name:'오세진', phone:'010-5544-3322',
     affiliMain:'꿈터 유치원', affiliSub:'해바라기반 (4세·담임)',
     conn:1, role:'담임', pos:'교사', route:'초대장', login:'SNS-네이버',
     join:'2023-03-02', last:'2024-09-30',
     avatar:'#6B7280,#9CA3AF', avatarChar:'오'
   },
-  { status:'s-active', statusLabel:'재직중', type:'teacher', typeLabel:'교사',
+  { status:'s-active', statusLabel:'이용중', type:'teacher', typeLabel:'교사',
     guardian:'-', name:'윤서아', phone:'010-7711-5522',
     affiliMain:'참사랑 어린이집', affiliSub:'사과반 (3세·보조)',
     conn:1, role:'보조', pos:'보조교사', route:'기존통합회원', login:'통합ID',
     join:'2024-09-01', last:'2025-03-07',
     avatar:'#06B6D4,#0EA5E9', avatarChar:'윤'
   },
-  { status:'s-enroll', statusLabel:'재원중', type:'parent', typeLabel:'학부모',
+  { status:'s-active', statusLabel:'이용중', type:'parent', typeLabel:'학부모',
     guardian:'주계정', name:'강다현', phone:'010-9900-1122',
     affiliMain:'무지개 유치원', affiliSub:'강예린(달님반·재원)',
     conn:1, role:'엄마', pos:'-', route:'초대장', login:'SNS-카카오',
@@ -1455,6 +1523,57 @@ const ROWS = [
     avatar:'#D946EF,#A855F7', avatarChar:'강'
   },
 ];
+
+/* 샘플 보강: 통합ID·이메일·성별·생년월일 (회원마다 다르게) */
+ROWS.forEach((r, i) => {
+  r.uid    = r.uid    || (r.type === 'director' ? 'dir' : r.type === 'teacher' ? 'tch' : 'par') + (1000 + i * 37);
+  r.email  = r.email  || r.uid + '@' + ['gmail.com', 'naver.com', 'kakao.com'][i % 3];
+  r.gender = r.gender || (r.role.includes('아빠') ? '남자' : r.role.includes('엄마') ? '여자' : (i % 2 ? '여자' : '남자'));
+  r.birth  = r.birth  || '19' + (80 + (i * 3) % 15) + '.' + String(1 + (i * 5) % 12).padStart(2, '0') + '.' + String(1 + (i * 7) % 28).padStart(2, '0');
+});
+/* 서비스 상태 변경 이력(샘플): 가입 → 이용중, 탈퇴 회원은 탈퇴 처리 이력 포함 */
+ROWS.forEach(r => {
+  r.statusHistory = [{ at: r.join + ' 09:00', from: '-', to: '이용중', reason: '서비스 가입', by: '시스템' }];
+  if (r.status === 's-out') r.statusHistory.unshift({ at: r.outDate + ' 14:20', from: '이용중', to: '서비스탈퇴', reason: '회원 본인 요청에 따른 서비스 탈퇴 처리', by: '슈퍼 관리자' });
+});
+/* 가족 연결(주계정 ↔ 보조계정): 보조계정은 연결된 주계정의 승인된 자녀를 조회. 한 보조계정이 여러 주계정에 연결될 수 있고, 회원 수는 회원(통합ID) 단위로 한 번만 집계 */
+const byUid = u => ROWS.find(x => x.uid === u);
+const uidOf = n => ROWS.find(x => x.name === n).uid;
+const LINKS = [
+  { id: 'L1', main: uidOf('김정은'), sub: uidOf('김민준'), status: 'active', since: '2025-03-10' },
+  { id: 'L2', main: uidOf('김정은'), sub: uidOf('송강'),   status: 'active', since: '2025-10-20' },
+  { id: 'L3', main: uidOf('박지수'), sub: uidOf('송강'),   status: 'active', since: '2025-11-02' },
+  { id: 'L4', main: uidOf('이민우'), sub: uidOf('송강'),   status: 'ended',  since: '2025-10-15', endedAt: '2025-12-03', endReason: '주계정 서비스 탈퇴' },
+];
+/* KPI = 회원 목록(ROWS)에서 직접 집계 (회원 통합ID 1건당 1회, 보조계정이 여러 주계정에 연결돼도 중복 없음)
+   SAMPLE_STATS 는 화면용 샘플 통계값(전체 모수). 목록 샘플(10건)과 다르므로 그 차이만 KPI_OFFSET 으로 보정한다.
+   → API 연동 시 ROWS 를 실제 회원 데이터로 교체하고 KPI_OFFSET 을 0 으로 두면 실제 데이터 기준 집계가 된다. */
+const SAMPLE_STATS = { inuse: 8120, director: 230, teacher: 1000, pMain: 4120, pSub: 2770, ended: 320 };
+function calcKpi(rows) {
+  const k = { inuse: 0, ended: 0, teacher: 0, director: 0, pMain: 0, pSub: 0 }, seen = new Set();
+  rows.forEach(r => {
+    if (seen.has(r.uid)) return; seen.add(r.uid);
+    if (r.status === 's-out') { k.ended++; return; }
+    k.inuse++;
+    if (r.type === 'teacher') k.teacher++; else if (r.type === 'director') k.director++;
+    else if (r.guardian === '가족계정') k.pSub++; else k.pMain++;
+  });
+  return k;
+}
+const KPI_OFFSET = (() => { const c = calcKpi(ROWS), o = {}; Object.keys(SAMPLE_STATS).forEach(key => o[key] = SAMPLE_STATS[key] - c[key]); return o; })();
+function getKpi() { const c = calcKpi(ROWS), k = {}; Object.keys(c).forEach(key => k[key] = c[key] + KPI_OFFSET[key]); return k; }
+function renderKpi() {
+  const KPI = getKpi();
+  const f = n => n.toLocaleString('en-US');
+  const pt = KPI.pMain + KPI.pSub;
+  $('kpiTotal').textContent = f(KPI.inuse + KPI.ended); $('kpiInuse').textContent = f(KPI.inuse);
+  $('kpiDirector').textContent = f(KPI.director); $('kpiTeacher').textContent = f(KPI.teacher);
+  $('kpiEnded').textContent = f(KPI.ended);
+  $('parentTotal').textContent = f(pt); $('parentMain').textContent = f(KPI.pMain); $('parentSub').textContent = f(KPI.pSub);
+  $('parentBarMain').style.width = (KPI.pMain / pt * 100).toFixed(1) + '%';
+  $('parentBarSub').style.width = (KPI.pSub / pt * 100).toFixed(1) + '%';
+}
+const $ = id => document.getElementById(id);
 
 const loginTagMap = {
   '통합ID':     'tag-unified',
@@ -1488,8 +1607,8 @@ function buildRow(r, i) {
   const routeClass = routeTagMap[r.route] || 'tag-direct';
 
   return `
-  <tr id="row-${i}">
-    <td><input type="checkbox" class="chk row-chk" onchange="toggleRow(this,${i})"></td>
+  <tr id="row-${i}" onclick="openDetail(${i})">
+    <td onclick="event.stopPropagation()"><input type="checkbox" class="chk row-chk" onchange="toggleRow(this,${i})"></td>
     <td><span class="sbadge ${r.status}"><span class="sdot"></span>${r.statusLabel}</span></td>
     <td>
       <span class="tbadge ${r.type==='teacher'?'t-teacher':r.type==='parent'?'t-parent':'t-director'}">
@@ -1498,12 +1617,12 @@ function buildRow(r, i) {
     </td>
     <td>${guardianHtml}</td>
     <td>
-      <a class="name-link" onclick="openDetail(${i})">${r.name}</a>
+      <a class="name-link">${r.name}</a>
     </td>
-    <td><span class="phone-num">${r.phone}</span></td>
+    <td><span class="email-txt" title="${r.email}">${r.email}</span></td>
     <td>
-      <div class="affil-main">${r.affiliMain}</div>
-      <div class="affil-sub">${r.affiliSub}</div>
+      <div class="affil-main" title="${r.affiliMain}">${r.affiliMain}</div>
+      <div class="affil-sub" title="${r.affiliSub}">${r.affiliSub}</div>
     </td>
     <td style="text-align:center">${connHtml}</td>
     <td style="font-size:12px; color:var(--text-secondary)">${r.role}</td>
@@ -1512,54 +1631,77 @@ function buildRow(r, i) {
     <td><span class="tag ${loginClass}">${r.login}</span></td>
     <td style="font-size:12px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace">${r.join}</td>
     <td style="font-size:12px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace">${r.last}</td>
-    <td style="text-align:center">
-      <button class="view-btn" onclick="openDetail(${i})">View</button>
-    </td>
   </tr>`;
 }
 
 function renderTable(data) {
-  document.getElementById('tbody').innerHTML = data.map((r,i) => buildRow(r,i)).join('');
+  document.getElementById('tbody').innerHTML = data.map(r => buildRow(r, ROWS.indexOf(r))).join('');
   document.getElementById('resultCount').textContent = data.length.toLocaleString();
   document.getElementById('pgTotal').textContent = data.length.toLocaleString();
+  const ca = document.getElementById('chkAll'); if (ca) ca.checked = false;
 }
 
 /* ═══════════════════════════════
    FILTER LOGIC
 ═══════════════════════════════ */
-const statusFilterMap = {
-  inuse:    row => ['s-active','s-enroll'].includes(row.status),
-  ended:    row => ['s-grad','s-leave','s-out'].includes(row.status),
-  teacher:  row => row.type === 'teacher',
-  parent:   row => row.type === 'parent',
-  director: row => row.type === 'director',
-  all:      ()  => true,
+const STATUS_GROUP = {
+  active: ['s-active'],
+  ended:  ['s-out'],
 };
+const CARD_CLASS = { all:'card-total', inuse:'card-inuse', director:'card-director', teacher:'card-teacher', parent:'card-parent', ended:'card-ended' };
+
+/* 현재 필터(상태·유형·보호자·검색)를 모두 적용한 목록 */
+function getFiltered() {
+  const st = $('fStatus').value, tp = $('fType').value, gd = $('fGuardian').value;
+  const q = $('fSearchVal').value.trim().toLowerCase(), sType = $('fSearchType').value;
+  return ROWS.filter(r => {
+    if (st && !STATUS_GROUP[st].includes(r.status)) return false;
+    if (tp && r.type !== tp) return false;
+    if (gd && r.guardian !== (gd === 'main' ? '주계정' : '가족계정')) return false;
+    if ($('fRoute').value && r.route !== $('fRoute').value) return false;
+    const of = $('fOutFrom').value, ot = $('fOutTo').value;
+    if ((of || ot) && !(r.status === 's-out' && r.outDate && (!of || r.outDate >= of) && (!ot || r.outDate <= ot))) return false;
+    if (q) {
+      let v, qq = q;
+      if (sType === '이름') v = r.name;
+      else if (sType === '통합ID') v = r.uid;
+      else if (sType === '이메일') v = r.email;
+      else { v = r.phone.replace(/-/g,''); qq = q.replace(/-/g,''); }
+      if (!(v || '').toLowerCase().includes(qq)) return false;
+    }
+    return true;
+  });
+}
+function applyFilters() { renderTable(getFiltered()); renderChips(); syncCards(); renderKpi(); }
+
+/* 상단 카드: 현재 필터와 일치하는 카드를 강조 */
+function syncCards() {
+  const st = $('fStatus').value, tp = $('fType').value, gd = $('fGuardian').value;
+  let key = '';
+  const extra = $('fRoute').value || $('fOutFrom').value || $('fOutTo').value;
+  if (extra) key = '';
+  else if (!st && !tp && !gd) key = 'all';
+  else if (st === 'active' && !tp && !gd) key = 'inuse';
+  else if (st === 'ended' && !tp && !gd) key = 'ended';
+  else if (st === 'active' && tp && !gd) key = tp;
+  document.querySelectorAll('.sum-card').forEach(c => c.classList.remove('active-filter'));
+  if (key) { const el = document.querySelector('.' + CARD_CLASS[key]); if (el) el.classList.add('active-filter'); }
+}
 
 function filterByCard(key) {
-  document.querySelectorAll('.sum-card').forEach(c => c.classList.remove('active-filter'));
-  event.currentTarget.classList.add('active-filter');
-
-  const fn = statusFilterMap[key] || (() => true);
-  renderTable(ROWS.filter(fn));
-
-  // sync dropdowns
-  if (key === 'inuse')    { document.getElementById('fStatus').value = 'active'; }
-  else if (key === 'ended')  { document.getElementById('fStatus').value = 'ended'; }
-  else if (['teacher','parent','director'].includes(key)) {
-    document.getElementById('fType').value = key;
-    toggleGuardian();
-  } else {
-    document.getElementById('fStatus').value = '';
-    document.getElementById('fType').value = '';
-  }
-  renderChips();
+  $('fStatus').value = ''; $('fType').value = ''; $('fGuardian').value = '';
+  $('fRoute').value = ''; $('fOutFrom').value = ''; $('fOutTo').value = '';
+  if (key === 'inuse') $('fStatus').value = 'active';
+  else if (key === 'ended') $('fStatus').value = 'ended';
+  else if (['teacher','parent','director'].includes(key)) { $('fType').value = key; $('fStatus').value = 'active'; }
+  toggleGuardian();
+  applyFilters();
 }
 
 function toggleGuardian() {
-  const type = document.getElementById('fType').value;
-  const sel = document.getElementById('fGuardian');
-  const lbl = document.getElementById('labelGuardian');
+  const type = $('fType').value;
+  const sel = $('fGuardian');
+  const lbl = $('labelGuardian');
   if (type === 'parent') {
     sel.style.opacity = '1'; sel.style.pointerEvents = 'auto';
     lbl.style.color = 'var(--text-secondary)';
@@ -1570,56 +1712,58 @@ function toggleGuardian() {
   }
 }
 
-function doSearch() {
-  const q = document.getElementById('fSearchVal').value.trim().toLowerCase();
-  const type = document.getElementById('fSearchType').value;
-  if (!q) { renderTable(ROWS); return; }
-
-  const fieldMap = { '이름':'name', '통합ID':'login', '휴대폰':'phone', '이메일':'login' };
-  const field = fieldMap[type] || 'name';
-  renderTable(ROWS.filter(r => (r[field]||'').toLowerCase().includes(q)));
-  renderChips();
-  showToast('검색이 완료되었습니다.');
-}
+function doSearch() { applyFilters(); showToast('검색이 완료되었습니다.'); }
 
 function resetFilter() {
-  document.getElementById('fStatus').value = '';
-  document.getElementById('fType').value = '';
-  document.getElementById('fGuardian').value = '';
-  document.getElementById('fSearchVal').value = '';
+  $('fStatus').value = ''; $('fType').value = ''; $('fGuardian').value = '';
+  $('fRoute').value = ''; $('fOutFrom').value = ''; $('fOutTo').value = '';
+  $('fSearchVal').value = ''; $('fSearchType').selectedIndex = 0;
   toggleGuardian();
-  renderChips();
-  renderTable(ROWS);
-  document.querySelectorAll('.sum-card').forEach(c => c.classList.remove('active-filter'));
+  applyFilters();
   showToast('필터가 초기화되었습니다.');
 }
 
 function renderChips() {
-  const status = document.getElementById('fStatus');
-  const type   = document.getElementById('fType');
-  const guard  = document.getElementById('fGuardian');
-  const chips  = [];
-
-  const statusLabel = { active:'이용중', ended:'이용 종료', stop:'정지' };
+  const status = $('fStatus'), type = $('fType'), guard = $('fGuardian'), sv = $('fSearchVal');
+  const chips = [];
+  const statusLabel = { active:'이용중', ended:'서비스탈퇴' };
   const typeLabel   = { teacher:'교사', parent:'학부모', director:'기관장' };
   const guardLabel  = { main:'주계정', family:'가족계정' };
 
-  if (status.value) chips.push({ label: '상태: ' + statusLabel[status.value], clear: ()=>{ status.value=''; renderChips(); }});
-  if (type.value)   chips.push({ label: '유형: ' + typeLabel[type.value],   clear: ()=>{ type.value=''; renderChips(); toggleGuardian(); }});
-  if (guard.value)  chips.push({ label: '보호자: ' + guardLabel[guard.value], clear: ()=>{ guard.value=''; renderChips(); }});
+  if (status.value) chips.push({ label: '상태: ' + statusLabel[status.value], clear: ()=>{ status.value=''; applyFilters(); }});
+  if (type.value)   chips.push({ label: '유형: ' + typeLabel[type.value],   clear: ()=>{ type.value=''; toggleGuardian(); applyFilters(); }});
+  if (guard.value)  chips.push({ label: '보호자: ' + guardLabel[guard.value], clear: ()=>{ guard.value=''; applyFilters(); }});
+  if ($('fRoute').value) chips.push({ label: '가입경로: ' + $('fRoute').value, clear: ()=>{ $('fRoute').value=''; applyFilters(); }});
+  if ($('fOutFrom').value || $('fOutTo').value) chips.push({ label: '탈퇴일: ' + ($('fOutFrom').value || '…') + ' ~ ' + ($('fOutTo').value || '…'), clear: ()=>{ $('fOutFrom').value=''; $('fOutTo').value=''; applyFilters(); }});
+  if (sv.value.trim()) chips.push({ label: $('fSearchType').value + ': ' + sv.value.trim(), clear: ()=>{ sv.value=''; applyFilters(); }});
 
-  const wrap = document.getElementById('activeChips');
-  if (chips.length === 0) { wrap.style.display = 'none'; return; }
+  const wrap = $('activeChips');
+  window._chipFns = chips.map(c => c.clear);
+  if (chips.length === 0) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
   wrap.style.display = 'flex';
   wrap.innerHTML = chips.map((c,i) => `
     <div class="chip">
       ${c.label}
       <button class="chip-rm" onclick="chipClear(${i})">✕</button>
     </div>`).join('');
-  window._chipFns = chips.map(c => c.clear);
 }
 
 function chipClear(i) { window._chipFns[i](); }
+
+/* 현재 목록 CSV 내보내기 */
+function exportCsv() {
+  const rows = getFiltered();
+  const head = ['상태','유형','보호자','이름','통합ID','이메일','대표 소속','연결수','역할','직책','가입경로','로그인 수단','가입일','최근 이용일','탈퇴일'];
+  const body = rows.map(r => [r.statusLabel,r.typeLabel,r.guardian==='-'?'':r.guardian,r.name,r.uid,r.email,r.affiliMain+' / '+r.affiliSub,r.conn==='-'?'':r.conn,r.role,r.pos==='-'?'':r.pos,r.route,r.login,r.join,r.last,r.outDate||'']);
+  const csv = '﻿' + [head].concat(body).map(l => l.map(v => '"' + String(v ?? '').replace(/"/g,'""') + '"').join(',')).join('\r\n');
+  window.__lastCsv = csv;
+  if (!window.__noDownload) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+    a.download = '통합회원조회.csv'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  showToast('엑셀(CSV) 파일이 다운로드되었습니다. (' + rows.length + '건)');
+}
 
 /* ═══════════════════════════════
    CHECKBOX
@@ -1718,6 +1862,183 @@ function showToast(msg) {
 ═══════════════════════════════════════ */
 let currentDetailIdx = null;
 
+/* 상세 페이지용 샘플 파생 데이터 (회원 정보에서 계산) */
+const ROLE_FULL = { '담임':'담임교사', '보조':'보조교사' };
+function kidStatusStyle(s) {
+  if (s === '졸업') return { status:'졸업', statusColor:'#5B21B6', statusBg:'#EDE9FE' };
+  if (s === '퇴소') return { status:'퇴소', statusColor:'#374151', statusBg:'#F3F4F6' };
+  return { status:'재원중', statusColor:'#065F46', statusBg:'#D1FAE5' };
+}
+function deriveKids(r) {
+  const m = r.affiliSub.match(/^(.+?)\((.+?)·(.+?)\)(?:\s*외\s*(\d+)명)?/);
+  if (!m) return [];
+  const list = [{ name:m[1], cls:m[2], st:m[3] }];
+  const extra = m[4] ? parseInt(m[4], 10) : 0;
+  const given = ['하준','서연','도윤'];
+  for (let k = 0; k < extra; k++) list.push({ name:r.name[0] + given[k % given.length], cls:'꽃잎반', st:'재원' });
+  return list.map((c, k) => Object.assign({
+    appr: (extra >= 2 && k === list.length - 1) ? '승인 대기' : '승인 완료',
+    gender: k % 2 ? '남아' : '여아',
+    birth: (2019 + k) + '.04.' + String(10 + k * 5).padStart(2, '0'),
+    cid: r.affiliMain + '|' + c.name + '|' + (2019 + k) + '.04.' + String(10 + k * 5).padStart(2, '0'),
+    org: r.affiliMain, cls: c.cls, state: c.st === '재원' ? '재원중' : c.st,
+    avatar: k % 2 ? '👦' : '👧', avatarBg: k % 2 ? '#6EE7B7,#34D399' : '#FDE68A,#FCA5A5'
+  }, kidStatusStyle(c.st), { name: c.name }));
+}
+function parentKids(r) {
+  if (r.guardian !== '가족계정') return deriveKids(r);
+  const seen = new Set(), out = [];
+  LINKS.filter(l => l.sub === r.uid && l.status === 'active').forEach(l => {
+    const m = byUid(l.main);
+    deriveKids(m).filter(k => k.appr === '승인 완료').forEach(k => { if (!seen.has(k.cid)) { seen.add(k.cid); out.push(Object.assign({}, k, { via: m.name })); } });
+  });
+  return out;
+}
+function syncSub(r) {
+  const ks = parentKids(r);
+  r.conn = ks.length || '-';
+  if (ks.length) {
+    const k = ks[0];
+    r.affiliMain = k.org;
+    r.affiliSub = k.name + '(' + k.cls + '·' + (k.state === '재원중' ? '재원' : k.state) + ')' + (ks.length > 1 ? ' 외 ' + (ks.length - 1) + '명' : '');
+  } else r.affiliSub = '연결된 자녀 없음';
+}
+function deriveTeacherClasses(r) {
+  const roles = (r.role || '').split(',').map(x => ROLE_FULL[x.trim()] || x.trim()).filter(Boolean);
+  const first = r.affiliSub.replace(/\s*\((\d+세)·[^)]*\)/, '($1)');
+  const list = [{ name:first, role:roles[0] || '담임교사' }];
+  if (roles[1]) list.push({ name:'방과후반(3-5세)', role:roles[1] });
+  return list;
+}
+function memoHistoryHtml(r) {
+  const list = r.memoHistory || [];
+  if (!list.length) return '<div class="memo-hist-empty">등록된 메모가 없습니다.</div>';
+  return list.map(m => `
+    <div class="memo-hist-item">
+      <div class="memo-hist-meta">${m.at} · ${m.by}</div>
+      <div class="memo-hist-text">${escMemo(m.text)}</div>
+    </div>`).join('');
+}
+function escMemo(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function memoBlock(i, r, placeholder) {
+  const n = (r.memoHistory || []).length;
+  return `
+    <div class="dp2-memo-card">
+      <textarea class="dp2-memo-textarea" id="dpMemo_${i}"
+        placeholder="${placeholder}"
+        maxlength="500"
+        oninput="document.getElementById('dpMemoCount_${i}').textContent=this.value.length"
+      ></textarea>
+      <div class="dp2-memo-footer">
+        <div class="dp2-memo-count"><span id="dpMemoCount_${i}">0</span> / 500자</div>
+        <button class="dp2-memo-save" onclick="saveDpMemo(${i})">메모 저장</button>
+      </div>
+      <div class="memo-hist">
+        <div class="memo-hist-title">메모 히스토리 <b id="dpMemoN_${i}">${n}</b>건</div>
+        <div class="memo-hist-list" id="dpMemoHist_${i}">${memoHistoryHtml(r)}</div>
+      </div>
+    </div>`;
+}
+
+/* ── 가족계정: 연결된 가족 / 초대 대기 (모바일 '초대/관리' 화면 기준) ── */
+function shiftDate(s, n) {
+  const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function todayStr() { return shiftDate(new Date().toISOString().slice(0, 10), 0); }
+function ensurePending(r, i) {
+  if (r.pending) return;
+  r.pending = (r.guardian === '주계정' && r.status !== 's-out' && i % 2 === 1)
+    ? [{ id: 'p1', role: '할아버지', expires: shiftDate(todayStr(), 3 + (i % 5)) }] : [];
+}
+const dotDate = s => s.replace(/-/g, '.');
+function linkedMembers(r) {
+  const isMain = r.guardian !== '가족계정';
+  const mk = (id, m, since, main) => ({ id, role: m.role, name: m.name, login: m.login, joined: since, main });
+  const self = { id: 'self', role: r.role, name: r.name, login: r.login, joined: r.join, main: isMain };
+  const act = LINKS.filter(l => l.status === 'active');
+  if (isMain) return [self].concat(act.filter(l => l.main === r.uid).map(l => mk(l.id, byUid(l.sub), l.since, false)));
+  return act.filter(l => l.sub === r.uid).map(l => mk(l.id, byUid(l.main), l.since, true)).concat([self]);
+}
+function familyHtml(r, i) {
+  ensurePending(r, i);
+  const today = todayStr();
+  const fam = linkedMembers(r);
+  const connected = fam.map(m => {
+    const lc = loginTagMap[m.login] || 'tag-direct';
+    const self = m.id === 'self';
+    const btn = (!m.main && !self)
+      ? `<button class="fam-btn fam-danger" onclick="disconnectFamily(${i},'${m.id}')">연결해제</button>` : '';
+    return `
+      <div class="fam-row">
+        <div class="fam-role">${m.role}</div>
+        <div class="fam-main">
+          <div class="fam-name">${m.name}${self ? '<span class="fam-me">본인</span>' : ''}${m.main ? '<span class="fam-primary">주계정</span>' : ''}</div>
+          <div class="fam-sub"><span class="tag ${lc}">${m.login}</span><span>연결 ${dotDate(m.joined)}</span></div>
+        </div>
+        ${btn}
+      </div>`;
+  }).join('');
+  const pending = r.pending.map(p => {
+    const n = Math.round((new Date(p.expires + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000);
+    return `
+      <div class="fam-row">
+        <div class="fam-role">${p.role}</div>
+        <div class="fam-main">
+          <div class="fam-name">초대 링크 발급됨</div>
+          <div class="fam-sub"><span>연결 가능 기한 ~${dotDate(p.expires)}</span><span class="fam-dday">D-${n}</span></div>
+          <div class="fam-more" id="famMore_${p.id}" style="display:none">
+            <button class="fam-btn" onclick="showToast('초대 링크가 복사되었습니다.')">링크 복사</button>
+            <button class="fam-btn fam-danger" onclick="cancelPending(${i},'${p.id}')">초대 취소</button>
+          </div>
+        </div>
+        <button class="fam-btn" onclick="showToast('${p.role} 초대 링크를 재공유했습니다.')">재공유</button>
+        <button class="fam-btn fam-icon" title="더보기" onclick="toggleFamMore('${p.id}')">⋯</button>
+      </div>`;
+  }).join('');
+  const ended = LINKS.filter(l => l.status === 'ended' && (l.main === r.uid || l.sub === r.uid));
+  const endedHtml = ended.map(l => {
+    const o = byUid(l.main === r.uid ? l.sub : l.main);
+    return `
+      <div class="fam-row fam-ended">
+        <div class="fam-role">${o.role}</div>
+        <div class="fam-main">
+          <div class="fam-name">${o.name}<span class="fam-me">${l.main === r.uid ? '보조계정' : '주계정'} · 연결 종료</span></div>
+          <div class="fam-sub"><span>${dotDate(l.since)} ~ ${dotDate(l.endedAt)}</span><span>${l.endReason}</span></div>
+        </div>
+      </div>`;
+  }).join('');
+  return `
+      <div class="dp2-sec" style="margin-top:24px">가족계정 정보
+      </div>
+      <div class="dp2-family-card" style="max-width:640px;padding:6px 18px 14px">
+        <div class="fam-head">연결된 가족 <b>${fam.length}</b>명</div>
+        ${connected}
+        ${r.pending.length ? `<div class="fam-head" style="margin-top:10px">초대 대기 중 <b>${r.pending.length}</b>명</div>${pending}` : ''}
+        ${ended.length ? `<div class="fam-head" style="margin-top:10px">연결 종료 <b>${ended.length}</b>건 <span style="font-weight:500;color:#9CA3AF">· 연결 이력은 삭제되지 않고 보관됩니다</span></div>${endedHtml}` : ''}
+        ${r.voidedInvites ? `<div class="fam-note">주계정 서비스 탈퇴로 발급된 초대 링크 ${r.voidedInvites}건은 더 이상 사용할 수 없습니다.</div>` : ''}
+        <div class="fam-note">초대 링크는 1회만 사용할 수 있으며 유효기간은 7일입니다. 초대받은 사람이 가입하거나 로그인하면 자동으로 가족이 연결됩니다.</div>
+      </div>`;
+}
+function disconnectFamily(i, id) {
+  const r = ROWS[i], l = LINKS.find(x => x.id === id && x.status === 'active'); if (!l) return;
+  const sub = byUid(l.sub);
+  if (!confirm('"' + sub.name + '(' + sub.role + ')" 님의 가족 연결을 해제하시겠습니까?')) return;
+  l.status = 'ended'; l.endedAt = todayStr(); l.endReason = '관리자 연결 해제';
+  syncSub(sub); applyFilters();
+  showToast(sub.name + '(' + sub.role + ') 연결이 해제되었습니다.');
+  openDetailPage();
+}
+function cancelPending(i, id) {
+  const r = ROWS[i], p = r.pending.find(x => x.id === id); if (!p) return;
+  if (!confirm(p.role + ' 초대를 취소하시겠습니까? 발급된 링크는 사용할 수 없게 됩니다.')) return;
+  r.pending = r.pending.filter(x => x.id !== id);
+  showToast(p.role + ' 초대가 취소되었습니다.');
+  openDetailPage();
+}
+function toggleFamMore(id) { const el = document.getElementById('famMore_' + id); if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
+function goClassOps(name) { showToast('"' + name + '" 운영관리 화면으로 이동합니다.'); }
+
 function openDetailPage() {
   const overlay = document.getElementById('detailOverlay');
   if (overlay) overlay.classList.remove('show');
@@ -1730,23 +2051,18 @@ function openDetailPage() {
   const typeLabel = r.type === 'teacher' ? '상세-교사' : r.type === 'parent' ? '상세-학부모' : '상세-기관장';
   document.getElementById('dpPageLabel').textContent = typeLabel;
 
-  // 상단 버튼
+  // 상단 버튼 (탈퇴 회원은 탈퇴 버튼 숨김)
+  const isOut = r.status === 's-out';
   document.getElementById('dpPageActions').innerHTML = `
     <button class="dpa-btn dpa-list" onclick="closeDetailPage()">목록</button>
-    <button class="dpa-btn dpa-stop">정지</button>
-    <button class="dpa-btn dpa-out">서비스 탈퇴</button>
+    ${isOut ? '' : `<button class="dpa-btn dpa-out" onclick="setMemberStatus('out')">서비스 탈퇴</button>`}
     <button class="dpa-btn dpa-edit" onclick="showToast('수정 기능은 준비 중입니다.')">수정</button>
   `;
 
   // 상태 스타일
   const stMap = {
-    's-active':  { label:'재직중',   color:'#10B981', bg:'#D1FAE5', text:'#065F46' },
-    's-enroll':  { label:'재원중',   color:'#3B82F6', bg:'#DBEAFE', text:'#1E40AF' },
-    's-pending': { label:'대기',     color:'#F59E0B', bg:'#FEF3C7', text:'#92400E' },
-    's-dormant': { label:'휴면',     color:'#9CA3AF', bg:'#F3F4F6', text:'#374151' },
-    's-out':     { label:'서비스탈퇴',color:'#EF4444', bg:'#FEE2E2', text:'#991B1B' },
-    's-grad':    { label:'졸업',     color:'#8B5CF6', bg:'#EDE9FE', text:'#5B21B6' },
-    's-leave':   { label:'퇴사',     color:'#F59E0B', bg:'#FEF3C7', text:'#92400E' },
+    's-active':  { label:'이용중',    color:'#10B981', bg:'#D1FAE5', text:'#065F46' },
+    's-out':     { label:'서비스탈퇴', color:'#EF4444', bg:'#FEE2E2', text:'#991B1B' },
   };
   const st = stMap[r.status] || { label: r.statusLabel, color:'#9CA3AF', bg:'#F3F4F6', text:'#374151' };
   const stBadge = `<span class="inline-badge" style="background:${st.bg};color:${st.text}">
@@ -1756,34 +2072,45 @@ function openDetailPage() {
 
   const loginClass = loginTagMap[r.login] || 'tag-direct';
   const routeClass = routeTagMap[r.route] || 'tag-direct';
+  const mono = "font-family:'JetBrains Mono',monospace;font-size:12px";
+  const orgType = r.affiliMain.includes('유치원') ? '유치원' : '어린이집';
+
+  const classes = r.type === 'teacher' ? deriveTeacherClasses(r) : [];
+  const children = r.type === 'parent' ? parentKids(r) : [];
+  const connLabel = r.type === 'teacher' ? '연결 반 수' : r.type === 'parent' ? '연결 자녀 수' : '연결 수';
+  const connVal = r.type === 'teacher' ? classes.length + '개 반' : r.type === 'parent' ? children.length + '명' : '—';
 
   let html = '';
 
-  /* ─── 공통: 상태정보 + 회원정보 ─── */
+  /* ─── 공통: 상태정보 ─── */
   html += `
-    <!-- 상태정보 -->
     <div class="dp2-sec" style="margin-top:8px">상태정보</div>
     <div class="dp2-status-wrap">
       <div class="dp2-status-inner">
         <div class="dp2-status-cell">
-          <div class="dp2-cell-label">알림장 상태</div>
+          <div class="dp2-cell-label">서비스 상태</div>
           <div class="dp2-cell-val">${stBadge}</div>
+          ${r.status === 's-out' && r.outDate ? `<div id="outElapsed" style="margin-top:8px;font-size:12px;font-weight:600;color:#DC2626">+${Math.max(0, Math.round((new Date(todayStr() + 'T00:00:00') - new Date(r.outDate + 'T00:00:00')) / 86400000))}일 경과</div>` : ''}
         </div>
         <div class="dp2-status-cell">
           <div class="dp2-cell-label">알림장 가입일</div>
-          <div class="dp2-cell-val" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">${r.join}</div>
+          <div class="dp2-cell-val" style="${mono}">${r.join}</div>
         </div>
         <div class="dp2-status-cell">
           <div class="dp2-cell-label">최근 이용일</div>
-          <div class="dp2-cell-val" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">${r.last}</div>
+          <div class="dp2-cell-val" style="${mono}">${r.last}</div>
         </div>
+        ${r.status === 's-out' ? `<div class="dp2-status-cell">
+          <div class="dp2-cell-label">탈퇴일</div>
+          <div class="dp2-cell-val" style="${mono};color:#DC2626">${r.outDate || '-'}</div>
+        </div>` : ''}
         <div class="dp2-status-cell">
           <div class="dp2-cell-label">가입 경로</div>
           <div class="dp2-cell-val"><span class="tag ${routeClass}" style="font-size:11px">${r.route}</span></div>
         </div>
         <div class="dp2-status-cell" style="border-right:none">
-          <div class="dp2-cell-label">연결 수(당반)</div>
-          <div class="dp2-cell-val">${r.conn !== '-' ? r.conn : '—'}</div>
+          <div class="dp2-cell-label">${connLabel}</div>
+          <div class="dp2-cell-val">${connVal}</div>
         </div>
       </div>
       <div class="dp2-photo-cell">
@@ -1794,10 +2121,9 @@ function openDetailPage() {
       </div>
     </div>`;
 
-  /* ─── 교사 / 기관장 타입 ─── */
+  /* ─── 교사 / 기관장 ─── */
   if (r.type === 'teacher' || r.type === 'director') {
     html += `
-      <!-- 회원정보 -->
       <div class="dp2-sec">회원정보</div>
       <table class="dp2-info-table">
         <tr>
@@ -1806,35 +2132,24 @@ function openDetailPage() {
           <td class="label">이름</td>
           <td class="val">${r.name}</td>
           <td class="label">성별</td>
-          <td class="val">남자</td>
+          <td class="val">${r.gender}</td>
           <td class="label">생년월일</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace;font-size:12px">1988.01.01</td>
+          <td class="val" style="${mono}">${r.birth}</td>
         </tr>
         <tr>
           <td class="label">통합아이디</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace;font-size:12px">eunwoo945</td>
+          <td class="val" style="${mono}">${r.uid}</td>
           <td class="label">로그인 수단</td>
-          <td class="val"><span class="tag ${loginClass}">${r.login}</span></td>
-          <td class="label" colspan="2"></td>
-          <td class="label" colspan="2"></td>
+          <td class="val" colspan="5"><span class="tag ${loginClass}">${r.login}</span></td>
         </tr>
         <tr>
           <td class="label">전화번호</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace">${r.phone}</td>
+          <td class="val" style="${mono}">${r.phone}</td>
           <td class="label">이메일</td>
-          <td class="val" colspan="5">
-            <div style="display:flex;align-items:center;gap:6px">
-              <input style="border:1px solid #D1D5DB;border-radius:5px;padding:4px 8px;font-size:12.5px;width:120px" value="jalsangkim" readonly>
-              <span style="color:#9CA3AF;font-weight:600">@</span>
-              <select style="border:1px solid #D1D5DB;border-radius:5px;padding:4px 8px;font-size:12.5px;background:#F9FAFB;width:120px">
-                <option>gmail.com</option><option>naver.com</option><option>kakao.com</option>
-              </select>
-            </div>
-          </td>
+          <td class="val" colspan="5">${r.email}</td>
         </tr>
       </table>
 
-      <!-- 소속정보 + 관리자 메모 -->
       <div class="dp2-two-col">
         <div>
           <div class="dp2-sec">소속정보</div>
@@ -1843,70 +2158,31 @@ function openDetailPage() {
               <div class="dp2-affil-label">기관명</div>
               <div class="dp2-affil-val">${r.affiliMain}</div>
               <div class="dp2-affil-label">기관유형</div>
-              <div class="dp2-affil-val">유치원</div>
+              <div class="dp2-affil-val">${orgType}</div>
             </div>
             <div class="dp2-affil-row">
               <div class="dp2-affil-label">직책</div>
-              <div class="dp2-affil-val full">
-                <div class="dp2-toggle"></div>
-                <span style="font-size:13px;font-weight:600">${r.pos !== '-' ? r.pos : '부원장'}</span>
-                <svg width="14" height="14" fill="none" stroke="#9CA3AF" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-              </div>
+              <div class="dp2-affil-val full">${r.pos !== '-' ? r.pos : '—'}</div>
             </div>
+            ${classes.map((c, k) => `
             <div class="dp2-affil-row">
-              <div class="dp2-affil-label">소속반1</div>
-              <div class="dp2-affil-val">꽃잎반(2세)</div>
-              <div class="dp2-affil-label">역할1</div>
-              <div class="dp2-affil-val">
-                <select class="dp2-select"><option>담임교사</option><option>보조교사</option></select>
-              </div>
-            </div>
-            <div class="dp2-affil-row">
-              <div class="dp2-affil-label">소속반2</div>
-              <div class="dp2-affil-val">방과후반(3-5세)</div>
-              <div class="dp2-affil-label">역할2</div>
-              <div class="dp2-affil-val">
-                <select class="dp2-select"><option>보조교사</option><option>담임교사</option></select>
-              </div>
-            </div>
+              <div class="dp2-affil-label">소속반${k + 1}</div>
+              <div class="dp2-affil-val"><span>${c.name}</span><button class="dp2-link-btn" onclick="goClassOps('${c.name}')">운영관리 바로가기 ›</button></div>
+              <div class="dp2-affil-label">역할${k + 1}</div>
+              <div class="dp2-affil-val">${c.role}</div>
+            </div>`).join('')}
           </div>
         </div>
-    <div>
-    <div class="dp2-sec">관리자 메모</div>
-    <div class="dp2-memo-card">
-        <textarea class="dp2-memo-textarea" id="dpMemo_${i}"
-            placeholder="계정 정지, 서비스탈퇴, 소속 변경 등 처리 시 참고용 메모를 입력 합니다."
-            maxlength="500"
-            oninput="document.getElementById('dpMemoCount_${i}').textContent=this.value.length"
-        >${r.memo||''}</textarea>
-        
-        <div class="dp2-memo-footer">
-            <div class="dp2-memo-count">
-                <span id="dpMemoCount_${i}">${(r.memo||'').length}</span> / 500자
-            </div>
-            
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                <button class="dp2-memo-save" onclick="saveDpMemo(${i})">저장</button>
-                <div class="dp2-memo-date">마지막 수정: 2025-12-02 16:10, 김관리자</div>
-            </div>
+        <div>
+          <div class="dp2-sec">관리자 메모</div>
+          ${memoBlock(i, r, '서비스탈퇴, 소속 변경 등 처리 시 참고용 메모를 입력 합니다.')}
         </div>
-    </div>
-</div>`;
+      </div>`;
   }
 
-  /* ─── 학부모 타입 ─── */
+  /* ─── 학부모 ─── */
   else if (r.type === 'parent') {
-    const children = r.children || [
-      { name:'김하윤', status:'졸업', statusColor:'#EF4444', statusBg:'#FEE2E2',
-        gender:'여아', birth:'2019.04.25', org:'키드키즈 유치원', cls:'솔이반(5세)', state:'졸업 (2026.02)',
-        avatar:'👧', avatarBg:'#FDE68A,#FCA5A5' },
-      { name:'김하준', status:'재원중', statusColor:'#10B981', statusBg:'#D1FAE5',
-        gender:'남아', birth:'2021.04.25', org:'기쁜 어린이집', cls:'꽃잎반(4세)', state:'재원중',
-        avatar:'👦', avatarBg:'#6EE7B7,#34D399' },
-    ];
-
     html += `
-      <!-- 회원정보 (학부모) -->
       <div class="dp2-sec">회원정보</div>
       <table class="dp2-info-table">
         <tr>
@@ -1915,13 +2191,13 @@ function openDetailPage() {
           <td class="label">이름</td>
           <td class="val">${r.name}</td>
           <td class="label">성별</td>
-          <td class="val">여자</td>
+          <td class="val">${r.gender}</td>
           <td class="label">생년월일</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace;font-size:12px">1988.01.01</td>
+          <td class="val" style="${mono}">${r.birth}</td>
         </tr>
         <tr>
           <td class="label">통합회원번호</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace;font-size:12px">M00001234</td>
+          <td class="val" style="${mono}">M${String(10000 + i * 7).padStart(8, '0')}</td>
           <td class="label">로그인 수단</td>
           <td class="val"><span class="tag ${loginClass}">${r.login}</span></td>
           <td class="label">보호자 유형</td>
@@ -1931,31 +2207,30 @@ function openDetailPage() {
         </tr>
         <tr>
           <td class="label">연락처</td>
-          <td class="val" style="font-family:'JetBrains Mono',monospace">${r.phone}</td>
+          <td class="val" style="${mono}">${r.phone}</td>
           <td class="label">이메일</td>
-          <td class="val" colspan="5">jalsangkim@gmail.com</td>
+          <td class="val" colspan="5">${r.email}</td>
         </tr>
       </table>
       <p class="dp2-notice">개인정보(이름, 생년월일, 연락처, 이메일, 로그인 수단)는 통합회원 관리 화면에서만 변경 가능합니다.</p>
 
-      <!-- 소속정보 (자녀 목록) -->
-      <div class="dp2-sec">소속정보
-        <button style="margin-left:auto;font-size:12px;color:#4361EE;background:#EEF1FD;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit" onclick="showToast('자녀 추가 기능 준비 중입니다.')">⊕ 자녀추가</button>
-      </div>
+      <div class="dp2-sec">소속정보 (자녀 ${children.length}명)</div>
+      <p class="dp2-notice" style="margin:-4px 0 10px">자녀 추가·승인은 학부모 주계정이 앱에서 신청하고 해당 기관 반 선생님이 승인합니다. 슈퍼관리자는 연결된 자녀와 승인 상태를 조회만 할 수 있습니다. 자녀의 졸업·퇴소는 기관 소속 상태이며, 학부모 계정의 서비스 상태에는 영향을 주지 않습니다.</p>
+      ${children.length ? '' : '<p class="dp2-notice">조회 가능한 자녀가 없습니다. (연결된 주계정이 없거나 서비스 탈퇴)</p>'}
       <div class="dp2-children-area">
-        ${children.map((c,ci) => `
+        ${children.map(c => `
         <div class="dp2-child-card">
           <div class="dp2-child-inner">
             <div class="dp2-child-photo">
               <div class="dp2-child-img" style="background:linear-gradient(135deg,${c.avatarBg})">
                 <span style="font-size:28px">${c.avatar}</span>
               </div>
-              <button class="dp2-child-photo-btn" onclick="showToast('사진 등록 기능 준비 중입니다.')">사진등록</button>
             </div>
             <div class="dp2-child-info">
               <div class="dp2-child-name-row">
                 <span class="dp2-child-name">${c.name}</span>
                 <span class="inline-badge" style="background:${c.statusBg};color:${c.statusColor};font-size:11.5px">${c.status}</span>
+                <span class="inline-badge" style="background:${c.appr === '승인 대기' ? '#FEF3C7' : '#E0E7FF'};color:${c.appr === '승인 대기' ? '#92400E' : '#3730A3'};font-size:11.5px">${c.appr}</span>
               </div>
               <div class="dp2-child-grid">
                 <div class="dp2-child-cell">
@@ -1964,7 +2239,7 @@ function openDetailPage() {
                 </div>
                 <div class="dp2-child-cell">
                   <div class="dp2-child-label">생년월일</div>
-                  <div class="dp2-child-val" style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.birth}</div>
+                  <div class="dp2-child-val" style="${mono}">${c.birth}</div>
                 </div>
                 <div class="dp2-child-cell wide">
                   <div class="dp2-child-label">기관명</div>
@@ -1972,10 +2247,10 @@ function openDetailPage() {
                 </div>
                 <div class="dp2-child-cell">
                   <div class="dp2-child-label">소속반</div>
-                  <div class="dp2-child-val"><a onclick="showToast('반 상세 준비 중')">${c.cls}</a></div>
+                  <div class="dp2-child-val">${c.cls}</div>
                 </div>
                 <div class="dp2-child-cell">
-                  <div class="dp2-child-label">상태</div>
+                  <div class="dp2-child-label">기관 소속 상태</div>
                   <div class="dp2-child-val">${c.state}</div>
                 </div>
               </div>
@@ -1984,65 +2259,15 @@ function openDetailPage() {
         </div>`).join('')}
       </div>
 
-      <!-- 가족계정 정보 (소속정보 하단) -->
-      <div class="dp2-sec" style="margin-top:24px">가족계정 정보(${r.conn > 0 ? r.conn + 2 : 4})
-        <button style="margin-left:auto;font-size:12px;color:#fff;background:#374151;border:none;padding:5px 12px;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:600" onclick="showToast('주계정 변경 기능 준비 중입니다.')">주계정 변경</button>
-      </div>
-      <div class="dp2-family-card" style="max-width:600px">
-        <!-- 본인 -->
-        <div style="padding:12px 18px 8px;border-bottom:1px solid #F3F4F6">
-          <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px">본인</div>
-          <div style="display:grid;grid-template-columns:80px 1fr 80px 1fr 100px;align-items:center;gap:0;background:#F9FAFB;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden">
-            <div style="padding:10px 14px;font-size:12px;color:#9CA3AF;border-right:1px solid #E5E7EB">역할</div>
-            <div style="padding:10px 14px;font-size:13px;font-weight:500;border-right:1px solid #E5E7EB">${r.role}</div>
-            <div style="padding:10px 14px;font-size:12px;color:#9CA3AF;border-right:1px solid #E5E7EB">이름</div>
-            <div style="padding:10px 14px;font-size:13px;font-weight:600;color:#1A1D2E;border-right:1px solid #E5E7EB">${r.name}</div>
-            <div style="padding:10px 14px;text-align:center">
-              <span style="font-size:11.5px;color:#4361EE;background:#EEF1FD;padding:3px 8px;border-radius:5px;font-weight:700">주계정</span>
-            </div>
-          </div>
-        </div>
-        <!-- 연결 가족 -->
-        <div style="padding:12px 18px 6px">
-          <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px">연결 가족</div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            ${[
-              { role:'아빠',   name:'김진영' },
-              { role:'할머니', name:'유의순' },
-              { role:'할아버지',name:'김진곤' },
-            ].map(m => `
-            <div style="display:grid;grid-template-columns:80px 1fr 80px 1fr;align-items:center;border:1px solid #E5E7EB;border-radius:7px;overflow:hidden">
-              <div style="padding:9px 14px;font-size:12px;color:#9CA3AF;background:#FAFAFA;border-right:1px solid #E5E7EB">역할</div>
-              <div style="padding:9px 14px;font-size:13px;font-weight:500;border-right:1px solid #E5E7EB">${m.role}</div>
-              <div style="padding:9px 14px;font-size:12px;color:#9CA3AF;background:#FAFAFA;border-right:1px solid #E5E7EB">이름</div>
-              <div style="padding:9px 14px;font-size:13px;font-weight:600;color:#4361EE;cursor:pointer" onclick="showToast('회원 상세로 이동합니다.')">${m.name}</div>
-            </div>`).join('')}
-          </div>
-        </div>
-        <div style="height:6px"></div>
-      </div>
+${familyHtml(r, i)}
 
-      <!-- 관리자 메모 (학부모: 전폭) -->
       <div class="dp2-sec">관리자 메모</div>
-      <div class="dp2-memo-card">
-        <textarea class="dp2-memo-textarea" id="dpMemo_${i}"
-          placeholder="계정 정지, 서비스탈퇴, 자녀 연결 변경 등 처리 시 참고용 메모를 입력 합니다."
-          maxlength="500"
-          oninput="document.getElementById('dpMemoCount_${i}').textContent=this.value.length"
-        >${r.memo||''}</textarea>
-        <div class="dp2-memo-footer">
-          <div>
-            <div class="dp2-memo-count"><span id="dpMemoCount_${i}">${(r.memo||'').length}</span> / 500자</div>
-            <div class="dp2-memo-date">마지막 수정: 2025-12-02 16:10, 김관리자</div>
-          </div>
-          <button class="dp2-memo-save" onclick="saveDpMemo(${i})">메모 저장</button>
-        </div>
-      </div>`;
+      ${memoBlock(i, r, '서비스탈퇴, 자녀 연결 변경 등 처리 시 참고용 메모를 입력 합니다.')}`;
   }
 
   document.getElementById('dpPageBody').innerHTML = html;
   document.getElementById('detailPage').classList.add('show');
-  window.scrollTo(0, 0);
+  document.getElementById('detailPage').scrollTop = 0;
 }
 
 function closeDetailPage() {
@@ -2050,13 +2275,63 @@ function closeDetailPage() {
 }
 
 function saveDpMemo(i) {
-  const val = document.getElementById('dpMemo_' + i).value;
-  ROWS[i].memo = val;
+  const ta = document.getElementById('dpMemo_' + i);
+  const val = ta.value.trim();
+  if (!val) { showToast('메모 내용을 입력해 주세요.'); return; }
+  const r = ROWS[i];
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const at = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  r.memoHistory = r.memoHistory || [];
+  r.memoHistory.unshift({ at, by: '슈퍼 관리자', text: val });      // 최신순으로 계속 누적 보관
+  ta.value = '';
+  document.getElementById('dpMemoCount_' + i).textContent = '0';
+  document.getElementById('dpMemoHist_' + i).innerHTML = memoHistoryHtml(r);
+  document.getElementById('dpMemoN_' + i).textContent = r.memoHistory.length;
   showToast('메모가 저장되었습니다.');
 }
 
+/* 서비스 탈퇴: 사유 입력 → 처리 → 이력/목록/KPI 반영 (프로토타입: 화면 상태만 변경) */
+function setMemberStatus() {
+  const r = ROWS[currentDetailIdx]; if (!r || r.status === 's-out') return;
+  $('wdTarget').textContent = r.name + ' (' + r.typeLabel + ')';
+  $('wdNote').style.display = r.type === 'parent' ? 'inline' : 'none';
+  const subs = r.guardian === '주계정' ? LINKS.filter(l => l.main === r.uid && l.status === 'active').length : 0;
+  $('wdFamNote').innerHTML = subs ? '<br>연결된 보조계정 ' + subs + '명의 자녀 조회 권한이 종료됩니다. (보조계정 자체는 탈퇴되지 않으며, 다른 주계정과의 연결은 유지됩니다.) 발급된 초대 링크는 사용할 수 없게 됩니다.' : '';
+  $('wdReason').value = ''; $('wdCount').textContent = '0';
+  $('wdModal').classList.add('show');
+  setTimeout(() => $('wdReason').focus(), 0);
+}
+function closeWithdraw() { $('wdModal').classList.remove('show'); }
+function submitWithdraw() {
+  const r = ROWS[currentDetailIdx]; if (!r || r.status === 's-out') return;
+  const reason = $('wdReason').value.trim();
+  if (reason.length < 10) { showToast('탈퇴 사유를 10자 이상 입력해 주세요.'); return; }
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const at = todayStr() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  r.status = 's-out'; r.statusLabel = '서비스탈퇴'; r.outDate = todayStr();
+  r.statusHistory.unshift({ at, from: '이용중', to: '서비스탈퇴', reason, by: '슈퍼 관리자' });
+  r.withdrawal = { date: r.outDate, by: '슈퍼 관리자', reason, scope: 'NEW 알림장 서비스' };   // 키드키즈 통합회원 탈퇴와 구분
+  ensurePending(r, ROWS.indexOf(r));
+  let cut = 0;
+  LINKS.filter(l => l.status === 'active' && (l.main === r.uid || l.sub === r.uid)).forEach(l => {
+    l.status = 'ended'; l.endedAt = r.outDate; l.endReason = l.main === r.uid ? '주계정 서비스 탈퇴' : '보조계정 서비스 탈퇴';
+    if (l.main === r.uid) { cut++; syncSub(byUid(l.sub)); }      // 보조계정 상태는 그대로, 해당 연결만 종료
+  });
+  if (r.guardian === '주계정') { r.voidedInvites = (r.voidedInvites || 0) + r.pending.length; r.pending = []; }
+  closeWithdraw();
+  showToast(cut ? '서비스 탈퇴 처리되었습니다. 보조계정 ' + cut + '명의 조회 권한이 종료되었습니다.' : '서비스 탈퇴 처리되었습니다.');
+  applyFilters(); openDetailPage();
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('wdModal').classList.contains('show')) { closeWithdraw(); return; }
+  const dp = document.getElementById('detailPage');
+  if (dp.classList.contains('show')) closeDetailPage(); else closeDetail();
+});
 
-renderTable(ROWS);
+
+ROWS.filter(r => r.guardian === '가족계정').forEach(syncSub);
+applyFilters();
 
 /* ── nav sub-menu toggle ── */
 function toggleSubNav(el, subId) {
@@ -2068,5 +2343,6 @@ function toggleSubNav(el, subId) {
   if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
 }
 </script>
+<script src="nav-links.js"></script>
 </body>
 </html>

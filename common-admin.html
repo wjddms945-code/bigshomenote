@@ -616,6 +616,39 @@ tr.row-sel td { background: var(--accent-primary-light); }
   background: var(--accent-primary); border-radius: 2px;
   margin-right: 10px; display: inline-block;
 }
+
+/* ══════════════════════════════════
+   CATEGORY MANAGER (운영 카테고리)
+══════════════════════════════════ */
+.cat-val { min-height:36px; display:flex; align-items:center; gap:6px; padding:0 12px; border:1px solid var(--border-medium); border-radius:var(--radius-md); background:#F3F4F6; color:var(--text-secondary); font-size:13px; }
+.cat-note { padding:10px 12px; border-radius:6px; margin-bottom:16px; font-size:12.5px; line-height:1.6; background:var(--amber-bg); color:var(--amber-text); }
+.cat-hint { font-size:11.5px; color:var(--text-muted); margin-top:5px; line-height:1.55; }
+.cat-sw-row { display:flex; gap:8px; flex-wrap:wrap; }
+.cat-sw { width:28px; height:28px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px var(--border-medium); cursor:pointer; padding:0; }
+.cat-sw.on { box-shadow:0 0 0 2px var(--accent-primary); }
+.cat-dot { width:10px; height:10px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.cat-prev { display:flex; gap:8px; flex-wrap:wrap; padding:12px 14px; border:1px dashed var(--border-medium); border-radius:var(--radius-md); background:#FAFBFC; }
+.cat-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border:1px solid var(--border-medium); border-radius:20px; font-size:12.5px; background:#fff; }
+.cat-sec { flex:1 1 100%; display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--border-medium); border-radius:var(--radius-md); background:#fff; font-size:13px; }
+.cat-sec b { width:22px; height:22px; border-radius:50%; background:var(--accent-primary); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; }
+.cat-sec span { margin-left:auto; font-size:11.5px; color:var(--text-muted); }
+.cat-radio { flex:1 1 100%; font-size:13px; }
+.tree-row.cat-off { opacity:.55; }
+.tree-num { font-size:11px; color:var(--text-muted); min-width:14px; }
+#screen-category .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* ══════════════════════════════════
+   PERMISSION MANAGER (관리자 / 기관 사용자)
+══════════════════════════════════ */
+.perm-note { padding:9px 12px; border-radius:6px; font-size:12px; line-height:1.6; background:var(--accent-primary-light); color:var(--blue-text); }
+.matrix-table tr.perm-parent td { background:#F8F9FB; font-weight:700; }
+.matrix-table tr.perm-child td:first-child { padding-left:32px; font-weight:400; }
+.perm-dash { color:var(--text-muted); }
+.chk:indeterminate { background: var(--accent-primary); border-color: var(--accent-primary); }
+.chk:indeterminate::after { content:''; position:absolute; left:2px; top:5px; width:8px; height:0; border-top:2px solid #fff; }
+.perm-fixed-tag { margin-left:6px; font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px; background:#F3F4F6; color:#374151; }
+#screen-permission .btn:disabled { opacity:.4; cursor:not-allowed; }
+#screen-permission .form-control:disabled, #screen-permission .f-select:disabled { background:#F3F4F6; color:var(--text-secondary); cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -642,10 +675,10 @@ tr.row-sel td { background: var(--accent-primary-light); }
   <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 </div>
     <div class="nav-sub" id="subCommon">
-      <div class="nav-item active-sub" id="sub-code" onclick="showScreen('code')">코드 관리</div>
+      <div class="nav-item active-sub" id="sub-code" onclick="showScreen('code')" style="opacity:0.55">코드관리(Ver2)</div>
       <div class="nav-item" id="sub-category" onclick="showScreen('category')">카테고리 관리</div>
       <div class="nav-item" id="sub-terms" onclick="showScreen('terms')">약관/동의 관리</div>
-      <div class="nav-item" id="sub-i18n" onclick="showScreen('i18n')">다국어 관리</div>
+      <div class="nav-item" id="sub-i18n" onclick="showScreen('i18n')" style="opacity:0.55">다국어관리(Ver2)</div>
       <div class="nav-item" id="sub-permission" onclick="showScreen('permission')">권한/그룹 관리</div>
       <div class="nav-item" id="sub-log" onclick="showScreen('log')">로그 관리</div>
     </div>
@@ -658,30 +691,35 @@ tr.row-sel td { background: var(--accent-primary-light); }
     </div>
     <div class="nav-sub" id="subMember" style="display:none">
       <div class="nav-item" onclick="location.href='member-list-admin.html'">통합회원 조회</div>
-      <div class="nav-item" onclick="location.href='member-approval.html'">가입/승인 관리</div>
-      <div class="nav-item" onclick="location.href='invitation-admin__2_.html'">초대 관리</div>
-      <div class="nav-item" onclick="location.href='member-status-admin.html'">회원 상태관리</div>
+      <div class="nav-item" onclick="location.href='member-approval.html'">가입 승인 관리</div>
     </div>
 
 <div class="nav-item" onclick="document.getElementById('sub-org').style.display = document.getElementById('sub-org').style.display === 'block' ? 'none' : 'block'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-  기관관리
+  기관/승인관리
   <span class="nav-badge" style="margin-left:auto;background:#4361EE;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">5</span>
   <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
 </div>
 <div class="nav-sub" id="sub-org" style="display:none">
   <div class="nav-item" onclick="location.href='org-admin.html'" style="cursor:pointer">기관 조회</div>
   <div class="nav-item" onclick="location.href='org-admin.html#approval'" style="cursor:pointer">기관 승인 관리 <span class="nav-badge">5</span></div>
-  <div class="nav-item" onclick="location.href='org-admin.html#status'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#membership'" style="cursor:pointer">멤버십 관리</div>
+  <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+  <div id="sub-invite" style="display:none;background:rgba(0,0,0,0.12)">
+    <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+    <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+  </div>
 </div>
 
 
-<div class="nav-item" style="cursor:default;opacity:0.5">
-  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-  </svg>
-  운영관리 
-  <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
+  <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
 <div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
@@ -849,11 +887,11 @@ tr.row-sel td { background: var(--accent-primary-light); }
     <!-- ══════════════════════════════════
          2. 카테고리 관리
     ══════════════════════════════════ -->
-    <div id="screen-category" class="screen fade-up">
+        <div id="screen-category" class="screen fade-up">
       <div class="page-header">
         <div>
           <div class="page-title">카테고리 관리</div>
-          <div class="page-subtitle">서비스 내 분류체계를 계층 구조로 관리합니다.</div>
+          <div class="page-subtitle">APP에서 선택하거나 노출되는 운영 카테고리를 서비스별로 관리합니다.</div>
         </div>
       </div>
 
@@ -862,10 +900,10 @@ tr.row-sel td { background: var(--accent-primary-light); }
         <div class="filter-row">
           <span class="f-label">카테고리 유형</span>
           <div class="f-select-wrap">
-            <select class="f-select"><option>전체</option><option>자료 카테고리</option><option>공지 카테고리</option><option>앨범 카테고리</option><option>연령 카테고리</option><option>주제/영역 분류</option></select>
+            <select class="f-select" id="catFSvc" onchange="catRender()"><option value="">전체</option><option value="notice">공지사항</option><option value="meal">식단표</option><option value="attend">출석부</option><option value="schedule">스케줄</option><option value="cs">고객센터</option><option value="material">자료</option></select>
           </div>
           <div class="f-select-wrap">
-            <select class="f-select"><option>사용여부 전체</option><option>사용</option><option>미사용</option></select>
+            <select class="f-select" id="catFUsed" onchange="catRender()"><option value="">사용여부 전체</option><option value="used">사용</option><option value="unused">미사용</option></select>
           </div>
         </div>
       </div>
@@ -875,98 +913,22 @@ tr.row-sel td { background: var(--accent-primary-light); }
         <div class="split-left">
           <div class="split-left-header">
             <span class="split-left-title">카테고리 트리</span>
-            <button class="btn btn-primary btn-sm" onclick="showPanel('categoryPanel','카테고리 추가')">+ 추가</button>
+            <button class="btn btn-primary btn-sm" onclick="catOpenAdd(null)">+ 추가</button>
           </div>
-          <div class="tree-wrap">
-            <!-- 자료 카테고리 -->
-            <div class="tree-node">
-              <div class="tree-row active" onclick="selectTree(this,'자료 카테고리')">
-                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">▼</span>
-                <span class="tree-icon">📁</span>
-                <span class="tree-label">자료 카테고리</span>
-                <span class="tbadge t-blue" style="font-size:10px">루트</span>
-              </div>
-              <div class="tree-children">
-                <div class="tree-node">
-                  <div class="tree-row" onclick="selectTree(this,'교육 자료')">
-                    <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">▼</span>
-                    <span class="tree-icon">📂</span>
-                    <span class="tree-label">교육 자료</span>
-                  </div>
-                  <div class="tree-children">
-                    <div class="tree-row" onclick="selectTree(this,'수업 계획안')"><span class="tree-toggle"></span><span class="tree-icon">📄</span><span class="tree-label">수업 계획안</span></div>
-                    <div class="tree-row" onclick="selectTree(this,'활동지')"><span class="tree-toggle"></span><span class="tree-icon">📄</span><span class="tree-label">활동지</span></div>
-                  </div>
-                </div>
-                <div class="tree-row" onclick="selectTree(this,'생활 안내')"><span class="tree-toggle"></span><span class="tree-icon">📂</span><span class="tree-label">생활 안내</span></div>
-              </div>
-            </div>
-            <!-- 공지 카테고리 -->
-            <div class="tree-node">
-              <div class="tree-row" onclick="selectTree(this,'공지 카테고리')">
-                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
-                <span class="tree-icon">📁</span>
-                <span class="tree-label">공지 카테고리</span>
-                <span class="tbadge t-blue" style="font-size:10px">루트</span>
-              </div>
-            </div>
-            <!-- 앨범 카테고리 -->
-            <div class="tree-node">
-              <div class="tree-row" onclick="selectTree(this,'앨범 카테고리')">
-                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
-                <span class="tree-icon">📁</span>
-                <span class="tree-label">앨범 카테고리</span>
-                <span class="tbadge t-blue" style="font-size:10px">루트</span>
-              </div>
-            </div>
-            <!-- 연령 카테고리 -->
-            <div class="tree-node">
-              <div class="tree-row" onclick="selectTree(this,'연령 카테고리')">
-                <span class="tree-toggle" onclick="event.stopPropagation();toggleTree(this)">►</span>
-                <span class="tree-icon">📁</span>
-                <span class="tree-label">연령 카테고리</span>
-                <span class="tbadge t-blue" style="font-size:10px">루트</span>
-              </div>
-            </div>
-          </div>
+          <div class="tree-wrap" id="catTree"></div>
         </div>
 
         <!-- 우: 상세 편집 패널 -->
         <div class="table-card">
           <div class="table-toolbar">
-            <div class="result-info">선택된 카테고리: <strong id="catTitle">자료 카테고리</strong></div>
+            <div class="result-info">선택된 카테고리: <strong id="catTitle"></strong></div>
             <div class="toolbar-right">
-              <button class="btn btn-secondary btn-sm" onclick="showPanel('categoryPanel','하위 카테고리 추가')">+ 하위 추가</button>
-              <button class="btn btn-primary btn-sm" onclick="showPanel('categoryPanel','카테고리 수정')">수정</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--red-text);border-color:var(--red-bg)" onclick="toast('삭제 기능은 하위 카테고리가 없을 때만 가능합니다.','⚠️')">삭제</button>
+              <button class="btn btn-secondary btn-sm" id="catBtnChild" onclick="catOpenAdd(catSel)">+ 하위 추가</button>
+              <button class="btn btn-primary btn-sm" id="catBtnEdit" onclick="catOpenEdit(catSel)">수정</button>
+              <button class="btn btn-ghost btn-sm" id="catBtnDel" style="color:var(--red-text);border-color:var(--red-bg)" onclick="catDelete(catSel)">삭제</button>
             </div>
           </div>
-          <div style="padding:20px 24px">
-            <div class="sec-divider">기본 정보</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
-              <div class="form-group"><label class="form-label">카테고리명</label><input class="form-control" value="자료 카테고리"></div>
-              <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" value="MATERIAL_CAT"></div>
-              <div class="form-group"><label class="form-label">카테고리 유형</label>
-                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>자료 카테고리</option></select></div>
-              </div>
-              <div class="form-group"><label class="form-label">Depth</label><input class="form-control" value="1 (루트)" readonly style="background:#F3F4F6;color:var(--text-secondary)"></div>
-              <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" value="1" type="number"></div>
-              <div class="form-group"><label class="form-label">노출여부</label>
-                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div>
-              </div>
-              <div class="form-group"><label class="form-label">사용여부</label>
-                <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div>
-              </div>
-            </div>
-            <div class="sec-divider">하위 카테고리 목록</div>
-            <table style="min-width:auto">
-              <thead><tr><th>카테고리명</th><th>코드</th><th>Depth</th><th>정렬</th><th>노출</th><th>사용</th><th>관리</th></tr></thead>
-              <tbody>
-                <tr><td>교육 자료</td><td><span style="font-family:monospace;font-size:12px">EDU_MATERIAL</span></td><td style="text-align:center">2</td><td style="text-align:center">1</td><td><span class="sbadge s-active"><span class="sdot"></span>노출</span></td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td><button class="view-btn">수정</button></td></tr>
-                <tr><td>생활 안내</td><td><span style="font-family:monospace;font-size:12px">LIFE_GUIDE</span></td><td style="text-align:center">2</td><td style="text-align:center">2</td><td><span class="sbadge s-active"><span class="sdot"></span>노출</span></td><td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td><td><button class="view-btn">수정</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div style="padding:20px 24px" id="catDetail"></div>
         </div>
       </div>
     </div>
@@ -1207,93 +1169,54 @@ tr.row-sel td { background: var(--accent-primary-light); }
     <!-- ══════════════════════════════════
          5. 권한/그룹 관리
     ══════════════════════════════════ -->
-    <div id="screen-permission" class="screen fade-up">
+        <div id="screen-permission" class="screen fade-up">
       <div class="page-header">
         <div>
           <div class="page-title">권한/그룹 관리</div>
-          <div class="page-subtitle">관리자 계정별 메뉴 접근 및 작업 권한을 그룹 단위로 설정합니다.</div>
+          <div class="page-subtitle" id="permSubtitle">관리자 계정별 메뉴 접근 및 작업 권한을 그룹 단위로 설정합니다.</div>
         </div>
+      </div>
+
+      <div class="tab-bar" id="permTabs">
+        <button class="tab-btn active" data-tab="admin" onclick="permSwitchTab('admin')">관리자 권한</button>
+        <button class="tab-btn" data-tab="org" onclick="permSwitchTab('org')">기관 사용자 권한</button>
       </div>
 
       <div class="split-layout">
         <!-- 좌: 권한 그룹 목록 -->
         <div class="split-left">
           <div class="split-left-header">
-            <span class="split-left-title">권한 그룹</span>
-            <button class="btn btn-primary btn-sm" onclick="showPanel('permPanel','권한 그룹 추가')">+ 추가</button>
+            <span class="split-left-title" id="permListTitle">권한 그룹</span>
+            <button class="btn btn-primary btn-sm" id="permBtnAdd" onclick="permOpenAdd()">+ 추가</button>
           </div>
-          <div>
-            <div class="split-item active" onclick="selectPermGroup(this,'슈퍼관리자')">
-              <div>
-                <div class="split-item-name">슈퍼관리자</div>
-                <div class="split-item-meta">모든 권한</div>
-              </div>
-              <span class="split-item-count">2명</span>
-            </div>
-            <div class="split-item" onclick="selectPermGroup(this,'운영관리자')">
-              <div>
-                <div class="split-item-name">운영관리자</div>
-                <div class="split-item-meta">기본 운영 권한</div>
-              </div>
-              <span class="split-item-count">5명</span>
-            </div>
-            <div class="split-item" onclick="selectPermGroup(this,'CS관리자')">
-              <div>
-                <div class="split-item-name">CS관리자</div>
-                <div class="split-item-meta">회원 조회/처리</div>
-              </div>
-              <span class="split-item-count">3명</span>
-            </div>
-            <div class="split-item" onclick="selectPermGroup(this,'승인 담당자')">
-              <div>
-                <div class="split-item-name">승인 담당자</div>
-                <div class="split-item-meta">가입 승인 전담</div>
-              </div>
-              <span class="split-item-count">2명</span>
-            </div>
-            <div class="split-item" onclick="selectPermGroup(this,'읽기 전용')">
-              <div>
-                <div class="split-item-name">읽기 전용</div>
-                <div class="split-item-meta">조회만 가능</div>
-              </div>
-              <span class="split-item-count">1명</span>
-            </div>
-          </div>
+          <div id="permList"></div>
+          <div class="perm-note" id="permListNote" style="display:none;margin:12px">기관 사용자 역할은 서비스에 정의된 역할만 사용하며, 역할 추가/삭제는 제공하지 않습니다. 기본 권한만 관리합니다.</div>
         </div>
 
         <!-- 우: 권한 매트릭스 -->
         <div>
           <div class="table-card">
             <div class="table-toolbar">
-              <div class="result-info">그룹: <strong id="permGroupTitle">슈퍼관리자</strong> · 권한 매트릭스</div>
+              <div class="result-info">그룹: <strong id="permGroupTitle">슈퍼관리자</strong> · 권한 매트릭스 <span id="permDirtyTag" style="display:none;margin-left:6px;font-size:11.5px;color:var(--amber-text)">● 저장되지 않은 변경사항</span></div>
               <div class="toolbar-right">
-                <button class="btn btn-secondary btn-sm" onclick="toast('권한 그룹이 복제되었습니다.','📋')">복제</button>
-                <button class="btn btn-primary btn-sm" onclick="toast('권한 설정이 저장되었습니다.','✅')">저장</button>
-                <button class="btn btn-ghost btn-sm" style="color:var(--red-text)" onclick="toast('사용 중인 그룹은 삭제할 수 없습니다.','⚠️')">삭제</button>
+                <button class="btn btn-secondary btn-sm" id="permBtnClone" onclick="permClone()">복제</button>
+                <button class="btn btn-primary btn-sm" id="permBtnSave" onclick="permSave()">저장</button>
+                <button class="btn btn-ghost btn-sm" id="permBtnDel" style="color:var(--red-text)" onclick="permDelete()">삭제</button>
               </div>
             </div>
             <div style="padding:16px 20px 8px;border-bottom:1px solid var(--border-light)">
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-                <div class="form-group" style="margin:0"><label class="form-label">그룹명</label><input class="form-control" value="슈퍼관리자"></div>
-                <div class="form-group" style="margin:0"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-                <div class="form-group" style="margin:0"><label class="form-label">설명</label><input class="form-control" value="모든 메뉴 전권 보유"></div>
+              <div id="permHeadForm" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                <div class="form-group" style="margin:0"><label class="form-label">그룹명</label><input class="form-control" id="permName" oninput="permField('name',this.value)"></div>
+                <div class="form-group" style="margin:0"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" id="permUsed" style="width:100%" onchange="permField('used',this.value==='1')"><option value="1">사용</option><option value="0">미사용</option></select></div></div>
+                <div class="form-group" id="permScopeWrap" style="margin:0;display:none"><label class="form-label">기본 데이터 범위</label><div class="f-select-wrap"><select class="f-select" id="permScope" style="width:100%" onchange="permField('scope',this.value)"><option>담당반</option><option>소속반</option><option>기관 전체</option></select></div></div>
+                <div class="form-group" style="margin:0"><label class="form-label">설명</label><input class="form-control" id="permDesc" oninput="permField('desc',this.value)"></div>
               </div>
+              <div class="perm-note" id="permNote" style="margin:12px 0 4px"></div>
             </div>
             <div class="tbl-wrap" style="padding:16px 20px">
               <table class="matrix-table" style="min-width:auto">
-                <thead>
-                  <tr>
-                    <th style="width:180px">메뉴</th>
-                    <th>조회</th>
-                    <th>등록</th>
-                    <th>수정</th>
-                    <th>삭제</th>
-                    <th>승인</th>
-                  </tr>
-                </thead>
-                <tbody id="permMatrix">
-                  <!-- rows generated by JS -->
-                </tbody>
+                <thead id="permHead"></thead>
+                <tbody id="permMatrix"></tbody>
               </table>
             </div>
           </div>
@@ -1328,7 +1251,7 @@ tr.row-sel td { background: var(--accent-primary-light); }
             <input class="search-input" placeholder="관리자명 또는 계정...">
             <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
           </div>
-          <div class="f-select-wrap"><select class="f-select"><option>메뉴 전체</option><option>공통관리</option><option>회원/승인관리</option><option>기관관리</option><option>운영관리</option><option>사이트관리</option></select></div>
+          <div class="f-select-wrap"><select class="f-select"><option>메뉴 전체</option><option>공통관리</option><option>회원/승인관리</option><option>기관/승인관리</option><option>운영관리</option><option>사이트관리</option></select></div>
           <div class="f-select-wrap"><select class="f-select"><option>작업유형 전체</option><option>로그인</option><option>등록</option><option>수정</option><option>삭제</option><option>승인</option><option>반려</option></select></div>
           <button class="btn btn-secondary btn-sm">초기화</button>
           <button class="btn btn-primary btn-sm">검색</button>
@@ -1382,7 +1305,7 @@ tr.row-sel td { background: var(--accent-primary-light); }
               <tr onclick="showPanel('logPanel','로그 상세')">
                 <td style="font-family:monospace;font-size:12px">25.03.19 11:20:44</td>
                 <td><div style="font-weight:600">CS관리자</div><div style="font-size:11px;color:var(--text-muted)">cs01@kidkids</div></td>
-                <td><span class="tbadge t-amber">기관관리</span></td>
+                <td><span class="tbadge t-amber">기관/승인관리</span></td>
                 <td><span class="tbadge t-amber">수정</span></td>
                 <td>기관ID: 220</td>
                 <td style="font-size:12.5px;color:var(--text-secondary)">기관 상태 정상→정지 변경</td>
@@ -1480,7 +1403,7 @@ function showScreen(key) {
   const subEl = document.getElementById('sub-' + key);
   if (subEl) subEl.classList.add('active-sub');
   // permission matrix init
-  if (key === 'permission') initPermMatrix();
+  if (key === 'permission') permRender();
 }
 
 /* ═══════════════════════════════════
@@ -1494,45 +1417,507 @@ function selectCodeGroup(el, name) {
 }
 
 /* ═══════════════════════════════════
-   CATEGORY TREE SELECT
+   CATEGORY MANAGER (운영 카테고리)
+   - depth1: 서비스 루트(시스템 고정) / depth2: 구분(시스템 고정, 하위만 관리) / depth3: 운영 카테고리 항목
+   - 앱 반영 방식: select(선택 항목) / section(화면 섹션 생성) / reason(사유 선택 항목)
+   - hist: 사용 이력 건수 (0이면 삭제 가능, 1건 이상이면 미사용 처리만 가능)
 ═══════════════════════════════════ */
-function selectTree(el, name) {
-  document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('active'));
-  el.classList.add('active');
-  if (document.getElementById('catTitle')) document.getElementById('catTitle').textContent = name;
+const CAT_MODE = { select:'선택 항목', section:'화면 섹션 생성', reason:'사유 선택 항목' };
+const CAT_MODE_HINT = {
+  select:'APP 작성 화면의 선택 항목(드롭다운/칩)으로 노출됩니다.',
+  section:'APP 작성 화면에 입력 섹션이 추가되며, 정렬순서가 섹션 순서와 동일하게 적용됩니다.',
+  reason:'APP 결석 처리 시 사유 선택 항목으로 노출됩니다.'
+};
+const CAT_COLORS = [
+  {name:'빨강',hex:'#EF4444'},{name:'주황',hex:'#F97316'},{name:'노랑',hex:'#EAB308'},{name:'초록',hex:'#22C55E'},
+  {name:'하늘',hex:'#0EA5E9'},{name:'파랑',hex:'#4361EE'},{name:'보라',hex:'#8B5CF6'},{name:'분홍',hex:'#EC4899'},{name:'회색',hex:'#6B7280'}
+];
+const CAT = [];
+let catSel = 'notice_type', catSeq = 100, catPanel = null;
+const catCollapsed = new Set();
+
+(function catSeed(){
+  const mk = o => CAT.push(Object.assign({parent:null,fixed:false,addable:false,mode:'',sort:1,exposed:true,used:true,hist:0,color:''},o));
+  [['notice','공지사항','NOTICE'],['meal','식단표','MEAL'],['attend','출석부','ATTEND'],['schedule','스케줄','SCHEDULE'],['cs','고객센터','CS'],['material','자료','MATERIAL']]
+    .forEach((r,i)=>mk({id:r[0],name:r[1],code:r[2],svc:r[0],depth:1,fixed:true,sort:i+1}));
+  const grp = (id,par,name,code,mode,sort) => mk({id,name,code,parent:par,svc:par,depth:2,fixed:true,addable:true,mode,sort});
+  grp('notice_type','notice','공지 유형','NOTICE_TYPE','select',1);
+  grp('meal_type','meal','식사 구분','MEAL_TYPE','section',1);
+  grp('attend_absent','attend','결석 사유','ATTEND_ABSENT','reason',1);
+  grp('attend_excused','attend','인정결석 사유','ATTEND_EXCUSED','reason',2);
+  grp('sched_type','schedule','일정 유형','SCHEDULE_TYPE','select',1);
+  grp('cs_type','cs','문의 유형','CS_TYPE','select',1);
+  grp('material_cat','material','자료 카테고리','MATERIAL_CAT','select',1);
+  const items = (gid,list) => { const g = CAT.find(x=>x.id===gid); list.forEach((it,i)=>mk({id:gid+'_'+(i+1),name:it[0],code:it[1],parent:gid,svc:g.svc,depth:3,mode:g.mode,sort:i+1,hist:it[2],color:it[3]||''})); };
+  items('notice_type',[['일반공지','NOTICE_GENERAL',482],['행사','NOTICE_EVENT',215],['준비물','NOTICE_SUPPLIES',163],['상담','NOTICE_COUNSEL',47],['교육','NOTICE_EDU',58],['기타','NOTICE_ETC',0]]);
+  items('meal_type',[['오전간식','MEAL_AM_SNACK',930],['점심식사','MEAL_LUNCH',945],['오후간식','MEAL_PM_SNACK',921]]);
+  items('attend_absent',[['병결','ABSENT_SICK',320],['가족행사','ABSENT_FAMILY',88],['개인 사정','ABSENT_PERSONAL',141],['기타','ABSENT_ETC',35]]);
+  items('attend_excused',[['질병/부상/감염병','EXCUSED_ILLNESS',102],['가족행사','EXCUSED_FAMILY',19],['경조사','EXCUSED_CEREMONY',12],['기타','EXCUSED_ETC',0]]);
+  items('sched_type',[['행사','SCHED_EVENT',260,'#EF4444'],['수업','SCHED_CLASS',411,'#4361EE'],['생일','SCHED_BIRTHDAY',198,'#EC4899'],['상담','SCHED_COUNSEL',74,'#22C55E'],['기타','SCHED_ETC',0,'#6B7280']]);
+  items('cs_type',[['회원가입','CS_SIGNUP',64],['로그인/계정','CS_LOGIN',91],['서비스 이용','CS_USAGE',120],['오류/장애','CS_ERROR',57],['결제/이용권','CS_PAYMENT',33],['기타','CS_ETC',21]]);
+  items('material_cat',[['교육 자료','MATERIAL_EDU',76],['생활 안내','MATERIAL_LIFE',39],['기타 자료','MATERIAL_ETC',0]]);
+})();
+
+const catEsc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const catNode = id => CAT.find(n=>n.id===id);
+const catKids = id => CAT.filter(n=>n.parent===id).sort((a,b)=>a.sort-b.sort);
+const catPath = n => { const p=[]; for(let x=n;x;x=x.parent?catNode(x.parent):null) p.unshift(x.name); return p.join(' › '); };
+const catScheduleItem = n => n && n.svc==='schedule' && n.depth===3;
+const catCanDelete = n => !n.fixed && n.depth===3 && n.hist===0;
+function catStateOf(n){
+  if(!n.used) return {badge:'<span class="tbadge t-gray">미사용</span>', desc:'신규 등록/선택에서 사용하지 않음 (기존 데이터는 유지)'};
+  if(!n.exposed) return {badge:'<span class="tbadge t-amber">사용 + 미노출</span>', desc:'데이터는 유지하지만 신규 화면에는 노출하지 않음'};
+  return {badge:'<span class="tbadge t-green">사용 + 노출</span>', desc:'APP에서 정상 노출'};
 }
-function toggleTree(el) {
-  const node = el.closest('.tree-node');
-  const children = node.querySelector('.tree-children');
-  if (!children) return;
-  const open = children.style.display !== 'none';
-  children.style.display = open ? 'none' : 'block';
-  el.textContent = open ? '►' : '▼';
+function catPlace(n, want){           // 정렬순서 변경 → 형제 순서 재배열(1..n 연속값)
+  const sibs = catKids(n.parent).filter(x=>x!==n);
+  const idx = Math.max(0, Math.min(sibs.length, (parseInt(want)||sibs.length+1)-1));
+  sibs.splice(idx,0,n); sibs.forEach((s,i)=>s.sort=i+1);
 }
+function catVisible(n){
+  const fs=document.getElementById('catFSvc').value, fu=document.getElementById('catFUsed').value;
+  if(fs && n.svc!==fs) return false;
+  if(n.depth===3){ if(fu==='used' && !n.used) return false; if(fu==='unused' && n.used) return false; }
+  return true;
+}
+
+/* ── 트리 ── */
+function catRenderTree(){
+  const row = (n,depth) => {
+    const kids = catKids(n.id).filter(catVisible);
+    const hasKids = CAT.some(x=>x.parent===n.id);
+    const open = !catCollapsed.has(n.id);
+    const icon = n.depth===1?'📁':(n.depth===2?'📂':'📄');
+    const badge = n.depth===1 ? '<span class="tbadge t-blue" style="font-size:10px">루트</span>'
+      : n.depth===2 ? '<span class="tbadge t-gray" style="font-size:10px">고정</span>'
+      : (!n.used?'<span class="tbadge t-gray" style="font-size:10px">미사용</span>':(!n.exposed?'<span class="tbadge t-amber" style="font-size:10px">미노출</span>':''));
+    const num = n.depth===3 ? `<span class="tree-num">${n.sort}</span>` : '';
+    const dot = catScheduleItem(n) ? `<span class="cat-dot" style="background:${n.color}"></span>` : '';
+    let h = `<div class="tree-node"><div class="tree-row ${n.id===catSel?'active':''} ${n.depth===3&&!n.used?'cat-off':''}" data-id="${n.id}" onclick="catSelect('${n.id}')">
+      <span class="tree-toggle" ${hasKids?`onclick="event.stopPropagation();catToggle('${n.id}')"`:''}>${hasKids?(open?'▼':'►'):''}</span>
+      <span class="tree-icon">${icon}</span>${num}${dot}<span class="tree-label">${catEsc(n.name)}</span>${badge}</div>`;
+    if(hasKids && open) h += `<div class="tree-children">${kids.map(k=>row(k,depth+1)).join('')}</div>`;
+    return h + '</div>';
+  };
+  document.getElementById('catTree').innerHTML = CAT.filter(n=>n.depth===1 && catVisible(n)).sort((a,b)=>a.sort-b.sort).map(n=>row(n,1)).join('')
+    || '<div style="padding:20px;font-size:12.5px;color:var(--text-muted)">조건에 맞는 카테고리가 없습니다.</div>';
+}
+function catToggle(id){ catCollapsed.has(id)?catCollapsed.delete(id):catCollapsed.add(id); catRenderTree(); }
+function catSelect(id){ catSel=id; catRender(); }
+
+/* ── 상세 ── */
+function catPreview(g){
+  const items = catKids(g.id).filter(x=>x.used&&x.exposed);
+  const label = {select:'APP 선택 항목 미리보기', section:'APP 식단 작성 화면 섹션 미리보기', reason:'APP 결석 처리 사유 선택 미리보기'}[g.mode];
+  let body;
+  if(!items.length) body='<span style="font-size:12.5px;color:var(--text-muted)">APP에 노출되는 항목이 없습니다.</span>';
+  else if(g.mode==='section') body = items.map((x,i)=>`<div class="cat-sec"><b>${i+1}</b>${catEsc(x.name)}<span>입력 섹션</span></div>`).join('');
+  else if(g.mode==='reason') body = items.map(x=>`<div class="cat-radio">○ ${catEsc(x.name)}</div>`).join('');
+  else body = items.map(x=>`<span class="cat-chip">${catScheduleItem(x)?`<span class="cat-dot" style="background:${x.color}"></span>`:''}${catEsc(x.name)}</span>`).join('');
+  return `<div class="sec-divider">${label}</div><div class="cat-prev" id="catPreview">${body}</div>`;
+}
+function catRender(){
+  catRenderTree();
+  const n = catNode(catSel); if(!n) return;
+  document.getElementById('catTitle').textContent = catPath(n);
+  const isGroup = n.depth===2, isRoot = n.depth===1, isItem = n.depth===3;
+  const bAdd=document.getElementById('catBtnChild'), bEdit=document.getElementById('catBtnEdit'), bDel=document.getElementById('catBtnDel');
+  bAdd.disabled = !n.addable; bAdd.title = n.addable ? '' : (isRoot?'시스템 고정 루트에는 직접 추가할 수 없습니다. 하위 구분을 선택하세요.':'이 카테고리에는 하위를 추가할 수 없습니다.');
+  bEdit.disabled = n.fixed; bEdit.title = n.fixed ? '시스템 고정 구분은 수정할 수 없습니다.' : '';
+  bDel.disabled = !catCanDelete(n);
+  bDel.title = n.fixed ? '시스템 고정 구분은 삭제할 수 없습니다.' : (n.hist>0 ? '사용 이력이 있어 삭제할 수 없습니다. 미사용 처리하세요.' : '');
+  const st = catStateOf(n), parent = n.parent?catNode(n.parent):null;
+  const ro = (label,html) => `<div class="form-group"><label class="form-label">${label}</label><div class="cat-val">${html}</div></div>`;
+  let note = '';
+  if(isRoot) note = '시스템 고정 서비스 구분입니다. 이름 변경·삭제·직접 추가가 불가하며, 하위 구분 안에서만 카테고리를 관리합니다.';
+  else if(isGroup) note = n.svc==='attend'
+    ? `출석부의 상위 구분(<b>${catEsc(n.name)}</b>)은 시스템 고정값입니다. 구분 추가/수정/삭제는 불가하며 하위 사유만 추가/수정/정렬/사용여부 관리가 가능합니다.`
+    : `<b>${catEsc(n.name)}</b>은(는) 시스템 고정 구분입니다. 구분 자체는 수정/삭제할 수 없고 하위 항목만 관리할 수 있습니다.`;
+  const typeName = isRoot ? '서비스 루트' : (isGroup ? n.name : parent.name);
+  const mode = n.mode ? `${CAT_MODE[n.mode]}` : '-';
+  let f = ro('카테고리명',catEsc(n.name)) + ro('카테고리 코드',`<span style="font-family:monospace;font-size:12px">${n.code}</span>`)
+    + ro('카테고리 유형',catEsc(typeName)) + ro('Depth',`${n.depth}${isRoot?' (루트)':''}`)
+    + ro('앱 반영 방식',`${mode}`) + ro('정렬순서',n.sort)
+    + ro('노출여부',n.exposed?'노출':'미노출') + ro('사용여부',n.used?'사용':'미사용');
+  if(catScheduleItem(n)) f += ro('표시 색상',`<span class="cat-dot" style="background:${n.color}"></span>${(CAT_COLORS.find(c=>c.hex===n.color)||{name:'-'}).name} <span style="font-family:monospace;font-size:12px;color:var(--text-muted)">${n.color}</span>`);
+  if(isItem) f += ro('사용 이력', n.hist>0 ? `${n.hist.toLocaleString()}건 (삭제 불가 · 미사용 처리만 가능)` : '없음 (삭제 가능)');
+  if(isItem) f += ro('APP 반영 상태', `${st.badge}<span style="font-size:11.5px">${st.desc}</span>`);
+  if(n.mode) f += `<div class="cat-hint" style="grid-column:1/-1;margin:-6px 0 4px">※ ${CAT_MODE_HINT[n.mode]}</div>`;
+
+  const kids = catKids(n.id);
+  const sched = n.id==='sched_type';
+  const kidRows = kids.map(k=>{
+    const ks = k.depth===2 ? '<span style="font-size:12px;color:var(--text-muted)">고정</span>'
+      : `<button class="view-btn" onclick="catOpenEdit('${k.id}')">수정</button>${catCanDelete(k)?` <button class="view-btn" style="color:var(--red-text)" onclick="catDelete('${k.id}')">삭제</button>`:''}`;
+    return `<tr><td>${sched?`<span class="cat-dot" style="background:${k.color};margin-right:6px"></span>`:''}${catEsc(k.name)}</td>
+      <td><span style="font-family:monospace;font-size:12px">${k.code}</span></td><td style="text-align:center">${k.depth}</td><td style="text-align:center">${k.sort}</td>
+      <td><span class="sbadge ${k.exposed?'s-active':'s-inactive'}"><span class="sdot"></span>${k.exposed?'노출':'미노출'}</span></td>
+      <td><span class="sbadge ${k.used?'s-active':'s-inactive'}"><span class="sdot"></span>${k.used?'사용':'미사용'}</span></td>
+      <td style="text-align:center">${k.depth===3?(k.hist>0?k.hist.toLocaleString()+'건':'없음'):'-'}</td><td>${ks}</td></tr>`;
+  }).join('');
+  document.getElementById('catDetail').innerHTML =
+    (note?`<div class="cat-note">🔒 ${note}</div>`:'') +
+    `<div class="sec-divider">기본 정보</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">${f}</div>` +
+    (isItem ? '' : `<div class="sec-divider">하위 카테고리 목록</div>
+      <table style="min-width:auto"><thead><tr><th>카테고리명</th><th>코드</th><th>Depth</th><th>정렬</th><th>노출</th><th>사용</th><th>사용 이력</th><th>관리</th></tr></thead>
+      <tbody id="catKidBody">${kidRows||'<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:18px">하위 카테고리가 없습니다.</td></tr>'}</tbody></table>`) +
+    (isGroup ? `<div style="margin-top:20px">${catPreview(n)}</div>` : '');
+}
+
+/* ── 추가/수정 패널 ── */
+function catAddableGroups(){ return CAT.filter(n=>n.addable); }
+function catColorPicker(cur){
+  return `<div class="cat-sw-row" id="cpSwatches">${CAT_COLORS.map(c=>`<button type="button" class="cat-sw ${c.hex===cur?'on':''}" style="background:${c.hex}" title="${c.name}" data-hex="${c.hex}" onclick="catPickColor('${c.hex}')"></button>`).join('')}</div>
+    <input type="hidden" id="cpColor" value="${cur}"><div class="cat-hint">APP 일정 리스트/캘린더 태그 색상으로 사용됩니다.</div>`;
+}
+function catPickColor(hex){
+  document.getElementById('cpColor').value = hex;
+  document.querySelectorAll('#cpSwatches .cat-sw').forEach(b=>b.classList.toggle('on', b.dataset.hex===hex));
+}
+function catPanelDyn(){            // 상위 카테고리에 따라 바뀌는 영역(앱 반영 방식 / 색상 / 섹션 안내)
+  const g = catNode(document.getElementById('cpParent').value); if(!g) return;
+  document.getElementById('cpMode').innerHTML = `<div class="cat-val">${CAT_MODE[g.mode]}</div><div class="cat-hint">${CAT_MODE_HINT[g.mode]}</div>`
+    + (g.mode==='section' ? `<div class="cat-hint" style="color:var(--accent-primary)">저장 시 APP 식단표 작성 화면에 새 입력 섹션이 추가됩니다.</div>` : '');
+  document.getElementById('cpType').textContent = g.name;
+  const wrap = document.getElementById('cpColorWrap');
+  if(g.svc==='schedule'){ wrap.style.display='block'; if(!wrap.dataset.init){ wrap.innerHTML = `<label class="form-label">표시 색상</label>`+catColorPicker(catPanel.color||'#4361EE'); wrap.dataset.init='1'; } }
+  else { wrap.style.display='none'; }
+}
+function catOpenAdd(fromId){
+  const base = fromId?catNode(fromId):null;
+  if(base && !base.addable){ toast('시스템 고정 루트에는 직접 추가할 수 없습니다. 하위 구분을 선택하세요.','⚠️'); return; }
+  const cur = catNode(catSel);
+  let pid = base ? base.id : (cur && cur.addable ? cur.id : (cur && cur.depth===3 ? cur.parent : catAddableGroups()[0].id));
+  catPanel = {mode:'add', id:null, locked:!!base, color:'#4361EE'};
+  const title = base ? '하위 카테고리 추가' : '카테고리 추가';
+  showPanel('categoryPanel', title);
+  const opts = catAddableGroups().map(g=>`<option value="${g.id}" ${g.id===pid?'selected':''}>${catEsc(catNode(g.parent).name)} › ${catEsc(g.name)}</option>`).join('');
+  document.getElementById('panelBody').innerHTML = `
+    <div class="form-group"><label class="form-label">상위 카테고리 <span style="color:var(--red)">*</span></label>
+      <div class="f-select-wrap"><select class="f-select" id="cpParent" style="width:100%" ${base?'disabled':''} onchange="document.getElementById('cpColorWrap').dataset.init='';catPanelDyn()">${opts}</select></div>
+      <div class="cat-hint">시스템 고정 구분(공지 유형, 식사 구분 등) 하위에만 추가할 수 있습니다.</div></div>
+    <div class="form-group"><label class="form-label">카테고리 유형</label><div class="cat-val" id="cpType"></div></div>
+    <div class="form-group"><label class="form-label">앱 반영 방식</label><div id="cpMode"></div></div>
+    <div class="form-group"><label class="form-label">카테고리명 <span style="color:var(--red)">*</span></label><input class="form-control" id="cpName" placeholder="카테고리명 입력"></div>
+    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" id="cpCode" placeholder="미입력 시 자동 생성 (영문 대문자/숫자/_)"></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" id="cpSort" type="number" min="1" value="${catKids(pid).length+1}"><div class="cat-hint">APP 노출 순서와 동일하게 적용됩니다. 중간 값을 입력하면 뒤 항목이 한 칸씩 밀립니다.</div></div>
+    <div class="form-group" id="cpColorWrap" style="display:none"></div>
+    ${catStatusFields(true,true)}`;
+  catPanel.pidAtOpen = pid;
+  catPanelDyn();
+  catPanelFooter();
+}
+function catStatusFields(exposed,used){
+  return `<div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" id="cpExposed" style="width:100%"><option value="1" ${exposed?'selected':''}>노출</option><option value="0" ${exposed?'':'selected'}>미노출</option></select></div></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" id="cpUsed" style="width:100%"><option value="1" ${used?'selected':''}>사용</option><option value="0" ${used?'':'selected'}>미사용</option></select></div></div>
+    <div class="cat-hint" style="margin:-4px 0 14px">· 사용+노출: APP 정상 노출 · 사용+미노출: 데이터 유지, 신규 화면 미노출 · 미사용: 신규 등록/선택 불가</div>`;
+}
+function catOpenEdit(id){
+  const n = catNode(id); if(!n) return;
+  if(n.fixed){ toast('시스템 고정 구분은 수정할 수 없습니다.','⚠️'); return; }
+  catPanel = {mode:'edit', id, color:n.color};
+  showPanel('categoryPanel','카테고리 수정');
+  const g = catNode(n.parent);
+  document.getElementById('panelBody').innerHTML = `
+    <div class="form-group"><label class="form-label">상위 카테고리</label><div class="cat-val">${catEsc(catPath(g))}</div></div>
+    <div class="form-group"><label class="form-label">카테고리 유형</label><div class="cat-val" id="cpType">${catEsc(g.name)}</div></div>
+    <div class="form-group"><label class="form-label">앱 반영 방식</label><div id="cpMode"><div class="cat-val">${CAT_MODE[n.mode]}</div><div class="cat-hint">${CAT_MODE_HINT[n.mode]}</div></div></div>
+    <div class="form-group"><label class="form-label">카테고리명</label><input class="form-control" id="cpName" value="${catEsc(n.name)}"></div>
+    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" id="cpCode" value="${n.code}" readonly style="background:#F3F4F6"></div>
+    <div class="form-group"><label class="form-label">Depth</label><input class="form-control" value="${n.depth}" readonly style="background:#F3F4F6;color:var(--text-secondary)"></div>
+    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" id="cpSort" type="number" min="1" value="${n.sort}"></div>
+    ${catScheduleItem(n)?`<div class="form-group" id="cpColorWrap"><label class="form-label">표시 색상</label>${catColorPicker(n.color)}</div>`:''}
+    ${catStatusFields(n.exposed,n.used)}
+    ${n.hist>0?`<div class="cat-note" style="margin-bottom:0">사용 이력 ${n.hist.toLocaleString()}건이 있어 삭제할 수 없습니다. 더 이상 사용하지 않으려면 <b>사용여부를 미사용</b>으로 변경하세요.</div>`:''}`;
+  catPanelFooter();
+}
+function catPanelFooter(){
+  document.getElementById('panelFooter').innerHTML = `<button class="btn btn-secondary" onclick="closePanel()">취소</button><button class="btn btn-primary" onclick="catSave()">저장</button>`;
+}
+function catSave(){
+  const v = id => document.getElementById(id).value;
+  const name = v('cpName').trim();
+  if(!name){ toast('카테고리명을 입력하세요.','⚠️'); return; }
+  const sort = parseInt(v('cpSort'));
+  if(!(sort>=1)){ toast('정렬순서는 1 이상의 숫자로 입력하세요.','⚠️'); return; }
+  const exposed = v('cpExposed')==='1', used = v('cpUsed')==='1';
+  const color = document.getElementById('cpColor') ? v('cpColor') : '';
+  if(catPanel.mode==='add'){
+    const g = catNode(v('cpParent'));
+    if(!g || !g.addable){ toast('추가할 수 없는 상위 카테고리입니다.','⚠️'); return; }
+    if(catKids(g.id).some(k=>k.name===name)){ toast('같은 구분에 동일한 카테고리명이 있습니다.','⚠️'); return; }
+    let code = v('cpCode').trim().toUpperCase();
+    if(code && !/^[A-Z0-9_]+$/.test(code)){ toast('코드는 영문 대문자/숫자/_ 만 사용할 수 있습니다.','⚠️'); return; }
+    if(!code) code = g.code + '_' + (++catSeq);
+    if(CAT.some(n=>n.code===code)){ toast('이미 사용 중인 코드입니다.','⚠️'); return; }
+    const n = {id:g.id+'_n'+(++catSeq),name,code,parent:g.id,svc:g.svc,depth:3,fixed:false,addable:false,mode:g.mode,sort,exposed,used,hist:0,color:g.svc==='schedule'?(color||'#4361EE'):''};
+    CAT.push(n); catPlace(n,sort); catCollapsed.delete(g.id); catSel = n.id;
+    toast(g.mode==='section' ? `'${name}' 입력 섹션이 APP 작성 화면에 추가됩니다.` : '카테고리가 추가되었습니다.');
+  } else {
+    const n = catNode(catPanel.id);
+    if(catKids(n.parent).some(k=>k.id!==n.id && k.name===name)){ toast('같은 구분에 동일한 카테고리명이 있습니다.','⚠️'); return; }
+    n.name=name; n.exposed=exposed; n.used=used; if(catScheduleItem(n) && color) n.color=color;
+    catPlace(n,sort); toast('저장되었습니다.');
+  }
+  closePanel(); catRender();
+}
+function catDelete(id){
+  const n = catNode(id); if(!n) return;
+  if(n.fixed){ toast('시스템 고정 구분은 삭제할 수 없습니다.','⚠️'); return; }
+  if(n.hist>0){ toast(`사용 이력(${n.hist.toLocaleString()}건)이 있어 삭제할 수 없습니다. 미사용 처리하세요.`,'⚠️'); return; }
+  if(!confirm(`'${n.name}' 카테고리를 삭제하시겠습니까?\n(사용 이력이 없는 카테고리만 삭제됩니다)`)) return;
+  CAT.splice(CAT.indexOf(n),1);
+  catKids(n.parent).forEach((k,i)=>k.sort=i+1);
+  catSel = n.parent; toast('삭제되었습니다.'); catRender();
+}
+catRender();
 
 /* ═══════════════════════════════════
-   PERMISSION GROUP SELECT
+   PERMISSION MANAGER
+   - 관리자 권한: 실제 사이드 메뉴(하위 메뉴 단위) × 조회/등록/수정/삭제/승인 (지원 액션만)
+   - 기관 사용자 권한: 알림장 서비스별 읽기/쓰기 + 기본 데이터 범위 (쓰기 ON → 읽기 자동 ON)
+   - 실제 APP 권한 API 연동 없음 (프로토타입, localStorage 저장)
 ═══════════════════════════════════ */
-function selectPermGroup(el, name) {
-  document.querySelectorAll('#screen-permission .split-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('permGroupTitle').textContent = name;
-  initPermMatrix(name === '슈퍼관리자' || name === '운영관리자');
+const PERM_ACTS = [['view','조회'],['create','등록'],['edit','수정'],['delete','삭제'],['approve','승인']];
+const CRUD = ['view','create','edit','delete'];
+const ADMIN_MENUS = [
+  {key:'member', name:'회원/승인관리', children:[
+    {key:'member.list', name:'통합회원 조회', acts:['view','edit']},
+    {key:'member.approval', name:'가입/승인 관리', acts:['view','approve']}]},
+  {key:'org', name:'기관/승인관리', children:[
+    {key:'org.list', name:'기관 조회', acts:['view','create','edit']},
+    {key:'org.approval', name:'기관 승인 관리', acts:['view','approve']},
+    {key:'org.membership', name:'멤버십 관리', acts:['view','edit']},
+    {key:'org.invite.service', name:'서비스 초대관리', acts:['view','create','edit']},
+    {key:'org.invite.org', name:'기관별 초대현황', acts:['view','edit']}]},
+  {key:'common', name:'공통관리', children:[
+    {key:'common.code', name:'코드관리(Ver2)', acts:CRUD},
+    {key:'common.category', name:'카테고리 관리', acts:CRUD},
+    {key:'common.terms', name:'약관/동의 관리', acts:CRUD},
+    {key:'common.i18n', name:'다국어관리(Ver2)', acts:CRUD},
+    {key:'common.perm', name:'권한/그룹 관리', acts:CRUD},
+    {key:'common.log', name:'로그 관리', acts:['view']}]},
+  {key:'ops', name:'운영관리', children:[
+    {key:'ops.inquiry', name:'1:1 문의 관리', acts:['view','edit']},
+    {key:'ops.orgadmin', name:'기관운영관리', acts:['view']}]},
+  {key:'tools', name:'운영도구', children:[
+    {key:'tools.push', name:'푸시 발송 관리', acts:CRUD},
+    {key:'tools.template', name:'푸시 템플릿 관리', acts:CRUD},
+    {key:'tools.history', name:'푸시 발송 이력', acts:['view']}]},
+  {key:'site', name:'사이트관리', children:[
+    {key:'site.basic', name:'기본 설정 관리', acts:['view','edit']},
+    {key:'site.layout', name:'메인/화면 구성 관리(Ver2)', acts:CRUD},
+    {key:'site.pendinghome', name:'승인대기홈 관리', acts:CRUD},
+    {key:'site.banner', name:'배너 관리(Web)', acts:CRUD},
+    {key:'site.popup', name:'팝업 관리(Web)', acts:CRUD},
+    {key:'site.notice', name:'공지/안내 관리(Web)', acts:CRUD},
+    {key:'site.appupdate', name:'앱 업데이트/점검 관리', acts:CRUD}]},
+  {key:'stats', name:'통계관리', children:[
+    {key:'stats.overview', name:'대시보드 통계', acts:['view']},
+    {key:'stats.user', name:'사용자/접속 통계', acts:['view']},
+    {key:'stats.feature', name:'기능별 이용 통계', acts:['view']},
+    {key:'stats.content', name:'콘텐츠/등록 통계', acts:['view']},
+    {key:'stats.newfeature', name:'신규 기능 이용 통계', acts:['view']},
+    {key:'stats.behavior', name:'검색/행동 분석(Ver2)', acts:['view']},
+    {key:'stats.error', name:'오류/이슈 통계(Ver2)', acts:['view']}]}
+];
+const ADMIN_LEAVES = ADMIN_MENUS.flatMap(m=>m.children);
+const ORG_SERVICES = ['알림장','앨범','공지사항','출석부','투약의뢰서','식단표','스케줄','함께보기','멤버관리','기관정보'];
+const ORG_SCOPES = ['담당반','소속반','기관 전체'];
+
+function permAllAdmin(){ const p={}; ADMIN_LEAVES.forEach(l=>{p[l.key]={}; l.acts.forEach(a=>p[l.key][a]=true);}); return p; }
+function permAdminOf(map){ const p={}; ADMIN_LEAVES.forEach(l=>{p[l.key]={}; l.acts.forEach(a=>p[l.key][a]=false);}); Object.entries(map).forEach(([k,acts])=>acts.forEach(a=>{ if(p[k]&&a in p[k]) p[k][a]=true; })); return p; }
+function permAdminAllExcept(ex,only){ const p=permAllAdmin(); Object.keys(p).forEach(k=>{ if(ex[k]){ Object.keys(p[k]).forEach(a=>p[k][a]=ex[k].includes(a)); } }); return p; }
+function permOrgOf(rw){ const p={}; ORG_SERVICES.forEach(s=>p[s]={r:false,w:false}); Object.entries(rw).forEach(([s,v])=>{ p[s]={r:true,w:v==='w'}; }); return p; }
+function permOrgAll(){ const p={}; ORG_SERVICES.forEach(s=>p[s]={r:true,w:true}); return p; }
+
+function permSeed(){
+  const readOnly = permAdminOf({}); ADMIN_LEAVES.forEach(l=>{ if(l.key!=='common.perm') readOnly[l.key].view=true; });
+  const rwAll8 = {알림장:'w',앨범:'w',공지사항:'w',출석부:'w',투약의뢰서:'w',식단표:'w',스케줄:'w',함께보기:'w'};
+  return {
+    admin:[
+      {id:'super', name:'슈퍼관리자', desc:'모든 메뉴 전권 보유', used:true, count:2, fixed:true, perms:permAllAdmin()},
+      {id:'ops', name:'운영관리자', desc:'기본 운영 권한', used:true, count:5, fixed:false, perms:permAdminAllExcept({'common.perm':['view']})},
+      {id:'cs', name:'CS관리자', desc:'회원 조회/처리', used:true, count:3, fixed:false, perms:permAdminOf({'member.list':['view'],'org.list':['view'],'ops.inquiry':['view','edit'],'tools.history':['view']})},
+      {id:'approver', name:'승인 담당자', desc:'가입 승인 전담', used:true, count:2, fixed:false, perms:permAdminOf({'member.list':['view'],'member.approval':['view','approve'],'org.list':['view'],'org.approval':['view','approve']})},
+      {id:'readonly', name:'읽기 전용', desc:'조회만 가능', used:true, count:1, fixed:false, perms:readOnly}
+    ],
+    org:[
+      {id:'director', name:'원장', desc:'기관 전체 관리 · 모든 서비스 읽기/쓰기', used:true, fixed:true, scope:'기관 전체', perms:permOrgAll()},
+      {id:'vice', name:'부원장', desc:'원장과 동일 권한', used:true, fixed:true, scope:'기관 전체', perms:permOrgAll()},
+      {id:'homeroom', name:'담임교사', desc:'담당 반 중심 업무', used:true, fixed:false, scope:'담당반', perms:permOrgOf({...rwAll8,멤버관리:'r',기관정보:'r'})},
+      {id:'assistant', name:'보조교사', desc:'소속 반 보조 업무 (일부 기관 관리 기능 제한)', used:true, fixed:false, scope:'소속반', perms:permOrgOf({알림장:'w',앨범:'w',출석부:'w',투약의뢰서:'w',스케줄:'w',함께보기:'w',공지사항:'r',식단표:'r'})},
+      {id:'afterschool', name:'방과후교사', desc:'방과후 과정 담당', used:true, fixed:false, scope:'소속반', perms:permOrgOf({알림장:'w',앨범:'w',출석부:'w',공지사항:'r',스케줄:'r'})},
+      {id:'english', name:'영어전담교사', desc:'영어 수업 전담', used:true, fixed:false, scope:'소속반', perms:permOrgOf({알림장:'w',앨범:'w',출석부:'w',공지사항:'r',스케줄:'r'})},
+      {id:'substitute', name:'대체교사', desc:'임시 대체 근무', used:true, fixed:false, scope:'소속반', perms:permOrgOf({알림장:'w',출석부:'w',앨범:'r',공지사항:'r',스케줄:'r',식단표:'r',투약의뢰서:'r'})},
+      {id:'cook', name:'조리사', desc:'급식/식단 담당', used:true, fixed:false, scope:'기관 전체', perms:permOrgOf({식단표:'w',공지사항:'r',스케줄:'r'})},
+      {id:'driver', name:'통학차량 운전원', desc:'통학차량 운행', used:true, fixed:false, scope:'기관 전체', perms:permOrgOf({공지사항:'r',스케줄:'r'})},
+      {id:'staff', name:'기타 교직원', desc:'그 외 교직원', used:true, fixed:false, scope:'소속반', perms:permOrgOf({공지사항:'r',스케줄:'r',식단표:'r'})}
+    ]
+  };
+}
+const PERM_STORE_KEY = 'kidkids.perm.proto.v1';
+let PERM = permSeed();
+try { const raw = localStorage.getItem(PERM_STORE_KEY); if(raw){ const o=JSON.parse(raw); if(o && o.admin && o.org) PERM=o; } } catch(e){}
+function permPersist(){ try{ localStorage.setItem(PERM_STORE_KEY, JSON.stringify(PERM)); }catch(e){} }
+
+let permTab = 'admin', permSelId = 'super', permDraft = null, permDirty = false, permSeq = 100;
+const permClone_ = o => JSON.parse(JSON.stringify(o));
+const permGroups = () => PERM[permTab];
+const permCur = () => permGroups().find(g=>g.id===permSelId);
+const permEsc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function permSetDirty(v){ permDirty=v; document.getElementById('permDirtyTag').style.display = v?'inline':'none'; }
+function permConfirmLeave(){
+  if(!permDirty) return true;
+  if(!confirm('저장되지 않은 변경사항이 있습니다.\n저장하지 않고 이동하시겠습니까?')) return false;
+  permSetDirty(false); return true;
 }
 
-const MENUS = ['회원/승인관리','기관관리','공통관리','운영관리','사이트관리','통계관리'];
-const PERMS = ['조회','등록','수정','삭제','승인'];
-
-function initPermMatrix(allChecked = true) {
-  const tbody = document.getElementById('permMatrix');
-  if (!tbody) return;
-  tbody.innerHTML = MENUS.map(m => `
-    <tr>
-      <td style="font-weight:500">${m}</td>
-      ${PERMS.map((p,i) => `<td><input type="checkbox" class="chk" ${allChecked || (p==='조회') ? 'checked' : ''}></td>`).join('')}
-    </tr>
-  `).join('');
+/* ── 탭/그룹 선택 ── */
+function permSwitchTab(tab){
+  if(tab===permTab) return;
+  if(!permConfirmLeave()) return;
+  permTab = tab; permSelId = permGroups()[0].id; permLoadDraft(); permRender();
 }
+function permSelectGroup(id){
+  if(id===permSelId) return;
+  if(!permConfirmLeave()) return;
+  permSelId = id; permLoadDraft(); permRender();
+}
+function permLoadDraft(){ const g=permCur(); permDraft = permClone_(g); }
+
+/* ── 렌더 ── */
+function permRender(){
+  if(!permDraft || permDraft.id!==permSelId) permLoadDraft();
+  const g = permCur(), isAdmin = permTab==='admin';
+  document.querySelectorAll('#permTabs .tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===permTab));
+  document.getElementById('permSubtitle').textContent = isAdmin ? '관리자 계정별 메뉴 접근 및 작업 권한을 그룹 단위로 설정합니다.' : '알림장 서비스를 사용하는 기관 구성원의 역할별 기본 권한(읽기/쓰기)을 설정합니다.';
+  document.getElementById('permListTitle').textContent = isAdmin ? '권한 그룹' : '기관 사용자 역할';
+  document.getElementById('permBtnAdd').style.display = isAdmin ? '' : 'none';
+  document.getElementById('permListNote').style.display = isAdmin ? 'none' : 'block';
+  // 좌측 목록
+  document.getElementById('permList').innerHTML = permGroups().map(x=>{
+    const meta = isAdmin ? permEsc(x.desc) : (x.fixed ? '전체 권한 · 시스템 고정' : `읽기 ${ORG_SERVICES.filter(s=>x.perms[s].r).length} · 쓰기 ${ORG_SERVICES.filter(s=>x.perms[s].w).length}`);
+    const cnt = isAdmin ? `${x.count}명` : (x.fixed ? '고정' : x.scope);
+    return `<div class="split-item ${x.id===permSelId?'active':''}" data-id="${x.id}" onclick="permSelectGroup('${x.id}')"><div><div class="split-item-name">${permEsc(x.name)}</div><div class="split-item-meta">${meta}</div></div><span class="split-item-count">${cnt}</span></div>`;
+  }).join('');
+  // 헤더 폼
+  const fixed = g.fixed;
+  document.getElementById('permGroupTitle').textContent = g.name;
+  const nm=document.getElementById('permName'), us=document.getElementById('permUsed'), ds=document.getElementById('permDesc'), sc=document.getElementById('permScope');
+  nm.value=permDraft.name; ds.value=permDraft.desc; us.value=permDraft.used?'1':'0';
+  nm.disabled = fixed || !isAdmin; us.disabled = fixed; ds.disabled = fixed;
+  document.getElementById('permScopeWrap').style.display = isAdmin ? 'none' : 'block';
+  document.getElementById('permHeadForm').style.gridTemplateColumns = isAdmin ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1.4fr';
+  sc.value = permDraft.scope || '담당반'; sc.disabled = fixed;
+  // 버튼
+  document.getElementById('permBtnClone').style.display = isAdmin ? '' : 'none';
+  document.getElementById('permBtnDel').style.display = isAdmin ? '' : 'none';
+  document.getElementById('permBtnDel').disabled = fixed;
+  document.getElementById('permBtnDel').title = fixed ? '시스템 고정 그룹은 삭제할 수 없습니다.' : '';
+  document.getElementById('permBtnSave').disabled = fixed;
+  // 안내
+  document.getElementById('permNote').innerHTML = isAdmin
+    ? (fixed ? '🔒 슈퍼관리자는 모든 관리자 권한이 고정되어 있어 변경/삭제할 수 없습니다.' : '메뉴별로 실제 지원하는 권한만 설정할 수 있으며, 지원하지 않는 액션은 “-”로 표시됩니다. 상위 메뉴 체크 시 하위 메뉴에 일괄 적용됩니다.')
+    : (fixed ? `🔒 ${permEsc(g.name)}은(는) <b>전체 권한 · 시스템 고정</b>입니다. 모든 서비스 읽기/쓰기 및 기관 전체 데이터 접근이 고정되어 변경할 수 없습니다.`
+             : '읽기=서비스 데이터 조회, 쓰기=등록·수정·처리·상태 변경 등 서비스 업무 액션(읽기 포함)입니다. 읽기 권한이 있어도 조회 범위는 <b>기본 데이터 범위</b>에 따라 제한됩니다.');
+  permRenderMatrix();
+}
+function permRenderMatrix(){
+  const fixed = permCur().fixed;
+  const head = document.getElementById('permHead'), body = document.getElementById('permMatrix');
+  if(permTab==='admin'){
+    head.innerHTML = `<tr><th style="width:230px">메뉴</th>${PERM_ACTS.map(a=>`<th>${a[1]}</th>`).join('')}</tr>`;
+    const P = permDraft.perms;
+    body.innerHTML = ADMIN_MENUS.map(m=>{
+      const parentCells = PERM_ACTS.map(([a])=>{
+        const sup = m.children.filter(c=>c.acts.includes(a));
+        if(!sup.length) return `<td class="perm-dash">-</td>`;
+        const n = sup.filter(c=>P[c.key][a]).length;
+        return `<td><input type="checkbox" class="chk" data-parent="${m.key}" data-act="${a}" ${n===sup.length?'checked':''} ${n>0&&n<sup.length?'data-ind="1"':''} ${fixed?'disabled':''} onchange="permAdminParent('${m.key}','${a}',this.checked)"></td>`;
+      }).join('');
+      const kids = m.children.map(c=>`<tr class="perm-child"><td>${permEsc(c.name)}</td>${PERM_ACTS.map(([a])=> c.acts.includes(a)
+        ? `<td><input type="checkbox" class="chk" data-leaf="${c.key}" data-act="${a}" ${P[c.key][a]?'checked':''} ${fixed?'disabled':''} onchange="permAdminLeaf('${c.key}','${a}',this.checked)"></td>`
+        : `<td class="perm-dash">-</td>`).join('')}</tr>`).join('');
+      return `<tr class="perm-parent"><td>${m.name}${fixed?'':''}</td>${parentCells}</tr>${kids}`;
+    }).join('');
+    body.querySelectorAll('input[data-ind="1"]').forEach(e=>e.indeterminate=true);
+  } else {
+    head.innerHTML = `<tr><th style="width:230px">서비스</th><th>읽기</th><th>쓰기</th></tr>`;
+    const P = permDraft.perms;
+    body.innerHTML = ORG_SERVICES.map(s=>`<tr><td style="font-weight:500">${s}</td>
+      <td><input type="checkbox" class="chk" data-svc="${s}" data-act="r" ${P[s].r?'checked':''} ${fixed?'disabled':''} onchange="permOrgToggle('${s}','r',this.checked)"></td>
+      <td><input type="checkbox" class="chk" data-svc="${s}" data-act="w" ${P[s].w?'checked':''} ${fixed?'disabled':''} onchange="permOrgToggle('${s}','w',this.checked)"></td></tr>`).join('');
+  }
+}
+
+/* ── 편집 동작 ── */
+function permField(k,v){ if(permCur().fixed) return; permDraft[k]=v; permSetDirty(true); }
+function permAdminLeaf(key,act,on){ if(permCur().fixed) return; permDraft.perms[key][act]=on; permSetDirty(true); permRenderMatrix(); }
+function permAdminParent(mkey,act,on){
+  if(permCur().fixed) return;
+  const m = ADMIN_MENUS.find(x=>x.key===mkey);
+  const sup = m.children.filter(c=>c.acts.includes(act));
+  const allOn = sup.every(c=>permDraft.perms[c.key][act]);
+  const next = on && !allOn ? true : (on ? true : false);   // 중간 상태에서 클릭 → 전체 체크, 체크 해제 → 전체 해제
+  sup.forEach(c=>permDraft.perms[c.key][act]=next);
+  permSetDirty(true); permRenderMatrix();
+}
+function permOrgToggle(svc,which,on){
+  if(permCur().fixed) return;
+  const p = permDraft.perms[svc];
+  if(which==='w'){ p.w=on; if(on) p.r=true; }       // 쓰기 ON → 읽기 자동 ON
+  else { p.r=on; if(!on) p.w=false; }               // 읽기 OFF → 쓰기 자동 OFF
+  permSetDirty(true); permRenderMatrix();
+}
+
+/* ── 저장/복제/삭제/추가 ── */
+function permSave(){
+  const g = permCur(); if(g.fixed) return;
+  const name = (permDraft.name||'').trim();
+  if(permTab==='admin'){
+    if(!name){ toast('그룹명을 입력하세요.','⚠️'); return; }
+    if(permGroups().some(x=>x.id!==g.id && x.name===name)){ toast('동일한 그룹명이 이미 있습니다.','⚠️'); return; }
+  }
+  permDraft.name = name || g.name;
+  Object.assign(g, permClone_(permDraft));
+  permSetDirty(false); permPersist(); permRender(); toast('권한 설정이 저장되었습니다.','✅');
+}
+function permUniqueName(base){ let n=base, i=1; while(permGroups().some(x=>x.name===n)){ i++; n = `${base} ${i}`; } return n; }
+function permClone(){
+  if(permTab!=='admin') return;
+  if(!permConfirmLeave()) return;
+  const g = permCur();
+  const copy = permClone_(g); copy.id='g'+(++permSeq); copy.name = permUniqueName(g.name+' 복사본'); copy.fixed=false; copy.count=0; copy.used=true;
+  permGroups().push(copy); permSelId=copy.id; permLoadDraft(); permPersist(); permRender(); toast('권한 그룹이 복제되었습니다.','📋');
+}
+function permDelete(){
+  const g = permCur();
+  if(permTab!=='admin' || g.fixed){ toast('시스템 고정 그룹은 삭제할 수 없습니다.','⚠️'); return; }
+  if(g.count>0){ toast('사용 중인 그룹은 삭제할 수 없습니다.','⚠️'); return; }
+  if(!confirm(`'${g.name}' 권한 그룹을 삭제하시겠습니까?`)) return;
+  const list = permGroups(); list.splice(list.indexOf(g),1);
+  permSelId = list[0].id; permSetDirty(false); permLoadDraft(); permPersist(); permRender(); toast('삭제되었습니다.','🗑️');
+}
+function permOpenAdd(){
+  if(permTab!=='admin') return;
+  if(!permConfirmLeave()) return;
+  showPanel('permPanel','권한 그룹 추가');
+  document.getElementById('panelBody').innerHTML = `
+    <div class="form-group"><label class="form-label">그룹명 <span style="color:var(--red)">*</span></label><input class="form-control" id="paName" placeholder="예: 콘텐츠 관리자"></div>
+    <div class="form-group"><label class="form-label">그룹 설명</label><textarea class="form-textarea" id="paDesc" style="min-height:60px" placeholder="권한 그룹 설명 입력"></textarea></div>
+    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" id="paUsed" style="width:100%"><option value="1">사용</option><option value="0">미사용</option></select></div></div>
+    <div style="margin-top:6px;padding:12px;background:var(--accent-primary-light);border-radius:8px;font-size:12.5px;color:var(--blue-text)">ℹ️ 그룹 추가 후 권한 매트릭스에서 메뉴별 권한을 설정하세요.</div>`;
+  document.getElementById('panelFooter').innerHTML = `<button class="btn btn-secondary" onclick="closePanel()">취소</button><button class="btn btn-primary" onclick="permSaveAdd()">저장</button>`;
+}
+function permSaveAdd(){
+  const name = document.getElementById('paName').value.trim();
+  if(!name){ toast('그룹명을 입력하세요.','⚠️'); return; }
+  if(permGroups().some(x=>x.name===name)){ toast('동일한 그룹명이 이미 있습니다.','⚠️'); return; }
+  const g = {id:'g'+(++permSeq), name, desc:document.getElementById('paDesc').value.trim(), used:document.getElementById('paUsed').value==='1', count:0, fixed:false, perms:permAdminOf({})};
+  permGroups().push(g); permSelId=g.id; permLoadDraft(); permPersist(); closePanel(); permRender(); toast('권한 그룹이 추가되었습니다.','✅');
+}
+permRender();
 
 /* ═══════════════════════════════════
    PANEL CONTENTS
@@ -1558,33 +1943,6 @@ const PANEL_CONTENTS = {
     <div class="form-group"><label class="form-label">코드값</label><input class="form-control" value="NURSERY" readonly style="background:#F3F4F6;color:var(--text-secondary)"><div style="font-size:11px;color:var(--text-muted);margin-top:3px">코드값은 등록 후 변경 불가합니다.</div></div>
     <div class="form-group"><label class="form-label">상위 코드</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option selected>없음 (최상위)</option><option>어린이집</option><option>유치원</option></select></div></div>
     <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
-    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-  `,
-  '카테고리 추가': `
-    <div class="form-group"><label class="form-label">카테고리 유형 <span style="color:var(--red)">*</span></label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>자료 카테고리</option><option>공지 카테고리</option><option>앨범 카테고리</option><option>연령 카테고리</option><option>주제/영역 분류</option></select></div></div>
-    <div class="form-group"><label class="form-label">상위 카테고리</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>없음 (루트)</option><option>자료 카테고리</option><option>교육 자료</option><option>생활 안내</option></select></div></div>
-    <div class="form-group"><label class="form-label">카테고리명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="카테고리명 입력"></div>
-    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" placeholder="예: EDU_MATERIAL (자동 생성 가능)"></div>
-    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
-    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
-    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-  `,
-  '하위 카테고리 추가': `
-    <div style="background:var(--accent-primary-light);padding:10px 12px;border-radius:6px;margin-bottom:14px;font-size:12.5px;color:var(--blue-text)">
-      상위 카테고리: <strong>자료 카테고리</strong> 하위에 추가됩니다.
-    </div>
-    <div class="form-group"><label class="form-label">카테고리명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="하위 카테고리명 입력"></div>
-    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" placeholder="예: SUB_CAT_001"></div>
-    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
-    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
-    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-  `,
-  '카테고리 수정': `
-    <div class="form-group"><label class="form-label">카테고리명</label><input class="form-control" value="자료 카테고리"></div>
-    <div class="form-group"><label class="form-label">카테고리 코드</label><input class="form-control" value="MATERIAL_CAT" readonly style="background:#F3F4F6"></div>
-    <div class="form-group"><label class="form-label">Depth</label><input class="form-control" value="1 (루트)" readonly style="background:#F3F4F6;color:var(--text-secondary)"></div>
-    <div class="form-group"><label class="form-label">정렬순서</label><input class="form-control" type="number" value="1"></div>
-    <div class="form-group"><label class="form-label">노출여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>노출</option><option>미노출</option></select></div></div>
     <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
   `,
   '새 약관 등록': `
@@ -1643,14 +2001,6 @@ const PANEL_CONTENTS = {
     <div class="form-group"><label class="form-label">인도네시아어 🇮🇩</label><input class="form-control" placeholder="미입력 — 번역 필요" style="border-color:var(--red);background:#FFF5F5"></div>
     <div style="background:var(--amber-bg);padding:9px 12px;border-radius:6px;font-size:12px;color:var(--amber-text);margin-bottom:12px">⚠️ 인도네시아어 번역이 입력되지 않았습니다.</div>
     <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-  `,
-  '권한 그룹 추가': `
-    <div class="form-group"><label class="form-label">그룹명 <span style="color:var(--red)">*</span></label><input class="form-control" placeholder="예: 콘텐츠 관리자"></div>
-    <div class="form-group"><label class="form-label">그룹 설명</label><textarea class="form-textarea" style="min-height:60px" placeholder="권한 그룹 설명 입력"></textarea></div>
-    <div class="form-group"><label class="form-label">사용여부</label><div class="f-select-wrap"><select class="f-select" style="width:100%"><option>사용</option><option>미사용</option></select></div></div>
-    <div style="margin-top:6px;padding:12px;background:var(--accent-primary-light);border-radius:8px;font-size:12.5px;color:var(--blue-text)">
-      ℹ️ 그룹 추가 후 권한 매트릭스에서 메뉴별 권한을 설정하세요.
-    </div>
   `,
   '로그 상세': `
     <div class="dp-section">
@@ -1722,11 +2072,14 @@ function toast(msg, icon = '✅') {
    INIT
 ═══════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
-  initPermMatrix(true);
   // open common sub
   const sub = document.getElementById('subCommon');
   if (sub) sub.style.display = 'block';
+  // 다른 페이지 사이드바에서 common-admin.html#terms 형태로 진입 시 해당 화면 표시
+  const hk = location.hash.replace('#', '');
+  if (hk && document.getElementById('screen-' + hk)) showScreen(hk);
 });
 </script>
+<script src="nav-links.js"></script>
 </body>
 </html>

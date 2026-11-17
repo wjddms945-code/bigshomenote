@@ -107,6 +107,7 @@ body {
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .icon-btn { width: 34px; height: 34px; border: none; background: transparent; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; position: relative; }
 .icon-btn:hover { background: var(--bg-base); color: var(--text-primary); }
+.icon-btn:disabled { cursor: default; pointer-events: none; background: transparent; color: var(--text-muted); }
 .notif-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; border: 1.5px solid #fff; }
 .topbar-divider { width: 1px; height: 22px; background: var(--border-light); }
 .topbar-profile { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: var(--radius-md); cursor: pointer; transition: background 0.15s; }
@@ -284,6 +285,41 @@ tr.row-sel td { background: var(--accent-primary-light); }
 /* var tag */
 .var-tag { display: inline-flex; align-items: center; padding: 2px 8px; background: #FEF3C7; color: #92400E; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; cursor: pointer; }
 .var-tag:hover { background: #fde68a; }
+.form-error { font-size: 11.5px; color: var(--red-text); margin-top: 4px; }
+.form-control.is-invalid { border-color: var(--red); }
+
+/* 직접 지정 사용자 검색 결과 */
+.user-results { border: 1px solid var(--border-light); border-radius: var(--radius-sm); margin-top: 8px; max-height: 180px; overflow-y: auto; }
+.user-result-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; font-size: 12.5px; border-bottom: 1px solid var(--border-light); }
+.user-result-row:last-child { border-bottom: none; }
+.user-result-meta { font-size: 11.5px; color: var(--text-muted); margin-left: 6px; }
+.user-results-empty { padding: 12px; font-size: 12px; color: var(--text-muted); text-align: center; }
+
+/* 대상 확인/편집 패널 — 기관 목록 */
+.te-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.te-search { position: relative; flex: 1; min-width: 140px; }
+.te-search .f-input { padding-right: 26px; }
+.te-search-clear { display: none; position: absolute; right: 7px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: var(--text-muted); font-size: 12px; line-height: 1; cursor: pointer; padding: 2px; }
+.te-search-clear:hover { color: var(--text-primary); }
+.te-list { border: 1px solid var(--border-light); border-radius: var(--radius-sm); overflow: hidden; }
+.te-head { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg-base); border-bottom: 1px solid var(--border-light); font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.te-row { border-bottom: 1px solid var(--border-light); }
+.te-row:last-child { border-bottom: none; }
+.te-row-main { display: flex; align-items: center; gap: 10px; padding: 9px 12px; }
+.te-toggle { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 13px; font-weight: 600; color: var(--text-primary); text-align: left; cursor: pointer; }
+.te-row.off .te-toggle { color: var(--text-muted); }
+.te-count { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.te-arrow { margin-left: 8px; font-size: 10px; color: var(--text-muted); }
+.te-users { background: var(--bg-base); border-top: 1px solid var(--border-light); padding: 6px 12px 6px 37px; max-height: 220px; overflow-y: auto; }
+.te-user { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 12.5px; }
+.te-user-meta { color: var(--text-muted); }
+.te-user-off { opacity: .6; }
+.te-consent-ok { font-size: 11.5px; color: var(--green-text); }
+.te-consent-no { font-size: 11.5px; color: var(--red-text); }
+.te-consent-neutral { font-size: 11.5px; color: var(--text-muted); }
+.te-pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.chk:indeterminate { background: var(--accent-primary); border-color: var(--accent-primary); }
+.chk:indeterminate::after { content: ''; position: absolute; left: 2px; top: 5.5px; width: 8px; height: 0; border-top: 2px solid #fff; }
 
 /* radio group */
 .radio-group { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -339,12 +375,12 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </div>
     <div class="nav-sub" id="subCommon" style="display:none">
-      <div class="nav-item" onclick="location.href='common-admin.html'">코드 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">카테고리 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">약관/동의 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">다국어 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">권한/그룹 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">로그 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#code'" style="opacity:0.55">코드관리(Ver2)</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#category'">카테고리 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#terms'">약관/동의 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#i18n'" style="opacity:0.55">다국어관리(Ver2)</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#permission'">권한/그룹 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#log'">로그 관리</div>
     </div>
 
     <div class="nav-item" onclick="toggleSub('subMember','navMember')" id="navMember">
@@ -354,26 +390,34 @@ tr.row-sel td { background: var(--accent-primary-light); }
     </div>
     <div class="nav-sub" id="subMember" style="display:none">
       <div class="nav-item" onclick="location.href='member-list-admin.html'">통합회원 조회</div>
-      <div class="nav-item" onclick="location.href='member-approval.html'">가입/승인 관리</div>
-      <div class="nav-item" onclick="location.href='invitation-admin__2_.html'">초대 관리</div>
-      <div class="nav-item" onclick="location.href='member-status-admin.html'">회원 상태관리</div>
+      <div class="nav-item" onclick="location.href='member-approval.html'">가입 승인 관리</div>
     </div>
 
 <div class="nav-item" onclick="toggleSub('subOrg','navOrg')" id="navOrg">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-  기관관리
+  기관/승인관리
   <span class="nav-badge">5</span>
   <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 </div>
 <div class="nav-sub" id="subOrg" style="display:none">
   <div class="nav-item" onclick="location.href='org-admin.html'">기관 조회</div>
   <div class="nav-item" onclick="location.href='org-admin.html#approval'">기관 승인 관리 <span class="nav-badge">5</span></div>
-  <div class="nav-item" onclick="location.href='org-admin.html#status'">기관 상태 관리</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#membership'">멤버십 관리</div>
+  <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+  <div id="sub-invite" style="display:none;background:rgba(0,0,0,0.12)">
+    <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+    <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+  </div>
 </div>
 
-<div class="nav-item" style="cursor:default;opacity:0.5">
+<div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
     <!-- 운영도구 (현재 활성) -->
@@ -402,7 +446,7 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <div class="user-avatar">관</div>
       <div>
         <div class="user-name">슈퍼 관리자</div>
-        <div class="user-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6b7b2bbbfb896bdbfb2bdbfb2a5f8b5b9bb">[email&#160;protected]</a></div>
+        <div class="user-role">admin@kidkids.com</div>
       </div>
     </div>
   </div>
@@ -417,8 +461,8 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <span class="breadcrumb-cur" id="topbarCur">푸시 발송 관리</span>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
-      <button class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="notif-dot"></span></button>
+      <button class="icon-btn" disabled aria-disabled="true" tabindex="-1"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+      <button class="icon-btn" disabled aria-disabled="true" tabindex="-1"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="notif-dot"></span></button>
       <div class="topbar-divider"></div>
       <div class="topbar-profile">
         <div class="profile-av">관</div>
@@ -437,17 +481,17 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <div class="page-header">
         <div>
           <div class="page-title">푸시 발송 관리</div>
-          <div class="page-subtitle">특정 대상에게 푸시 알림을 직접 작성하여 즉시 또는 예약 발송합니다.</div>
+          <div class="page-subtitle">운영자가 직접 작성하는 수동 푸시(공지/안내 · 마케팅·이벤트)를 즉시 또는 예약 발송합니다. 상단 현황은 수동 발송 기준이며 자동 푸시는 포함하지 않습니다.</div>
         </div>
       </div>
 
-      <!-- 요약 카드 (오늘 기준) -->
+      <!-- 요약 카드 — 수동 발송 기준 집계 (자동 트리거 푸시 제외) -->
       <div class="sum-grid sum-grid-5">
         <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">오늘 발송 건수</div><div class="sum-card-num">3</div><div class="sum-card-sub">건 완료</div></div>
-        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">총 발송 수신자</div><div class="sum-card-num">1,248</div><div class="sum-card-sub">명에게 발송</div></div>
-        <div class="sum-card" style="--card-accent:#EF4444"><div class="sum-card-label">실패 수</div><div class="sum-card-num">14</div><div class="sum-card-sub">건 발송 실패</div></div>
-        <div class="sum-card" style="--card-accent:#3B82F6"><div class="sum-card-label">예약 발송</div><div class="sum-card-num">2</div><div class="sum-card-sub">건 대기 중</div></div>
-        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">이번 달 총 발송</div><div class="sum-card-num">28</div><div class="sum-card-sub">건 / 월간</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">오늘 발송 대상자</div><div class="sum-card-num">1,248</div><div class="sum-card-sub">명에게 발송</div></div>
+        <div class="sum-card" style="--card-accent:#EF4444"><div class="sum-card-label">오늘 실패 건수</div><div class="sum-card-num">14</div><div class="sum-card-sub">건 발송 실패</div></div>
+        <div class="sum-card" style="--card-accent:#3B82F6"><div class="sum-card-label">예약 대기</div><div class="sum-card-num">2</div><div class="sum-card-sub">건 대기 중</div></div>
+        <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">이번 달 발송 건수</div><div class="sum-card-num">28</div><div class="sum-card-sub">건 / 월간</div></div>
       </div>
 
       <!-- 작성 영역 + 미리보기 -->
@@ -455,18 +499,80 @@ tr.row-sel td { background: var(--accent-primary-light); }
 
         <!-- 좌: 발송 폼 -->
         <div>
-          <!-- ① 메시지 작성 -->
+          <!-- ① 발송 설정: 발송 목적 → 수신 앱 -->
           <div class="compose-card">
-            <div class="sec-divider">① 메시지 작성</div>
+            <div class="sec-divider">① 발송 설정</div>
+            <div class="form-group">
+              <label class="form-label">발송 목적 <span class="form-required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="sendPurpose" value="service" checked onchange="onPurposeChange()"> 공지/안내</label>
+                <label class="radio-item"><input type="radio" name="sendPurpose" value="marketing" onchange="onPurposeChange()"> 마케팅·이벤트</label>
+              </div>
+              <div class="form-hint" id="purposeHint">마케팅 수신 동의 여부와 관계없이 발송 대상 전체에게 발송됩니다.</div>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">수신 앱 <span class="form-required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="receiveApp" value="parentApp" onchange="onAppChange()"> 학부모 앱</label>
+                <label class="radio-item"><input type="radio" name="receiveApp" value="kidkidsApp" onchange="onAppChange()"> 키드키즈 앱</label>
+              </div>
+              <div class="form-hint">학부모 앱은 학부모, 키드키즈 앱은 교사·원장이 수신합니다. 수신 앱을 바꾸면 발송 대상이 초기화됩니다.</div>
+            </div>
+          </div>
+
+          <!-- ② 발송 대상 -->
+          <div class="compose-card">
+            <div class="sec-divider">② 발송 대상 설정</div>
+            <div class="form-group">
+              <label class="form-label">발송 대상 <span class="form-required">*</span></label>
+              <!-- 대상 옵션은 선택한 수신 앱 기준으로 생성 (RECEIVE_APPS[app].targets) -->
+              <div class="radio-group" id="targetRadioGroup"></div>
+              <div class="form-hint" id="targetAppNotice">① 발송 설정에서 수신 앱을 먼저 선택해주세요.</div>
+            </div>
+            <div id="targetOptions" style="display:none;margin-top:10px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                  <label class="form-label">기관 필터</label>
+                  <div class="f-select-wrap"><select class="f-select" style="width:100%" id="custOrg" onchange="onCustOrgChange()"><option value="">전체 기관</option></select></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">반 필터</label>
+                  <div class="f-select-wrap"><select class="f-select" style="width:100%" id="custClass" onchange="searchUsers()"><option value="">전체 반</option></select></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">특정 사용자 추가</label>
+                <div style="display:flex;gap:8px">
+                  <input class="f-input" style="flex:1" id="custQuery" placeholder="이름 또는 아이디 검색..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchUsers();}">
+                  <button class="btn btn-secondary btn-sm" onclick="searchUsers()">검색</button>
+                </div>
+                <div class="user-results" id="custResults" style="display:none"></div>
+                <div class="chip-wrap" id="customTargets" style="margin-top:8px"></div>
+              </div>
+            </div>
+
+            <!-- 대상 요약 박스 -->
+            <div class="target-box" id="targetBox">
+              <div class="target-box-row">
+                <div>
+                  <div class="target-count" id="targetCount">1,843</div>
+                  <div class="target-label" id="targetLabel">명에게 발송 예정</div>
+                </div>
+                <!-- 전체 학부모/교직원/교사/원장 선택 시에만 노출 (직접 지정은 아래 사용자 칩에서 편집) -->
+                <button class="btn btn-secondary btn-sm" id="targetEditBtn" style="display:none" onclick="openTargetEditor()">대상 확인/편집</button>
+              </div>
+              <div class="target-breakdown" id="targetBreakdown"></div>
+            </div>
+          </div>
+
+          <!-- ③ 메시지 작성 -->
+          <div class="compose-card">
+            <div class="sec-divider">③ 메시지 작성</div>
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
               <div class="f-select-wrap" style="flex:1">
+                <!-- 옵션은 푸시 템플릿 관리(EVENT_DATA)의 사용 중 템플릿으로 생성 -->
                 <select class="f-select" style="width:100%" id="templateSelect" onchange="applyTemplate(this)">
                   <option value="">— 템플릿 불러오기 (선택) —</option>
-                  <option value="투약 알림">💊 투약 알림</option>
-                  <option value="출석 알림">✅ 출석 알림</option>
-                  <option value="공지 등록 알림">📢 공지 등록 알림</option>
-                  <option value="승인 완료 알림">🎉 승인 완료 알림</option>
-                  <option value="반려 알림">❌ 반려 알림</option>
                 </select>
               </div>
               <button class="btn btn-secondary btn-sm" onclick="clearForm()">내용 초기화</button>
@@ -481,80 +587,30 @@ tr.row-sel td { background: var(--accent-primary-light); }
               <textarea class="form-textarea" id="pushBody" style="min-height:80px" placeholder="알림 내용 입력 (최대 200자)" oninput="updatePreview()" maxlength="200"></textarea>
               <div class="form-hint" id="bodyCount">0 / 200자</div>
             </div>
-            <div class="form-group">
-              <label class="form-label">링크 URL (선택)</label>
-              <input class="form-control" id="pushUrl" placeholder="알림 클릭 시 이동할 화면 경로 (예: /notice/123)">
-            </div>
-            <div>
-              <label class="form-label">치환 변수</label>
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">클릭하면 커서 위치에 삽입됩니다.</div>
-              <div class="chip-wrap">
-                <span class="var-tag" onclick="insertVar('{원아명}')">&#123;원아명&#125;</span>
-                <span class="var-tag" onclick="insertVar('{기관명}')">&#123;기관명&#125;</span>
-                <span class="var-tag" onclick="insertVar('{반명}')">&#123;반명&#125;</span>
-                <span class="var-tag" onclick="insertVar('{교사명}')">&#123;교사명&#125;</span>
-                <span class="var-tag" onclick="insertVar('{날짜}')">&#123;날짜&#125;</span>
-                <span class="var-tag" onclick="insertVar('{서비스명}')">&#123;서비스명&#125;</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ② 발송 대상 -->
-          <div class="compose-card">
-            <div class="sec-divider">② 발송 대상 설정</div>
-            <div class="form-group">
-              <label class="form-label">회원 유형 <span class="form-required">*</span></label>
+            <!-- 이동 방식: 단일 선택 (이동 없음 / 앱 내 화면 이동 / 링크 이동) -->
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">이동 방식 (알림 클릭 시)</label>
               <div class="radio-group">
-                <label class="radio-item"><input type="radio" name="targetType" value="all" checked onchange="updateTarget()"> 전체 사용자</label>
-                <label class="radio-item"><input type="radio" name="targetType" value="parent" onchange="updateTarget()"> 학부모</label>
-                <label class="radio-item"><input type="radio" name="targetType" value="teacher" onchange="updateTarget()"> 교사</label>
-                <label class="radio-item"><input type="radio" name="targetType" value="director" onchange="updateTarget()"> 원장</label>
-                <label class="radio-item"><input type="radio" name="targetType" value="custom" onchange="updateTarget()"> 직접 지정</label>
+                <label class="radio-item"><input type="radio" name="moveType" value="none" checked onchange="onMoveTypeChange()"> 이동 없음</label>
+                <label class="radio-item"><input type="radio" name="moveType" value="screen" onchange="onMoveTypeChange()"> 앱 내 화면 이동</label>
+                <label class="radio-item"><input type="radio" name="moveType" value="link" onchange="onMoveTypeChange()"> 링크 이동</label>
               </div>
-            </div>
-            <div id="targetOptions" style="display:none;margin-top:10px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div class="form-group">
-                  <label class="form-label">기관 필터</label>
-                  <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>전체 기관</option><option>키드키즈 어린이집</option><option>ABC 유치원</option><option>사랑센터 어린이집</option></select></div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">반 필터</label>
-                  <div class="f-select-wrap"><select class="f-select" style="width:100%"><option>전체 반</option><option>토끼반</option><option>병아리반</option><option>곰돌이반</option></select></div>
-                </div>
+              <div id="moveScreenArea" style="display:none;margin-top:8px">
+                <div class="f-select-wrap"><select class="f-select" style="width:100%" id="pushScreen" onchange="validateMove()"></select></div>
+                <div class="form-hint">현재 수신 앱에서 지원하는 이동 화면만 선택할 수 있습니다.</div>
+                <div class="form-error" id="pushScreenError" style="display:none"></div>
               </div>
-              <div class="form-group">
-                <label class="form-label">특정 사용자 추가</label>
-                <div style="display:flex;gap:8px">
-                  <input class="f-input" style="flex:1" placeholder="이름 또는 아이디 검색...">
-                  <button class="btn btn-secondary btn-sm">추가</button>
-                </div>
-                <div class="chip-wrap" id="customTargets" style="margin-top:8px">
-                  <span class="chip">김민지 (교사) <button class="chip-rm" onclick="this.closest('.chip').remove()">×</button></span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 대상 요약 박스 -->
-            <div class="target-box" id="targetBox">
-              <div class="target-box-row">
-                <div>
-                  <div class="target-count" id="targetCount">1,843</div>
-                  <div class="target-label">명에게 발송 예정</div>
-                </div>
-                <button class="btn btn-secondary btn-sm" onclick="toast('대상 목록을 상세 조회합니다.','👥')">목록 확인</button>
-              </div>
-              <div class="target-breakdown" id="targetBreakdown">
-                <span>📱 학부모 812명</span>
-                <span>👩‍🏫 교사 524명</span>
-                <span>🏫 원장 507명</span>
+              <div id="moveLinkArea" style="display:none;margin-top:8px">
+                <input class="form-control" id="pushUrl" maxlength="500" placeholder="이동할 웹페이지 주소 (예: https://example.com/event)" oninput="validateMove()">
+                <div class="form-hint">이벤트·프로모션 등 특정 웹페이지로 이동합니다. https:// 주소만 입력할 수 있습니다.</div>
+                <div class="form-error" id="pushUrlError" style="display:none"></div>
               </div>
             </div>
           </div>
 
-          <!-- ③ 발송 일정 -->
+          <!-- ④ 발송 일정 -->
           <div class="compose-card">
-            <div class="sec-divider">③ 발송 일정</div>
+            <div class="sec-divider">④ 발송 일정</div>
             <div class="form-group">
               <label class="form-label">발송 유형 <span class="form-required">*</span></label>
               <div class="radio-group">
@@ -565,19 +621,21 @@ tr.row-sel td { background: var(--accent-primary-light); }
             <div id="scheduleArea" style="display:none">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                 <div class="form-group">
-                  <label class="form-label">발송 날짜</label>
-                  <input class="form-control" type="date" id="schedDate">
+                  <label class="form-label">발송 날짜 <span class="form-required">*</span></label>
+                  <input class="form-control" type="date" id="schedDate" onchange="validateSchedule()">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">발송 시각</label>
-                  <input class="form-control" type="time" id="schedTime" value="09:00">
+                  <label class="form-label">발송 시각 <span class="form-required">*</span></label>
+                  <input class="form-control" type="time" id="schedTime" value="09:00" onchange="validateSchedule()">
                 </div>
               </div>
+              <div class="form-error" id="schedError" style="display:none;margin-top:-6px;margin-bottom:10px"></div>
             </div>
 
             <!-- 발송 버튼 -->
             <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
-              <button class="btn btn-secondary" onclick="clearForm()">초기화</button>
+              <button class="btn btn-secondary" onclick="resetAll()">초기화</button>
+              <button class="btn btn-secondary" onclick="openTestSend()">테스트 발송</button>
               <button class="btn btn-send btn-lg" onclick="openConfirm()">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                 발송하기
@@ -618,66 +676,70 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <div class="page-header">
         <div>
           <div class="page-title">푸시 템플릿 관리</div>
-          <div class="page-subtitle">시스템 이벤트에 연결된 푸시 문구를 관리합니다. 수정한 문구는 이후 발송 건부터 반영됩니다.</div>
+          <div class="page-subtitle">자동 발송 템플릿(트리거)과 수동 발송 템플릿(공지/안내 · 마케팅·이벤트)을 관리합니다. 수정한 문구는 이후 발송 건부터 반영됩니다.</div>
         </div>
       </div>
 
       <!-- 요약 카드 -->
       <div class="sum-grid">
-        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 이벤트</div><div class="sum-card-num">8</div><div class="sum-card-sub">시스템 자동 발송 이벤트</div></div>
-        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">사용 중</div><div class="sum-card-num">7</div><div class="sum-card-sub">이벤트 활성화됨</div></div>
-        <div class="sum-card" style="--card-accent:#9CA3AF"><div class="sum-card-label">미사용</div><div class="sum-card-num">1</div><div class="sum-card-sub">비활성화 이벤트</div></div>
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 템플릿</div><div class="sum-card-num" id="tmplKpiTotal">-</div><div class="sum-card-sub" id="tmplKpiTotalSub">-</div></div>
+        <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">사용 중</div><div class="sum-card-num" id="tmplKpiActive">-</div><div class="sum-card-sub">템플릿 활성화됨</div></div>
+        <div class="sum-card" style="--card-accent:#9CA3AF"><div class="sum-card-label">미사용</div><div class="sum-card-num" id="tmplKpiInactive">-</div><div class="sum-card-sub">비활성화 템플릿</div></div>
         <div class="sum-card" style="--card-accent:#F59E0B"><div class="sum-card-label">최근 문구 수정</div><div class="sum-card-num">3</div><div class="sum-card-sub">최근 30일 이내</div></div>
       </div>
 
       <!-- 안내 배너 -->
       <div style="background:#EEF1FD;border:1px solid #C7D2FB;border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:#3730A3;line-height:1.6">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>이 화면에서는 시스템에 정의된 자동 발송 이벤트의 <strong>푸시 문구·랜딩 경로·사용 여부</strong>만 수정할 수 있습니다. 이벤트 자체의 추가·삭제는 불가합니다. 저장한 문구는 <strong>이후 발생하는 해당 이벤트 발송 건부터 반영</strong>됩니다.</span>
+        <span><strong>자동 발송</strong> 템플릿은 트리거 조건에 따라 시스템이 자동 발송하며, 이벤트의 <strong>푸시 문구·랜딩 경로·사용 여부</strong>만 수정할 수 있습니다(이벤트 추가·삭제 불가). 푸시 발송 관리의 템플릿 목록에는 노출되지 않습니다. <strong>수동 발송</strong> 템플릿(공지/안내 · 마케팅·이벤트)은 운영자가 등록하며, 푸시 발송 관리에서 발송 목적·수신 앱이 맞고 사용 중인 템플릿만 노출됩니다.</span>
       </div>
 
       <!-- 필터 -->
       <div class="filter-card">
         <div class="filter-row">
-          <span class="f-label">서비스</span>
-          <div class="f-select-wrap"><select class="f-select" id="tmplFService"><option value="">전체</option><option>알림장</option><option>앨범</option><option>투약</option><option>스케줄</option><option>식단표</option><option>초대장</option><option>공지사항</option><option>출석부</option><option>가입/승인</option></select></div>
+          <span class="f-label">발송 방식</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFMode" onchange="onTmplFilter()"><option value="">전체</option><option value="auto">자동 발송</option><option value="manual">수동 발송</option></select></div>
+          <span class="f-label" style="width:auto">서비스</span>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFService" onchange="onTmplFilter()"><option value="">전체</option><option>알림장</option><option>앨범</option><option>투약</option><option>스케줄</option><option>식단표</option><option>초대장</option><option>공지사항</option><option>출석부</option><option>가입/승인</option></select></div>
           <span class="f-label" style="width:auto">발송 대상</span>
-          <div class="f-select-wrap"><select class="f-select" id="tmplFTarget"><option value="">전체</option><option>학부모</option><option>교사</option><option>원장</option></select></div>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFTarget" onchange="onTmplFilter()"><option value="">전체</option><option>학부모</option><option>교사</option><option>원장</option></select></div>
           <span class="f-label" style="width:auto">이벤트 유형</span>
-          <div class="f-select-wrap"><select class="f-select" id="tmplFType"><option value="">전체</option><option>등록</option><option>수정</option><option>승인</option><option>반려</option><option>시간도래</option><option>초대</option><option>완료</option></select></div>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFType" onchange="onTmplFilter()"><option value="">전체</option><option>등록</option><option>수정</option><option>승인</option><option>반려</option><option>시간도래</option><option>초대</option><option>완료</option></select></div>
           <span class="f-label" style="width:auto">사용여부</span>
-          <div class="f-select-wrap"><select class="f-select" id="tmplFStatus"><option value="">전체</option><option>사용</option><option>미사용</option></select></div>
+          <div class="f-select-wrap"><select class="f-select" id="tmplFStatus" onchange="onTmplFilter()"><option value="">전체</option><option>사용</option><option>미사용</option></select></div>
         </div>
         <div class="filter-row">
           <span class="f-label">검색</span>
           <div class="search-combo">
-            <input class="search-input" placeholder="이벤트명 또는 제목 검색...">
-            <button class="search-btn" onclick="toast('검색 완료','🔍')"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+            <input class="search-input" id="tmplQuery" placeholder="이벤트명 또는 제목 검색..." onkeydown="if(event.key==='Enter'){event.preventDefault();onTmplFilter();}">
+            <button class="search-btn" onclick="onTmplFilter()"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
           </div>
-          <button class="btn btn-secondary btn-sm" onclick="toast('필터를 초기화했습니다.','🔄')">초기화</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetTmplFilter()">초기화</button>
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-toolbar">
-          <div class="result-info">전체 <strong>8</strong>개 이벤트</div>
+          <div class="result-info">전체 <strong id="tmplResultCount">-</strong>개 템플릿</div>
           <div class="toolbar-right">
-            <span style="font-size:12px;color:var(--text-muted)">이벤트 자체는 시스템에서 관리됩니다. 문구와 사용 여부만 수정 가능합니다.</span>
+            <span style="font-size:12px;color:var(--text-muted)">자동 발송 템플릿(트리거 이벤트)은 시스템에서 관리됩니다.</span>
+            <button class="btn btn-primary btn-sm" onclick="showManualTemplatePanel()">템플릿 등록</button>
           </div>
         </div>
         <div class="tbl-wrap">
-          <table style="min-width:1100px">
+          <table style="min-width:1300px">
             <colgroup>
-              <col width="44"><col width="90"><col width="80"><col width="150">
+              <col width="90"><col width="110"><col width="90"><col width="80"><col width="150">
               <col width="80"><col><col width="90"><col width="100"><col width="80"><col width="60">
             </colgroup>
             <thead>
               <tr>
-                <th><input type="checkbox" class="chk"></th>
+                <th>발송 방식</th>
+                <th>발송 목적</th>
                 <th>서비스</th>
                 <th>이벤트 유형</th>
-                <th>이벤트명</th>
-                <th>발송 대상</th>
+                <th>템플릿명</th>
+                <th>발송 대상 / 수신 앱</th>
                 <th>푸시 제목</th>
                 <th>사용 여부</th>
                 <th>수정일</th>
@@ -685,176 +747,12 @@ tr.row-sel td { background: var(--accent-primary-light); }
                 <th>관리</th>
               </tr>
             </thead>
-            <tbody id="tmplTableBody">
-
-              <!-- 1. 알림장 등록 -->
-              <tr onclick="showEventPanel(0)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-blue">알림장</span></td>
-                <td><span class="tbadge t-green">등록</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">알림장 게시</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">교사가 알림장 게시 시</div>
-                </td>
-                <td><span class="tbadge t-purple">학부모</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 새 알림장이 도착했어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{반명} 반의 새로운 알림장이 등록되었습니다. 지금 확인해 보세요.</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">26.02.14</td>
-                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(0)">수정</button></td>
-              </tr>
-
-              <!-- 2. 앨범 등록 -->
-              <tr onclick="showEventPanel(1)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-cyan">앨범</span></td>
-                <td><span class="tbadge t-green">등록</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">앨범 게시</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">교사가 앨범 게시 시</div>
-                </td>
-                <td><span class="tbadge t-purple">학부모</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 새 앨범이 등록되었어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">오늘의 사진이 업로드되었습니다. 확인해보세요!</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">26.01.20</td>
-                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(1)">수정</button></td>
-              </tr>
-
-              <!-- 3. 투약 시간도래 -->
-              <tr onclick="showEventPanel(2)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-amber">투약</span></td>
-                <td><span class="tbadge" style="background:#FEF3C7;color:#92400E">시간도래</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">투약 시간 알림</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">예약된 투약 시간 도래 시</div>
-                </td>
-                <td><span class="tbadge t-green">교사</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] {원아명} 투약 시간입니다</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">{원아명} 어린이의 투약 시간입니다. 처방약을 확인해 주세요.</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">26.02.10</td>
-                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(2)">수정</button></td>
-              </tr>
-
-              <!-- 4. 스케줄 등록 -->
-              <tr onclick="showEventPanel(3)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-blue">스케줄</span></td>
-                <td><span class="tbadge t-green">등록</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">일정 등록</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">일정 등록 시</div>
-                </td>
-                <td><span class="tbadge t-purple">학부모</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 새로운 일정이 등록되었어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}에서 새 일정을 등록했습니다. 일정을 확인해 보세요.</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">25.12.05</td>
-                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(3)">수정</button></td>
-              </tr>
-
-              <!-- 5. 식단표 등록 -->
-              <tr onclick="showEventPanel(4)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-green">식단표</span></td>
-                <td><span class="tbadge t-green">등록</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">식단표 게시</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">식단표 게시 시</div>
-                </td>
-                <td><span class="tbadge t-purple">학부모</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 오늘의 식단표가 등록되었어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}의 {날짜} 식단표가 업데이트되었습니다.</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">25.11.18</td>
-                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(4)">수정</button></td>
-              </tr>
-
-              <!-- 6. 초대장 발송 -->
-              <tr onclick="showEventPanel(5)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-purple">초대장</span></td>
-                <td><span class="tbadge" style="background:#EDE9FE;color:#5B21B6">초대</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">초대장 발송</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">초대장 발송 시</div>
-                </td>
-                <td><span class="tbadge t-purple">학부모</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 초대장이 도착했어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명}에서 초대장을 보냈습니다. 지금 확인해보세요.</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">25.10.30</td>
-                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(5)">수정</button></td>
-              </tr>
-
-              <!-- 7. 가입 승인 완료 -->
-              <tr onclick="showEventPanel(6)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-gray">가입/승인</span></td>
-                <td><span class="tbadge" style="background:#D1FAE5;color:#065F46">완료</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">가입 승인 완료</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">가입 승인 완료 시</div>
-                </td>
-                <td><span class="tbadge t-green">교사</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 가입 승인이 완료되었어요</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">{기관명} 가입 승인이 완료되었습니다. 지금 바로 이용해 보세요!</div>
-                </td>
-                <td><span class="sbadge s-active"><span class="sdot"></span>사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">25.09.12</td>
-                <td style="color:var(--text-muted);font-size:12px">김관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(6)">수정</button></td>
-              </tr>
-
-              <!-- 8. 승인 반려 -->
-              <tr onclick="showEventPanel(7)" style="cursor:pointer">
-                <td><input type="checkbox" class="chk" onclick="event.stopPropagation()"></td>
-                <td><span class="tbadge t-gray">가입/승인</span></td>
-                <td><span class="tbadge t-red">반려</span></td>
-                <td>
-                  <div style="font-weight:600;font-size:13px">승인 반려</div>
-                  <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">승인 반려 시</div>
-                </td>
-                <td><span class="tbadge t-gray" style="background:#FEF3C7;color:#92400E">원장/교사</span></td>
-                <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  <div style="font-size:13px">[알림장] 승인 요청이 반려되었습니다</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">가입 신청이 반려되었습니다. 사유를 확인하고 재신청해주세요.</div>
-                </td>
-                <td><span class="sbadge s-inactive"><span class="sdot"></span>미사용</span></td>
-                <td style="color:var(--text-muted);font-size:12px">25.08.01</td>
-                <td style="color:var(--text-muted);font-size:12px">슈퍼관리자</td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showEventPanel(7)">수정</button></td>
-              </tr>
-
-            </tbody>
+            <tbody id="tmplTableBody"><!-- renderTemplateTable()에서 EVENT_DATA 기준으로 생성 --></tbody>
           </table>
         </div>
         <div class="pagination-area">
-          <div class="pg-info">1 – 8 / 8건</div>
-          <div class="pagination">
-            <button class="pg-btn active">1</button>
-          </div>
+          <div class="pg-info" id="tmplPgInfo">-</div>
+          <div class="pagination" id="tmplPager"></div>
         </div>
       </div>
     </div>
@@ -866,14 +764,21 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <div class="page-header">
         <div>
           <div class="page-title">푸시 발송 이력</div>
-          <div class="page-subtitle">발송된 푸시 알림의 내역과 결과를 조회합니다.</div>
+          <div class="page-subtitle">운영자가 직접 발송한 수동 푸시의 내역과 결과를 조회합니다. 자동 푸시는 자동 푸시 모니터링에서 정상/실패 여부만 확인합니다.</div>
         </div>
-        <button class="btn btn-secondary">엑셀 다운로드</button>
+        <button class="btn btn-secondary" id="histExcelBtn" onclick="exportHistoryCsv()">엑셀 다운로드</button>
       </div>
 
-      <!-- 요약 카드 -->
+      <!-- 수동 발송 이력 / 자동 푸시 모니터링 구분 -->
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-primary btn-sm" id="histTabManual" onclick="showHistoryTab('manual')">수동 발송 이력</button>
+        <button class="btn btn-secondary btn-sm" id="histTabAuto" onclick="showHistoryTab('auto')">자동 푸시 모니터링</button>
+      </div>
+
+      <div id="histManualArea">
+      <!-- 요약 카드 — 수동 발송 기준 집계 (자동 트리거 푸시 제외) -->
       <div class="sum-grid">
-        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 발송 건수</div><div class="sum-card-num">186</div><div class="sum-card-sub">건 (이번 달)</div></div>
+        <div class="sum-card" style="--card-accent:#4361EE"><div class="sum-card-label">전체 발송 건수</div><div class="sum-card-num">186</div><div class="sum-card-sub">건 (이번 달 · 수동 발송)</div></div>
         <div class="sum-card" style="--card-accent:#10B981"><div class="sum-card-label">발송 성공</div><div class="sum-card-num">174</div><div class="sum-card-sub">건 완료</div></div>
         <div class="sum-card" style="--card-accent:#EF4444"><div class="sum-card-label">발송 실패</div><div class="sum-card-num">12</div><div class="sum-card-sub">건 실패</div></div>
         <div class="sum-card" style="--card-accent:#3B82F6"><div class="sum-card-label">예약 대기</div><div class="sum-card-num">2</div><div class="sum-card-sub">건 예약됨</div></div>
@@ -883,129 +788,65 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <div class="filter-card">
         <div class="filter-row">
           <span class="f-label">기간</span>
-          <input class="f-input" type="date" value="2025-03-01" style="min-width:140px">
+          <input class="f-input" type="date" id="histFFrom" style="min-width:140px">
           <span style="color:var(--text-muted)">~</span>
-          <input class="f-input" type="date" value="2025-03-19" style="min-width:140px">
-          <div class="f-select-wrap"><select class="f-select"><option>발송 대상 전체</option><option>전체 사용자</option><option>학부모</option><option>교사</option><option>원장</option></select></div>
-          <div class="f-select-wrap"><select class="f-select"><option>상태 전체</option><option>성공</option><option>실패</option><option>예약</option><option>발송 중</option></select></div>
+          <input class="f-input" type="date" id="histFTo" style="min-width:140px">
+          <div class="f-select-wrap"><select class="f-select" id="histFPurpose"><option value="">발송 목적 전체</option><option value="service">공지/안내</option><option value="marketing">마케팅·이벤트</option></select></div>
+          <div class="f-select-wrap"><select class="f-select" id="histFApp"><option value="">수신 앱 전체</option><option value="parentApp">학부모 앱</option><option value="kidkidsApp">키드키즈 앱</option></select></div>
+          <div class="f-select-wrap"><select class="f-select" id="histFStatus"><option value="">상태 전체</option><option value="sending">발송 중</option><option value="done">완료</option><option value="reserve">예약</option><option value="canceled">예약 취소</option></select></div>
         </div>
         <div class="filter-row">
           <span class="f-label">검색</span>
           <div class="search-combo">
-            <input class="search-input" placeholder="발송 제목 검색...">
-            <button class="search-btn"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
+            <input class="search-input" id="histQuery" placeholder="발송 제목 검색..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchHistory();}">
+            <button class="search-btn" onclick="searchHistory()"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg></button>
           </div>
-          <button class="btn btn-secondary btn-sm">초기화</button>
-          <button class="btn btn-primary btn-sm">검색</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetHistoryFilter()">초기화</button>
+          <button class="btn btn-primary btn-sm" onclick="searchHistory()">검색</button>
         </div>
       </div>
 
       <!-- 테이블 -->
       <div class="table-card">
         <div class="table-toolbar">
-          <div class="result-info">총 <strong>186</strong>건</div>
+          <div class="result-info">총 <strong id="histTotal">0</strong>건</div>
           <div class="toolbar-right">
-            <div class="f-select-wrap"><select class="f-select" style="min-width:90px"><option>20건</option><option>50건</option></select></div>
+            <div class="f-select-wrap"><select class="f-select" style="min-width:90px" id="histPageSize" onchange="onHistPageSize()"><option value="20">20건</option><option value="50">50건</option></select></div>
           </div>
         </div>
         <div class="tbl-wrap">
-          <table style="min-width:auto">
-            <colgroup><col width="150"><col><col width="120"><col width="90"><col width="80"><col width="80"><col width="90"><col width="60"></colgroup>
+          <table style="min-width:1150px">
+            <colgroup><col width="130"><col><col width="110"><col width="100"><col width="100"><col width="80"><col width="70"><col width="70"><col width="90"><col width="60"></colgroup>
             <thead>
-              <tr><th>발송 일시</th><th>제목</th><th>발송 대상</th><th>발송 수</th><th>성공 수</th><th>실패 수</th><th>상태</th><th>상세</th></tr>
+              <tr><th>발송 일시</th><th>제목</th><th>발송 목적</th><th>수신 앱</th><th>대상</th><th>발송 수</th><th>성공 수</th><th>실패 수</th><th>상태</th><th>상세</th></tr>
             </thead>
-            <tbody>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.19 14:30</td>
-                <td>
-                  <div style="font-weight:600">[알림장] 오늘 투약 안내</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">💊 투약 알림 템플릿 · 즉시 발송</div>
-                </td>
-                <td><span class="tbadge t-amber">학부모</span></td>
-                <td style="text-align:right;font-family:monospace">812</td>
-                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">805</td>
-                <td style="text-align:right;font-family:monospace;color:var(--red-text)">7</td>
-                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation();showPanel('발송 상세')">상세</button></td>
-              </tr>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.19 09:00</td>
-                <td>
-                  <div style="font-weight:600">[알림장] 가입 승인이 완료되었습니다</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">🎉 승인 완료 알림 템플릿 · 즉시 발송</div>
-                </td>
-                <td><span class="tbadge t-blue">전체</span></td>
-                <td style="text-align:right;font-family:monospace">24</td>
-                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">24</td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
-                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
-              </tr>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.20 09:00</td>
-                <td>
-                  <div style="font-weight:600">3/20 시스템 점검 사전 안내</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">직접 작성 · 예약 발송</div>
-                </td>
-                <td><span class="tbadge t-blue">전체</span></td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>
-                <td><span class="sbadge s-reserve"><span class="sdot"></span>예약</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
-              </tr>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.18 15:22</td>
-                <td>
-                  <div style="font-weight:600">[알림장] 출석 확인 알림</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">✅ 출석 알림 템플릿 · 즉시 발송</div>
-                </td>
-                <td><span class="tbadge t-amber">학부모</span></td>
-                <td style="text-align:right;font-family:monospace">398</td>
-                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">393</td>
-                <td style="text-align:right;font-family:monospace;color:var(--red-text)">5</td>
-                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
-              </tr>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.17 10:05</td>
-                <td>
-                  <div style="font-weight:600">봄학기 이벤트 참여 안내</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">직접 작성 · 즉시 발송</div>
-                </td>
-                <td><span class="tbadge t-blue">전체</span></td>
-                <td style="text-align:right;font-family:monospace">1,843</td>
-                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">1,843</td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
-                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
-              </tr>
-              <tr onclick="showPanel('발송 상세')">
-                <td style="font-family:monospace;font-size:12px">25.03.15 08:30</td>
-                <td>
-                  <div style="font-weight:600">[알림장] 새 공지 등록 알림</div>
-                  <div style="font-size:11.5px;color:var(--text-muted)">📢 공지 등록 알림 템플릿</div>
-                </td>
-                <td><span class="tbadge t-green">교사</span></td>
-                <td style="text-align:right;font-family:monospace">524</td>
-                <td style="text-align:right;font-family:monospace;color:var(--green-text);font-weight:700">524</td>
-                <td style="text-align:right;font-family:monospace;color:var(--text-muted)">0</td>
-                <td><span class="sbadge s-success"><span class="sdot"></span>성공</span></td>
-                <td><button class="view-btn" onclick="event.stopPropagation()">상세</button></td>
-              </tr>
-            </tbody>
+            <tbody id="histTableBody"><!-- SEND_RECORDS(수동 발송) 기준으로 생성 --></tbody>
           </table>
         </div>
         <div class="pagination-area">
-          <div class="pg-info">1 – 20 / 186건</div>
-          <div class="pagination">
-            <button class="pg-btn">‹‹</button>
-            <button class="pg-btn">‹</button>
-            <button class="pg-btn active">1</button>
-            <button class="pg-btn">2</button>
-            <button class="pg-btn">3</button>
-            <button class="pg-btn">›</button>
-            <button class="pg-btn">››</button>
+          <div class="pg-info" id="histPgInfo">-</div>
+          <div class="pagination" id="histPager"></div>
+        </div>
+      </div>
+      </div><!-- /histManualArea -->
+
+      <!-- 자동 푸시 모니터링 — 트리거별 정상/실패 여부만 확인 (개별 발송 건 조회·재발송 미제공) -->
+      <div id="histAutoArea" style="display:none">
+        <div style="background:#EEF1FD;border:1px solid #C7D2FB;border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;font-size:12.5px;color:#3730A3;line-height:1.6">
+          자동 푸시는 트리거 조건에 따라 시스템이 자동 발송하며, 수동 발송 KPI·이력 집계에서 제외됩니다. 이 영역에서는 최근 24시간 기준 트리거별 정상/실패 여부와 실패 건수만 확인합니다.
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="result-info" id="autoMonitorSummary">-</div>
+          </div>
+          <div class="tbl-wrap">
+            <table style="min-width:auto">
+              <colgroup><col width="110"><col><col width="110"><col width="110"><col width="170"></colgroup>
+              <thead>
+                <tr><th>서비스</th><th>트리거</th><th>이벤트 유형</th><th>상태</th><th>실패 건수 (최근 24시간)</th></tr>
+              </thead>
+              <tbody id="autoMonitorBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1033,25 +874,20 @@ tr.row-sel td { background: var(--accent-primary-light); }
 ══════════════════════════════════ -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
-    <div class="confirm-icon">📨</div>
+    <!-- 즉시 발송 / 예약 발송 / 템플릿 덮어쓰기 / 예약 취소 확인에 공용 사용 (문구·버튼은 openDialog에서 설정) -->
+    <div class="confirm-icon" id="confirmIcon">📨</div>
     <div class="confirm-title" id="confirmTitle">푸시 발송 확인</div>
-    <div class="confirm-desc" id="confirmDesc">
-      <strong id="confirmTargetNum">1,843명</strong>에게 푸시 알림을 발송합니다.<br>
-      발송 후에는 취소할 수 없습니다. 계속하시겠습니까?
-    </div>
+    <div class="confirm-desc" id="confirmDesc"></div>
     <div class="confirm-actions">
-      <button class="btn btn-secondary" onclick="closeConfirm()">취소</button>
-      <button class="btn btn-send" onclick="doSend()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-        발송하기
-      </button>
+      <button class="btn btn-secondary" id="confirmCancelBtn" onclick="cancelDialog()">취소</button>
+      <button class="btn btn-send" id="confirmOkBtn" onclick="confirmDialog()">확인</button>
     </div>
   </div>
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ─────────────────────────────────
    SIDEBAR
 ───────────────────────────────── */
@@ -1072,10 +908,97 @@ function showScreen(key) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + key).classList.add('active');
   document.getElementById('topbarCur').textContent = SCREEN_NAMES[key];
+  if (key === 'history') renderAutoMonitor(); // 자동 푸시 모니터링은 화면 진입 시 최신 템플릿 상태로 갱신
   document.querySelectorAll('.nav-sub .nav-item').forEach(i => i.classList.remove('active-sub'));
   const sub = document.getElementById('sub-' + key);
   if (sub) sub.classList.add('active-sub');
   closePanel();
+}
+
+/* ─────────────────────────────────
+   PUSH FORM — 공통
+───────────────────────────────── */
+const TITLE_MAX = 50;
+const BODY_MAX  = 200;
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function getTargetType() {
+  return document.querySelector('input[name="targetType"]:checked')?.value || '';
+}
+function getSendType() {
+  return document.querySelector('input[name="sendType"]:checked')?.value || 'now';
+}
+function getPurpose() {
+  return document.querySelector('input[name="sendPurpose"]:checked')?.value || 'service';
+}
+function getReceiveApp() {
+  return document.querySelector('input[name="receiveApp"]:checked')?.value || '';
+}
+
+/* ─────────────────────────────────
+   발송 목적 / 수신 앱 설정
+   - 수신 앱 추가·대상 변경 시 RECEIVE_APPS만 확장
+───────────────────────────────── */
+const PURPOSES = {
+  service:   { label:'공지/안내', hint:'마케팅 수신 동의 여부와 관계없이 발송 대상 전체에게 발송됩니다.' },
+  marketing: { label:'마케팅·이벤트',   hint:'마케팅 수신에 동의한 대상에게만 발송됩니다. 수신 미동의 대상은 자동 제외됩니다.' },
+};
+const RECEIVE_APPS = {
+  parentApp: {
+    label:'학부모 앱', roles:['parent'],
+    targets:[
+      { value:'allParent', label:'전체 학부모', roles:['parent'] },
+      { value:'custom',    label:'직접 지정' },
+    ],
+  },
+  kidkidsApp: {
+    label:'키드키즈 앱', roles:['teacher', 'director'],
+    targets:[
+      { value:'allStaff', label:'전체 교직원', roles:['teacher', 'director'] },
+      { value:'teacher',  label:'교사',       roles:['teacher'] },
+      { value:'director', label:'원장',       roles:['director'] },
+      { value:'custom',   label:'직접 지정' },
+    ],
+  },
+};
+function getTargetDef() {
+  const app = RECEIVE_APPS[getReceiveApp()];
+  return app ? app.targets.find(t => t.value === getTargetType()) || null : null;
+}
+function renderTargetOptions() {
+  const app = RECEIVE_APPS[getReceiveApp()];
+  document.getElementById('targetRadioGroup').innerHTML = app
+    ? app.targets.map(t => `<label class="radio-item"><input type="radio" name="targetType" value="${t.value}" onchange="onTargetChange()"> ${t.label}</label>`).join('')
+    : '';
+  document.getElementById('targetAppNotice').style.display = app ? 'none' : 'block';
+}
+function onPurposeChange() {
+  document.getElementById('purposeHint').textContent = PURPOSES[getPurpose()].hint;
+  // 발송 목적 변경 시 선택된 템플릿 초기화 후 해당 목적의 템플릿 목록으로 재구성
+  document.getElementById('templateSelect').value = '';
+  renderTemplateOptions();
+  updateTarget();
+  if (document.getElementById('custResults').style.display !== 'none') searchUsers();
+  renderCustomChips();
+}
+// 수신 앱 변경 시 발송 대상 선택값과 직접 지정 대상 초기화
+function onAppChange() {
+  selectedUsers = [];
+  resetCustomSearch();
+  renderCustomChips();
+  renderTargetOptions();
+  renderTemplateOptions(); // 수신 앱과 맞지 않는 템플릿 제외 (선택 중이던 템플릿이 제외되면 선택 해제)
+  excludedUsers = new Set();
+  renderScreenOptions(); // 수신 앱에서 지원하는 이동 화면으로 재구성
+  updateTarget();
+  validateMove(true);
+}
+// 발송 대상 유형을 선택하면 기본값(전체 기관 선택)으로 시작
+function onTargetChange() {
+  excludedUsers = new Set();
+  updateTarget();
 }
 
 /* ─────────────────────────────────
@@ -1086,104 +1009,1227 @@ function updatePreview() {
   const b = document.getElementById('pushBody');
   document.getElementById('previewTitle').textContent = t.value || '제목을 입력해주세요';
   document.getElementById('previewBody').textContent  = b.value || '내용을 입력하면 여기에 미리보기가 표시됩니다.';
-  document.getElementById('titleCount').textContent = (t.value.length) + ' / 50자';
-  document.getElementById('bodyCount').textContent  = (b.value.length) + ' / 200자';
+  document.getElementById('titleCount').textContent = t.value.length + ' / ' + TITLE_MAX + '자';
+  document.getElementById('bodyCount').textContent  = b.value.length + ' / ' + BODY_MAX + '자';
 }
 
 /* ─────────────────────────────────
-   TEMPLATE APPLY
+   TEMPLATE APPLY — 푸시 템플릿 관리(EVENT_DATA)의 수동 발송용 템플릿과 연동
+   - 자동 발송 템플릿은 노출하지 않음 (수동 발송 템플릿만)
+   - 발송 목적 일치, 수신 앱 일치(전체 앱 포함), 사용 중인 템플릿만 노출
 ───────────────────────────────── */
-const TMPL_DATA = {
-  '투약 알림':     { title:'💊 [알림장] {원아명} 투약 안내', body:'{원아명} 어린이의 투약 시간입니다. 오늘 {날짜} 처방약을 확인해 주세요. ({기관명})' },
-  '출석 알림':     { title:'✅ [알림장] {원아명} 출석 확인', body:'{원아명} 어린이가 오늘 {날짜} 등원하였습니다. ({기관명} {반명})' },
-  '공지 등록 알림':{ title:'📢 [알림장] 새 공지가 등록되었습니다', body:'{기관명}에서 새로운 공지사항을 등록했습니다. 확인해 주세요.' },
-  '승인 완료 알림':{ title:'🎉 [알림장] 가입 승인이 완료되었습니다', body:'안녕하세요! {기관명} 가입 승인이 완료되었습니다. 지금 바로 서비스를 이용해 보세요.' },
-  '반려 알림':     { title:'❌ [알림장] 가입 신청이 반려되었습니다', body:'가입 신청이 반려되었습니다. 사유를 확인하고 다시 신청해 주세요.' },
-};
+function getSelectableTemplates() {
+  const purpose = getPurpose();
+  const app = getReceiveApp();
+  return EVENT_DATA.filter(ev =>
+    ev.active && ev.templateType !== 'auto' && ev.templateType === purpose
+    && (!app || ev.app === 'all' || ev.app === app));
+}
+function renderTemplateOptions() {
+  const sel = document.getElementById('templateSelect');
+  const current = sel.value;
+  const options = getSelectableTemplates();
+  sel.innerHTML = '<option value="">— 템플릿 불러오기 (선택) —</option>'
+    + options.map(ev => `<option value="${ev.idx}">${esc(ev.name)} (${TEMPLATE_APPS[ev.app]})</option>`).join('');
+  sel.value = options.some(ev => String(ev.idx) === current) ? current : '';
+  sel.dataset.prev = sel.value;
+}
 function applyTemplate(sel) {
-  const d = TMPL_DATA[sel.value];
-  if (!d) return;
-  document.getElementById('pushTitle').value = d.title;
-  document.getElementById('pushBody').value  = d.body;
+  const ev = EVENT_DATA.find(item => String(item.idx) === sel.value);
+  if (!ev) { sel.dataset.prev = sel.value; return; }
+  const hasContent = document.getElementById('pushTitle').value.trim() || document.getElementById('pushBody').value.trim();
+  if (!hasContent) { fillTemplate(ev); return; }
+  // 작성 중인 내용이 있으면 확인 후 적용 (확인 전까지 이전 선택값 유지)
+  sel.value = sel.dataset.prev || '';
+  openDialog({
+    icon:'📋', title:'템플릿 적용',
+    desc:`작성 중인 제목과 내용이 <strong>${esc(ev.name)}</strong> 템플릿 내용으로 바뀝니다.<br>계속하시겠습니까?`,
+    okLabel:'적용', okClass:'btn-primary',
+    onOk:() => fillTemplate(ev),
+  });
+}
+function fillTemplate(ev) {
+  const sel = document.getElementById('templateSelect');
+  sel.value = String(ev.idx);
+  sel.dataset.prev = sel.value;
+  document.getElementById('pushTitle').value = ev.title.slice(0, TITLE_MAX);
+  document.getElementById('pushBody').value  = ev.body.slice(0, BODY_MAX);
+  setMoveFromLanding(ev.landing);
   updatePreview();
-  toast('템플릿 "' + sel.value + '"을 불러왔습니다.', '📋');
+  toast('템플릿 "' + ev.name + '"을 불러왔습니다.', '📋');
 }
 
 /* ─────────────────────────────────
-   INSERT VAR
+   이동 방식 — 이동 없음 / 앱 내 화면 이동 / 링크 이동 (단일 선택)
 ───────────────────────────────── */
-let lastFocus = null;
-document.addEventListener('focusin', e => {
-  if (e.target.id === 'pushTitle' || e.target.id === 'pushBody') lastFocus = e.target;
-});
-function insertVar(v) {
-  const el = lastFocus || document.getElementById('pushBody');
-  const s = el.selectionStart ?? el.value.length;
-  const e2 = el.selectionEnd ?? s;
-  el.value = el.value.slice(0, s) + v + el.value.slice(e2);
-  el.focus(); el.selectionStart = el.selectionEnd = s + v.length;
-  updatePreview();
+// 앱 내 이동 가능 화면: 푸시 템플릿 관리에 등록된 랜딩 경로(확인된 경로)만 사용 — 확인되지 않은 화면은 추가하지 않음
+// 최초 1회 확정 후 고정 — 자동 템플릿 랜딩 경로를 수정해도 수동 푸시의 이동 화면 선택지는 변하지 않음
+let existingScreens = null;
+function getExistingScreens() {
+  if (!existingScreens) {
+    const seen = new Set();
+    existingScreens = [];
+    EVENT_DATA.filter(ev => ev.templateType === 'auto' && ev.landing).forEach(ev => {
+      if (seen.has(ev.landing)) return;
+      seen.add(ev.landing);
+      existingScreens.push({ path: ev.landing, label: ev.service + ' · ' + ev.landing });
+    });
+  }
+  return existingScreens;
+}
+/* 수신 앱별 앱 내 이동 화면(allowlist)
+   - native : 앱 네이티브 화면 (알림장 네이티브 화면 등)
+   - webview: 웹뷰 화면 (키드키즈 웹뷰 화면 등, 화면 확정 시 추가)
+   현재는 두 앱 모두 기존 확인된 화면을 동일하게 사용 */
+const LINK_ALLOWLIST = {
+  parentApp:  { native: getExistingScreens, webview: () => [] },
+  kidkidsApp: { native: getExistingScreens, webview: () => [] },
+};
+// 앱 미선택 시 전체 앱의 화면 합집합
+function getAppScreens(app) {
+  const apps = LINK_ALLOWLIST[app] ? [app] : Object.keys(LINK_ALLOWLIST);
+  const seen = new Set();
+  return apps.flatMap(a => [...LINK_ALLOWLIST[a].native(), ...LINK_ALLOWLIST[a].webview()])
+    .filter(sc => !seen.has(sc.path) && seen.add(sc.path));
+}
+function getAllowedLinkRoots(app) {
+  return [...new Set(getAppScreens(app).map(sc => '/' + sc.path.split('/')[1]))];
+}
+// 경로 검증 (템플릿 등록 랜딩 경로용). app 미지정 시 전체 앱 기준. 오류 문구 반환, 정상이면 ''
+function checkLinkPath(url, app) {
+  if (!url) return '';
+  const roots = getAllowedLinkRoots(app);
+  if (!/^\/[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)*$/.test(url)) return "'/'로 시작하는 앱 내부 경로만 입력할 수 있습니다. (예: /notice/123)";
+  if (!roots.includes('/' + url.split('/')[1])) return '허용되지 않은 이동 경로입니다. ' + (RECEIVE_APPS[app] ? RECEIVE_APPS[app].label + ' ' : '') + '허용 경로: ' + roots.join(', ');
+  return '';
+}
+// 링크 이동(웹페이지) 검증: https 주소만 허용
+function checkWebUrl(url) {
+  if (!url) return '이동할 링크를 입력해주세요.';
+  if (/\s/.test(url)) return '링크에 공백을 포함할 수 없습니다.';
+  let u;
+  try { u = new URL(url); } catch (e) { return 'https:// 로 시작하는 올바른 주소를 입력해주세요. (예: https://example.com/event)'; }
+  if (u.protocol !== 'https:') return 'https:// 로 시작하는 주소만 입력할 수 있습니다.';
+  if (!u.hostname.includes('.')) return '올바른 도메인의 주소를 입력해주세요.';
+  return '';
+}
+function getMoveType() {
+  return document.querySelector('input[name="moveType"]:checked')?.value || 'none';
+}
+function renderScreenOptions() {
+  const sel = document.getElementById('pushScreen');
+  const current = sel.value;
+  const screens = getAppScreens(getReceiveApp());
+  sel.innerHTML = '<option value="">이동할 화면을 선택해주세요</option>'
+    + screens.map(sc => `<option value="${esc(sc.path)}">${esc(sc.label)}</option>`).join('');
+  sel.value = screens.some(sc => sc.path === current) ? current : '';
+}
+function onMoveTypeChange() {
+  const type = getMoveType();
+  document.getElementById('moveScreenArea').style.display = type === 'screen' ? 'block' : 'none';
+  document.getElementById('moveLinkArea').style.display = type === 'link' ? 'block' : 'none';
+  // 단일 선택: 선택하지 않은 방식의 입력값은 비움
+  if (type !== 'screen') document.getElementById('pushScreen').value = '';
+  if (type !== 'link') document.getElementById('pushUrl').value = '';
+  if (type === 'screen') renderScreenOptions();
+  validateMove(true);
+}
+// 이동 방식 검증 결과: 정상이면 null, 오류면 { field, msg, empty }
+function checkMove() {
+  const type = getMoveType();
+  if (type === 'screen') {
+    const path = document.getElementById('pushScreen').value;
+    if (!path) return { field:'screen', msg:'이동할 화면을 선택해주세요.', empty:true };
+    if (!getAppScreens(getReceiveApp()).some(sc => sc.path === path)) return { field:'screen', msg:'선택한 수신 앱에서 지원하지 않는 화면입니다.' };
+  }
+  if (type === 'link') {
+    const url = document.getElementById('pushUrl').value.trim();
+    const msg = checkWebUrl(url);
+    if (msg) return { field:'link', msg, empty:!url };
+  }
+  return null;
+}
+// quiet=true: 아직 입력하지 않은 필수값 오류는 표시하지 않고 형식 오류만 표시
+function validateMove(quiet) {
+  const err = checkMove();
+  const showErr = (id, field) => {
+    const el = document.getElementById(id);
+    const show = !!err && err.field === field && !(quiet && err.empty);
+    el.textContent = show ? err.msg : '';
+    el.style.display = show ? 'block' : 'none';
+    return show;
+  };
+  showErr('pushScreenError', 'screen');
+  document.getElementById('pushUrl').classList.toggle('is-invalid', showErr('pushUrlError', 'link'));
+  return !err;
+}
+function getMove() {
+  const type = getMoveType();
+  if (type === 'screen') {
+    const path = document.getElementById('pushScreen').value;
+    const sc = getAppScreens(getReceiveApp()).find(x => x.path === path);
+    return { type, value: path, label: sc ? sc.label : path };
+  }
+  if (type === 'link') return { type, value: document.getElementById('pushUrl').value.trim() };
+  return { type:'none' };
+}
+function moveText(m) {
+  if (!m || m.type === 'none') return '이동 없음';
+  return (m.type === 'screen' ? '앱 내 화면 이동' : '링크 이동') + ' · ' + (m.type === 'screen' ? (m.label || m.value) : m.value);
+}
+// 템플릿 적용 시 랜딩 경로 → 앱 내 화면 이동으로 반영 (일치하는 확인된 화면이 없으면 이동 없음)
+function setMoveFromLanding(landing) {
+  const screens = getAppScreens(getReceiveApp());
+  const root = path => path.split('/')[1];
+  const hit = landing ? (screens.find(sc => sc.path === landing) || screens.find(sc => root(sc.path) === root(landing))) : null;
+  document.querySelector('input[name="moveType"][value="' + (hit ? 'screen' : 'none') + '"]').checked = true;
+  onMoveTypeChange();
+  if (hit) { document.getElementById('pushScreen').value = hit.path; validateMove(); }
 }
 
 /* ─────────────────────────────────
    TARGET TYPE
 ───────────────────────────────── */
-const TARGET_MAP = {
-  all:      { count:'1,843', breakdown:'📱 학부모 812명 · 👩‍🏫 교사 524명 · 🏫 원장 507명' },
-  parent:   { count:'812',   breakdown:'📱 학부모 전체' },
-  teacher:  { count:'524',   breakdown:'👩‍🏫 교사 전체' },
-  director: { count:'507',   breakdown:'🏫 원장 전체' },
-  custom:   { count:'1',     breakdown:'직접 지정 대상' },
-};
+// 샘플 기관별 대상 인원 — [전체, 마케팅 수신 동의]
+const ORG_TARGETS = [
+  { id:'o01', name:'키드키즈 어린이집', joinedAt:'2023-03-15', parent:[82, 59],   teacher:[6, 4],   director:[1, 1] },
+  { id:'o02', name:'행복 유치원',       joinedAt:'2023-05-02', parent:[64, 46],   teacher:[5, 4],   director:[1, 1] },
+  { id:'o03', name:'새싹 어린이집',     joinedAt:'2024-01-10', parent:[51, 37],   teacher:[4, 3],   director:[1, 0] },
+  { id:'o04', name:'ABC 유치원',        joinedAt:'2022-11-21', parent:[210, 151], teacher:[12, 9],  director:[1, 1] },
+  { id:'o05', name:'사랑센터 어린이집', joinedAt:'2023-09-05', parent:[175, 126], teacher:[9, 7],   director:[1, 1] },
+  { id:'o06', name:'해님 어린이집',     joinedAt:'2024-03-18', parent:[230, 166], teacher:[14, 10], director:[1, 1] },
+  { id:'o07', name:'푸른숲 유치원',     joinedAt:'2022-08-30', parent:[148, 107], teacher:[16, 12], director:[1, 1] },
+  { id:'o08', name:'꿈나무 어린이집',   joinedAt:'2024-06-12', parent:[190, 137], teacher:[11, 8],  director:[1, 0] },
+  { id:'o09', name:'무지개 유치원',     joinedAt:'2023-02-08', parent:[165, 119], teacher:[13, 10], director:[1, 1] },
+  { id:'o10', name:'별빛 어린이집',     joinedAt:'2025-01-20', parent:[205, 148], teacher:[10, 7],  director:[1, 1] },
+  { id:'o11', name:'하늘 유치원',       joinedAt:'2024-10-07', parent:[140, 101], teacher:[12, 9],  director:[1, 1] },
+  { id:'o12', name:'초록 어린이집',     joinedAt:'2025-03-03', parent:[183, 130], teacher:[8, 6],   director:[1, 1] },
+];
+// 샘플 기관 추가 — 기관 수가 많을 때의 검색/정렬/페이지네이션 확인용 (인원·가입일은 샘플 규칙으로 생성)
+['키드랜드 유치원', '키드스쿨 어린이집', '키드파크 유치원', '가온 어린이집', '나래 유치원', '다솜 어린이집',
+ '라온 유치원', '마루 어린이집', '바람 유치원', '사과나무 어린이집', '아침 유치원', '자작나무 어린이집',
+ '차돌 유치원', '카네이션 어린이집', '타래 유치원', '파랑새 어린이집', '한솔 유치원', '구름 어린이집',
+ '노을 유치원', '단비 어린이집', '두레 유치원', '보리 어린이집', '소나무 유치원', '솔빛 어린이집',
+ '아라 유치원', '오름 어린이집', '이든 유치원', '제비꽃 어린이집', '진달래 유치원', '참새 어린이집',
+ '코끼리 유치원', '토끼풀 어린이집', '푸름 어린이집'].forEach((name, k) => {
+  const pt = 45 + (k * 53) % 170;
+  const tt = 3 + (k * 5) % 12;
+  const d = new Date(2022, 6 + (k * 7) % 40, 1 + (k * 11) % 27);
+  ORG_TARGETS.push({
+    id: 'o' + String(ORG_TARGETS.length + 1).padStart(2, '0'), name,
+    joinedAt: d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()),
+    parent:   [pt, Math.round(pt * (0.66 + ((k * 7) % 9) / 100))],
+    teacher:  [tt, Math.max(1, Math.round(tt * 0.74))],
+    director: [1, k % 5 === 3 ? 0 : 1],
+  });
+});
+ORG_TARGETS.forEach((o, i) => { o.seq = i; });
+let excludedUsers = new Set(); // 대상 확인/편집에서 발송 제외한 사용자 키 (기본: 발송 가능한 전체 사용자 포함)
+let teSnapshot = null; // 대상 확인/편집 패널 진입 시점의 확정 상태 (취소·X·배경 클릭 시 복원)
+const ROLE_LABEL = { parent:'학부모', teacher:'교사', director:'원장' };
+const ROLE_ICON  = { parent:'📱', teacher:'👩‍🏫', director:'🏫' };
+const ROLE_ORDER = ['parent', 'teacher', 'director'];
+
+function sumOrgs(orgs, role, i) { return orgs.reduce((sum, o) => sum + o[role][i], 0); }
+
+// 수신 앱 + 발송 대상 + 발송 목적 + 제외 기관을 반영한 예상 발송 대상
+function getTargetSummary() {
+  const def = getTargetDef();
+  if (!def) return { total:0, excluded:0, parts:[], orgCount:null, orgTotal:ORG_TARGETS.length };
+  const marketing = getPurpose() === 'marketing';
+  let rows; // [회원 유형, 전체, 수신 동의]
+  let orgCount = null;
+  if (def.value === 'custom') {
+    rows = ROLE_ORDER.map(r => {
+      const users = selectedUsers.filter(u => u.role === r);
+      return [r, users.length, users.filter(u => u.marketing).length];
+    }).filter(([, n]) => n > 0);
+  } else {
+    // 개별 제외 사용자 반영: 마케팅은 수신 동의 인원에서, 공지/안내는 전체 인원에서 차감
+    const stats = getExcludedStats(def, marketing);
+    orgCount = ORG_TARGETS.filter(o => teOrgStat(o, def, marketing, stats).selected > 0).length;
+    rows = def.roles.map(r => {
+      const ex = ORG_TARGETS.reduce((sum, o) => sum + ((stats.get(o.id) || {})[r] || 0), 0);
+      return [r, sumOrgs(ORG_TARGETS, r, 0) - (marketing ? 0 : ex), sumOrgs(ORG_TARGETS, r, 1) - (marketing ? ex : 0)];
+    });
+  }
+  // 마케팅·이벤트: 수신 동의 대상만 포함 / 공지/안내: 동의 조건 미적용
+  const parts = rows.map(([r, all, consent]) => [r, marketing ? consent : all]);
+  return {
+    total: parts.reduce((sum, [, n]) => sum + n, 0),
+    excluded: marketing ? rows.reduce((sum, [, all, consent]) => sum + (all - consent), 0) : 0,
+    parts, orgCount, orgTotal: ORG_TARGETS.length,
+  };
+}
 function updateTarget() {
-  const v = document.querySelector('input[name="targetType"]:checked')?.value || 'all';
-  const d = TARGET_MAP[v];
-  document.getElementById('targetCount').textContent = d.count + '명';
-  document.getElementById('targetBreakdown').textContent = d.breakdown;
-  document.getElementById('targetOptions').style.display = v === 'custom' ? 'block' : 'none';
-  document.getElementById('confirmTargetNum').textContent = d.count + '명';
+  const app = getReceiveApp();
+  const def = getTargetDef();
+  const { total, excluded, parts, orgCount, orgTotal } = getTargetSummary();
+  const isGroup = !!def && def.value !== 'custom';
+  // 단위 '명'은 하단 라벨에만 표시
+  document.getElementById('targetCount').textContent = total.toLocaleString();
+  document.getElementById('targetLabel').textContent = excluded
+    ? '명 발송 가능 · 수신 미동의 ' + excluded.toLocaleString() + '명 제외'
+    : '명에게 발송 예정';
+  // 보조정보: 총 인원과 중복되는 회원 유형별 인원은 표시하지 않고, 선택 기관 수만 표시 (유형이 2개 이상일 때만 유형별 인원 표시)
+  const items = [];
+  if (!app) items.push('수신 앱과 발송 대상을 선택하면 예상 발송 대상이 표시됩니다.');
+  else if (!def) items.push('발송 대상을 선택해주세요.');
+  else {
+    if (isGroup) items.push('선택 기관 ' + orgCount + '개' + (orgCount < orgTotal ? ' (' + (orgTotal - orgCount) + '개 제외)' : ''));
+    if (parts.length > 1) parts.forEach(([r, n]) => items.push(ROLE_ICON[r] + ' ' + ROLE_LABEL[r] + ' ' + n.toLocaleString() + '명'));
+    else if (!isGroup && !parts.length) items.push('추가된 대상이 없습니다.');
+  }
+  const bd = document.getElementById('targetBreakdown');
+  bd.innerHTML = items.map(t => '<span>' + t + '</span>').join('');
+  bd.style.display = items.length ? '' : 'none';
+  document.getElementById('targetEditBtn').style.display = isGroup ? '' : 'none';
+  document.getElementById('targetOptions').style.display = def?.value === 'custom' ? 'block' : 'none';
 }
 
 /* ─────────────────────────────────
-   SCHEDULE TOGGLE
+   직접 지정 — 기관/반 필터 → 사용자 검색 → 사용자 추가
 ───────────────────────────────── */
+const CUSTOM_ORG_CLASSES = {
+  '키드키즈 어린이집': ['토끼반', '병아리반'],
+  'ABC 유치원':        ['곰돌이반', '햇살반'],
+  '사랑센터 어린이집': ['새싹반'],
+};
+// marketing: 마케팅 수신 동의 여부 (샘플)
+const PUSH_USERS = [
+  { id:'u01', name:'김민지', loginId:'minji.kim',    role:'teacher',  org:'키드키즈 어린이집', cls:'토끼반',   marketing:true },
+  { id:'u02', name:'이서준', loginId:'seojun_lee',   role:'teacher',  org:'키드키즈 어린이집', cls:'병아리반', marketing:false },
+  { id:'u03', name:'홍길동', loginId:'kidkids01',    role:'director', org:'키드키즈 어린이집', cls:'',         marketing:true },
+  { id:'u04', name:'박지수', loginId:'jisu_mom',     role:'parent',   org:'키드키즈 어린이집', cls:'토끼반',   marketing:true },
+  { id:'u05', name:'최유나', loginId:'yuna0412',     role:'parent',   org:'키드키즈 어린이집', cls:'병아리반', marketing:false },
+  { id:'u06', name:'정하은', loginId:'haeun_t',      role:'teacher',  org:'ABC 유치원',        cls:'곰돌이반', marketing:true },
+  { id:'u07', name:'강민호', loginId:'abc_director', role:'director', org:'ABC 유치원',        cls:'',         marketing:false },
+  { id:'u08', name:'윤서아', loginId:'seoa_papa',    role:'parent',   org:'ABC 유치원',        cls:'햇살반',   marketing:true },
+  { id:'u09', name:'한지민', loginId:'jimin_h',      role:'teacher',  org:'사랑센터 어린이집', cls:'새싹반',   marketing:true },
+  { id:'u10', name:'오태윤', loginId:'taeyun_mom',   role:'parent',   org:'사랑센터 어린이집', cls:'새싹반',   marketing:false },
+];
+let selectedUsers = [];
+
+function renderCustomOrgOptions() {
+  document.getElementById('custOrg').innerHTML = '<option value="">전체 기관</option>'
+    + Object.keys(CUSTOM_ORG_CLASSES).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+  renderCustomClassOptions();
+}
+function renderCustomClassOptions() {
+  const org = document.getElementById('custOrg').value;
+  const classes = org ? CUSTOM_ORG_CLASSES[org] : [...new Set(Object.values(CUSTOM_ORG_CLASSES).flat())];
+  document.getElementById('custClass').innerHTML = '<option value="">전체 반</option>'
+    + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+}
+function onCustOrgChange() {
+  renderCustomClassOptions();
+  searchUsers();
+}
+function resetCustomSearch() {
+  document.getElementById('custOrg').value = '';
+  renderCustomClassOptions();
+  document.getElementById('custQuery').value = '';
+  document.getElementById('custResults').style.display = 'none';
+}
+function isExcludedByConsent(u) {
+  return getPurpose() === 'marketing' && !u.marketing;
+}
+function userMeta(u) {
+  return [ROLE_LABEL[u.role], u.org, u.cls, isExcludedByConsent(u) ? '마케팅 수신 미동의(발송 제외)' : ''].filter(Boolean).join(' · ');
+}
+// 선택한 수신 앱의 회원 유형만 검색·추가 가능 (학부모 앱 → 학부모 / 키드키즈 앱 → 교사·원장)
+function searchUsers() {
+  const app = RECEIVE_APPS[getReceiveApp()];
+  if (!app) { toast('수신 앱을 먼저 선택해주세요.', '⚠️'); return; }
+  const org = document.getElementById('custOrg').value;
+  const cls = document.getElementById('custClass').value;
+  const q = document.getElementById('custQuery').value.trim().toLowerCase();
+  const results = PUSH_USERS.filter(u =>
+    app.roles.includes(u.role)
+    && (!org || u.org === org) && (!cls || u.cls === cls)
+    && (!q || u.name.toLowerCase().includes(q) || u.loginId.toLowerCase().includes(q)));
+  const box = document.getElementById('custResults');
+  box.innerHTML = results.length
+    ? results.map(u => {
+        const added = selectedUsers.some(s => s.id === u.id);
+        return `<div class="user-result-row">
+          <div><strong>${esc(u.name)}</strong><span class="user-result-meta">${esc(userMeta(u))}</span></div>
+          <button class="btn btn-secondary btn-sm" onclick="addCustomUser('${u.id}')" ${added ? 'disabled' : ''}>${added ? '추가됨' : '추가'}</button>
+        </div>`;
+      }).join('')
+    : '<div class="user-results-empty">검색 결과가 없습니다.</div>';
+  box.style.display = 'block';
+}
+function addCustomUser(id) {
+  if (selectedUsers.some(u => u.id === id)) { toast('이미 추가된 사용자입니다.', '⚠️'); return; }
+  const user = PUSH_USERS.find(u => u.id === id);
+  if (!user) return;
+  if (!RECEIVE_APPS[getReceiveApp()]?.roles.includes(user.role)) { toast('선택한 수신 앱의 사용자만 추가할 수 있습니다.', '⚠️'); return; }
+  selectedUsers.push(user);
+  renderCustomChips();
+  updateTarget();
+  if (document.getElementById('custResults').style.display !== 'none') searchUsers();
+}
+function removeCustomUser(id) {
+  selectedUsers = selectedUsers.filter(u => u.id !== id);
+  renderCustomChips();
+  updateTarget();
+  if (document.getElementById('custResults').style.display !== 'none') searchUsers();
+}
+function renderCustomChips() {
+  document.getElementById('customTargets').innerHTML = selectedUsers.map(u =>
+    `<span class="chip"${isExcludedByConsent(u) ? ' style="opacity:.55" title="마케팅 수신 미동의로 발송에서 제외됩니다."' : ''}>${esc(u.name)} (${ROLE_LABEL[u.role]}${isExcludedByConsent(u) ? ' · 미동의' : ''}) <button class="chip-rm" onclick="removeCustomUser('${u.id}')">×</button></span>`
+  ).join('');
+}
+
+/* 대상 확인/편집 — 발송 대상 기관 확인 및 기관 단위 발송 제외 (개별 사용자 선택은 '직접 지정'에서 처리)
+   전체 학부모 / 전체 교직원 / 교사 / 원장 공통 — 선택한 발송 대상(def.roles)에 따라 기관별 인원·하위 대상자가 달라짐 */
+const TE_PAGE_SIZE = 20;
+const TE_COUNT_LABEL = { allParent:'학부모', allStaff:'교직원', teacher:'교사', director:'원장' };
+const teState = { query:'', sort:'name', onlySelected:false, page:1, expanded:new Set() };
+
+// 기관 하위 대상자 샘플 — 기관·회원 유형별 인원/수신 동의 수에 맞춰 규칙으로 생성 (펼칠 때 생성)
+const SURNAMES = ['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','류','홍'];
+const GIVEN = ['민지','서준','하은','지우','도윤','서연','예준','수아','지호','유나','시우','채원','주원','다은','건우','소율','현우','지민','태윤','하린','유진','수연','하늘','지수','은서','민호','아라','나연','재윤','세아'];
+const TEACHER_POSITIONS = ['담임교사', '보조교사', '방과후교사'];
+function makeName(seed) {
+  return SURNAMES[seed % SURNAMES.length] + GIVEN[(seed * 7 + Math.floor(seed / SURNAMES.length)) % GIVEN.length];
+}
+function getOrgUsers(org, role) {
+  org._users = org._users || {};
+  if (!org._users[role]) {
+    const [total, consent] = org[role];
+    const base = org.seq * 977 + ROLE_ORDER.indexOf(role) * 131;
+    org._users[role] = Array.from({ length: total }, (_, i) => ({
+      name: makeName(base + i * 13),
+      position: role === 'teacher' ? TEACHER_POSITIONS[i % 3] : role === 'director' ? '원장' : '학부모',
+      // 수신 동의 인원이 목록 전체에 고르게 분포하도록 배정 (합계 = consent)
+      consent: Math.floor((i + 1) * consent / total) - Math.floor(i * consent / total) === 1,
+    }));
+  }
+  return org._users[role];
+}
+// 대상자 개별 선택: excludedUsers = 발송 대상에서 제외한 사용자 키(기관|회원유형|순번). 기본은 발송 가능한 전체 사용자 선택
+const userKey = (o, r, i) => o.id + '|' + r + '|' + i;
+// 기관별 개별 제외 인원 { 기관 id: { 회원유형: 인원 } } — 현재 발송 가능한 사용자(마케팅은 수신 동의자)만 집계
+function getExcludedStats(def, marketing) {
+  const stats = new Map();
+  excludedUsers.forEach(k => {
+    const [id, r, i] = k.split('|');
+    if (!def.roles.includes(r)) return;
+    const o = ORG_TARGETS.find(x => x.id === id);
+    const u = o && getOrgUsers(o, r)[+i];
+    if (!u || (marketing && !u.consent)) return;
+    const e = stats.get(id) || {};
+    e[r] = (e[r] || 0) + 1;
+    stats.set(id, e);
+  });
+  return stats;
+}
+// 기관의 대상 인원: total 전체 / sendable 발송 가능 / selected 현재 선택
+function teOrgStat(o, def, marketing, stats) {
+  const ex = stats.get(o.id) || {};
+  const total = def.roles.reduce((sum, r) => sum + o[r][0], 0);
+  const sendable = def.roles.reduce((sum, r) => sum + o[r][marketing ? 1 : 0], 0);
+  return { total, sendable, selected: sendable - def.roles.reduce((sum, r) => sum + (ex[r] || 0), 0) };
+}
+// 검색 / 선택 기관만 보기(선택된 사용자가 1명 이상인 기관) / 정렬이 적용된 조회 결과 (전체 페이지)
+function getTeVisibleOrgs() {
+  const def = getTargetDef();
+  const marketing = getPurpose() === 'marketing';
+  const stats = getExcludedStats(def, marketing);
+  const q = teState.query.trim().toLowerCase();
+  const list = ORG_TARGETS.filter(o =>
+    (!q || o.name.toLowerCase().includes(q)) && (!teState.onlySelected || teOrgStat(o, def, marketing, stats).selected > 0));
+  return list.sort(teState.sort === 'recent'
+    ? (a, b) => b.joinedAt.localeCompare(a.joinedAt) || a.name.localeCompare(b.name, 'ko')
+    : (a, b) => a.name.localeCompare(b.name, 'ko'));
+}
+
+function openTargetEditor() {
+  if (!RECEIVE_APPS[getReceiveApp()]) { toast('수신 앱을 먼저 선택해주세요.', '⚠️'); return; }
+  const def = getTargetDef();
+  if (!def) { toast('발송 대상을 선택해주세요.', '⚠️'); return; }
+  if (def.value === 'custom') { toast('직접 지정 대상은 사용자 목록에서 편집할 수 있습니다.', 'ℹ️'); return; }
+  // 기관·사용자 선택 상태(excludedUsers)는 유지, 검색/정렬/페이지는 열 때마다 기본값으로 시작
+  teState.query = ''; teState.sort = 'name'; teState.onlySelected = false; teState.page = 1; teState.expanded.clear();
+  document.getElementById('panelTitle').textContent = '발송 대상 확인/편집';
+  document.getElementById('panelBody').innerHTML = `
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 대상 요약</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">선택 기관</div><div class="dp-val" style="font-size:18px;font-weight:800" id="teOrgSummary"></div></div>
+        <div class="dp-item">
+          <div class="dp-key">최종 발송 예정</div>
+          <div class="dp-val" style="font-size:18px;font-weight:800" id="teTotalSummary"></div>
+          <div class="form-hint" id="teExcludedHint" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="te-toolbar">
+        <div class="te-search">
+          <input class="f-input" style="width:100%" id="teQuery" placeholder="기관명 검색" oninput="onTeSearch(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onTeSearch(this.value);}">
+          <button type="button" class="te-search-clear" id="teQueryClear" onclick="clearTeSearch()" aria-label="검색어 지우기">✕</button>
+        </div>
+        <div class="f-select-wrap"><select class="f-select" id="teSort" onchange="onTeSort(this.value)"><option value="name">가나다순</option><option value="recent">최근 가입순</option></select></div>
+        <label class="radio-item" style="font-size:12.5px"><input type="checkbox" class="chk" id="teOnlySelected" onchange="onTeOnlySelected(this.checked)"> 선택 기관만 보기</label>
+      </div>
+      <div id="teList"></div>
+    </div>`;
+  teSnapshot = new Set(excludedUsers); // 패널 내 변경은 임시 상태 — 선택 적용 시에만 메인 발송 대상에 확정
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="btn btn-secondary" onclick="closePanel()">취소</button>
+    <button class="btn btn-primary" onclick="applyTargetEditor()">선택 적용</button>`;
+  refreshTargetEditor();
+  renderTargetEditorList();
+  document.getElementById('panelOverlay').classList.add('show');
+}
+
+// 상단 요약: 선택 기관 수 / 최종 발송 예정 인원 (메인 발송 대상 카드와 동일 계산)
+function refreshTargetEditor() {
+  const orgEl = document.getElementById('teOrgSummary');
+  const totalEl = document.getElementById('teTotalSummary');
+  if (!orgEl || !totalEl) return;
+  const { total, excluded, orgCount, orgTotal } = getTargetSummary();
+  orgEl.textContent = orgCount + ' / ' + orgTotal + '개';
+  totalEl.textContent = total.toLocaleString() + '명';
+  const hint = document.getElementById('teExcludedHint');
+  const show = getPurpose() === 'marketing' && excluded > 0;
+  hint.textContent = show ? '수신 미동의 ' + excluded.toLocaleString() + '명 제외' : '';
+  hint.style.display = show ? 'block' : 'none';
+}
+
+// 기관 목록 (헤더 전체선택 / 기관 행 / 기관 하위 사용자 / 페이지네이션)
+function renderTargetEditorList() {
+  const box = document.getElementById('teList');
+  const def = getTargetDef();
+  if (!box || !def || def.value === 'custom') return;
+  const marketing = getPurpose() === 'marketing';
+  const label = TE_COUNT_LABEL[def.value];
+  const stats = getExcludedStats(def, marketing);
+  const st = o => teOrgStat(o, def, marketing, stats);
+  const all = getTeVisibleOrgs();
+  const pages = Math.max(1, Math.ceil(all.length / TE_PAGE_SIZE));
+  teState.page = Math.min(Math.max(1, teState.page), pages);
+  const start = (teState.page - 1) * TE_PAGE_SIZE;
+  const rows = all.slice(start, start + TE_PAGE_SIZE);
+  const selUsers = all.reduce((sum, o) => sum + st(o).selected, 0);
+  const sendUsers = all.reduce((sum, o) => sum + st(o).sendable, 0);
+
+  const rowHtml = o => {
+    const s = st(o);
+    const open = teState.expanded.has(o.id);
+    let users = '';
+    if (open) {
+      users = '<div class="te-users">' + def.roles.flatMap(r => getOrgUsers(o, r).map((u, i) => ({ u, r, i }))).map(({ u, r, i }) => {
+        const locked = marketing && !u.consent; // 마케팅 수신 미동의: 선택 불가
+        const on = !locked && !excludedUsers.has(userKey(o, r, i));
+        return `
+        <label class="te-user${locked ? ' te-user-off' : ''}">
+          <span style="display:flex;align-items:center;gap:8px"><input type="checkbox" class="chk" ${on ? 'checked' : ''} ${locked ? 'disabled' : ''} onchange="toggleUser('${o.id}','${r}',${i},this.checked)" aria-label="${esc(u.name)} 발송 대상 포함"><span>${esc(u.name)} <span class="te-user-meta">/ ${esc(u.position)}</span></span></span>
+          <span class="${u.consent ? 'te-consent-ok' : (marketing ? 'te-consent-no' : 'te-consent-neutral')}">${u.consent ? '마케팅 수신 동의' : '마케팅 수신 미동의'}</span>
+        </label>`;
+      }).join('') + '</div>';
+    }
+    const partial = s.selected > 0 && s.selected < s.sendable;
+    return `
+      <div class="te-row${s.selected === 0 ? ' off' : ''}">
+        <div class="te-row-main">
+          <input type="checkbox" class="chk" data-partial="${partial ? 1 : 0}" ${s.selected > 0 && !partial ? 'checked' : ''} ${s.sendable ? '' : 'disabled'} onchange="toggleOrg('${o.id}', this.checked)" aria-label="${esc(o.name)} 발송 대상 포함">
+          <button type="button" class="te-toggle" onclick="toggleOrgExpand('${o.id}')" aria-expanded="${open}">
+            <span>${esc(o.name)}</span>
+            <span><span class="te-count">${label} ${s.total.toLocaleString()}명${s.selected !== s.total ? ' · 발송 ' + s.selected.toLocaleString() + '명' : ''}</span><span class="te-arrow">${open ? '▲' : '▼'}</span></span>
+          </button>
+        </div>${users}
+      </div>`;
+  };
+
+  let pager = '';
+  if (pages > 1) {
+    let a = Math.max(1, teState.page - 2);
+    const b = Math.min(pages, a + 4);
+    a = Math.max(1, b - 4);
+    let nums = '';
+    for (let n = a; n <= b; n++) nums += `<button class="pg-btn${n === teState.page ? ' active' : ''}" onclick="goTePage(${n})">${n}</button>`;
+    pager = `
+      <div class="te-pager">
+        <div class="pg-info">${start + 1}–${start + rows.length} / ${all.length}개</div>
+        <div class="pagination">
+          <button class="pg-btn" onclick="goTePage(${teState.page - 1})" ${teState.page === 1 ? 'disabled' : ''} aria-label="이전 페이지">‹</button>
+          ${nums}
+          <button class="pg-btn" onclick="goTePage(${teState.page + 1})" ${teState.page === pages ? 'disabled' : ''} aria-label="다음 페이지">›</button>
+        </div>
+      </div>`;
+  }
+  const q = teState.query.trim();
+  const empty = q ? `'${esc(q)}'에 해당하는 기관이 없습니다.` : (teState.onlySelected ? '선택된 기관이 없습니다.' : '표시할 기관이 없습니다.');
+  box.innerHTML = `
+    <div class="form-hint" style="margin:0 0 6px">조회된 기관 ${all.length}개</div>
+    <div class="te-list">
+      <div class="te-head">
+        <input type="checkbox" class="chk" id="teSelectAll" ${sendUsers && selUsers === sendUsers ? 'checked' : ''} ${sendUsers ? '' : 'disabled'} onchange="toggleVisibleOrgs(this.checked)" aria-label="조회된 기관 전체 선택">
+        <span style="flex:1">기관명</span><span>대상 인원</span>
+      </div>
+      ${rows.length ? rows.map(rowHtml).join('') : `<div class="user-results-empty">${empty}</div>`}
+    </div>${pager}`;
+  const sa = document.getElementById('teSelectAll');
+  if (sa) sa.indeterminate = selUsers > 0 && selUsers < sendUsers; // 일부 사용자만 선택된 상태
+  box.querySelectorAll('input[data-partial="1"]').forEach(c => { c.indeterminate = true; });
+}
+
+function onTeSearch(value) {
+  teState.query = value;
+  teState.page = 1;
+  document.getElementById('teQueryClear').style.display = value ? 'block' : 'none';
+  renderTargetEditorList();
+}
+function clearTeSearch() {
+  const input = document.getElementById('teQuery');
+  input.value = '';
+  onTeSearch('');
+  input.focus();
+}
+function onTeSort(value) {
+  teState.sort = value;
+  teState.page = 1;
+  renderTargetEditorList();
+}
+function onTeOnlySelected(checked) {
+  teState.onlySelected = checked;
+  teState.page = 1;
+  renderTargetEditorList();
+}
+function goTePage(n) {
+  teState.page = n;
+  teState.expanded.clear(); // 페이지 이동 시 펼침 상태 초기화 (기관 선택 상태는 유지)
+  renderTargetEditorList();
+}
+function toggleOrgExpand(id) {
+  if (teState.expanded.has(id)) teState.expanded.delete(id); else teState.expanded.add(id);
+  renderTargetEditorList();
+}
+// 기관 하위 발송 가능 사용자 전체 선택/해제 (마케팅 수신 미동의 사용자는 대상에서 제외되어 변경 없음)
+function setOrgSelected(o, def, marketing, checked) {
+  def.roles.forEach(r => getOrgUsers(o, r).forEach((u, i) => {
+    if (marketing && !u.consent) return;
+    if (checked) excludedUsers.delete(userKey(o, r, i)); else excludedUsers.add(userKey(o, r, i));
+  }));
+}
+// 패널 내부 요약·목록만 갱신 (메인 발송 대상은 선택 적용 전까지 변경하지 않음)
+function syncTargetEditor() {
+  refreshTargetEditor();
+  renderTargetEditorList();
+}
+// 기관 체크 → 발송 가능한 사용자 전체 선택 / 해제 → 전체 제외
+function toggleOrg(id, checked) {
+  setOrgSelected(ORG_TARGETS.find(o => o.id === id), getTargetDef(), getPurpose() === 'marketing', checked);
+  syncTargetEditor();
+}
+// 사용자 개별 체크/해제
+function toggleUser(id, role, i, checked) {
+  const k = id + '|' + role + '|' + i;
+  if (checked) excludedUsers.delete(k); else excludedUsers.add(k);
+  syncTargetEditor();
+}
+// 헤더 전체선택: 현재 조회 결과(검색·선택 기관만 보기 적용, 전체 페이지)의 발송 가능한 사용자에만 적용 — 조회되지 않은 기관·사용자의 선택 상태는 유지
+function toggleVisibleOrgs(checked) {
+  const def = getTargetDef(), marketing = getPurpose() === 'marketing';
+  getTeVisibleOrgs().forEach(o => setOrgSelected(o, def, marketing, checked));
+  syncTargetEditor();
+}
+
+// 선택 적용: 임시 선택을 발송 대상으로 확정하고 메인 발송 예정 인원 갱신
+function applyTargetEditor() {
+  teSnapshot = null;
+  updateTarget();
+  closePanel();
+  toast('발송 대상이 적용되었습니다.', '✅');
+}
+
+/* ─────────────────────────────────
+   SCHEDULE — 예약 시 날짜/시간 필수, 현재 이후만 가능
+───────────────────────────────── */
+function pad2(n) { return String(n).padStart(2, '0'); }
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
 function toggleSchedule(show) {
   document.getElementById('scheduleArea').style.display = show ? 'block' : 'none';
+  document.getElementById('schedDate').min = todayStr();
+  if (!show) showScheduleError('');
+}
+function checkSchedule() {
+  const date = document.getElementById('schedDate').value;
+  const time = document.getElementById('schedTime').value;
+  if (!date) return { msg:'예약 발송 날짜를 선택해주세요.' };
+  if (!time) return { msg:'예약 발송 시각을 선택해주세요.' };
+  const at = new Date(date + 'T' + time);
+  if (isNaN(at) || at <= new Date()) return { msg:'예약 발송 일시는 현재 시점 이후로 선택해주세요.' };
+  return { at };
+}
+function showScheduleError(msg) {
+  const el = document.getElementById('schedError');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+function validateSchedule() {
+  const date = document.getElementById('schedDate').value;
+  const time = document.getElementById('schedTime').value;
+  // 둘 다 입력된 경우에만 즉시 안내 (미입력은 발송하기 시점에 안내)
+  if (!date || !time) { showScheduleError(''); return; }
+  showScheduleError(checkSchedule().msg || '');
+}
+function fmtDateTime(d, withYear4) {
+  const y = withYear4 ? d.getFullYear() : String(d.getFullYear()).slice(2);
+  return y + '.' + pad2(d.getMonth() + 1) + '.' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
 }
 
 /* ─────────────────────────────────
-   CLEAR FORM
+   CLEAR / RESET
 ───────────────────────────────── */
-function clearForm() {
+// 상단 내용 초기화: 템플릿 / 제목 / 내용 / 이동 방식만 초기화
+function clearForm(silent) {
   document.getElementById('pushTitle').value = '';
   document.getElementById('pushBody').value  = '';
-  document.getElementById('pushUrl').value   = '';
-  document.getElementById('templateSelect').value = '';
+  const sel = document.getElementById('templateSelect');
+  sel.value = '';
+  sel.dataset.prev = '';
+  document.querySelector('input[name="moveType"][value="none"]').checked = true;
+  onMoveTypeChange(); // 이동 방식: 이동 없음 (화면/링크 입력값 초기화)
   updatePreview();
-  toast('작성 내용을 초기화했습니다.', '🗑️');
+  if (!silent) toast('작성 내용을 초기화했습니다.', '🗑️');
+}
+// 하단 초기화: 발송 설정 / 메시지 / 발송 대상 / 발송 일정 전체 초기화
+function resetAll(silent) {
+  clearForm(true);
+  document.querySelector('input[name="sendPurpose"][value="service"]').checked = true;
+  document.getElementById('purposeHint').textContent = PURPOSES.service.hint;
+  document.querySelectorAll('input[name="receiveApp"]').forEach(r => { r.checked = false; });
+  selectedUsers = [];
+  resetCustomSearch();
+  renderCustomChips();
+  renderTargetOptions();
+  renderTemplateOptions();
+  renderScreenOptions();
+  excludedUsers = new Set();
+  updateTarget();
+  document.querySelector('input[name="sendType"][value="now"]').checked = true;
+  document.getElementById('schedDate').value = '';
+  document.getElementById('schedTime').value = '09:00';
+  toggleSchedule(false);
+  if (!silent) toast('발송 설정, 메시지, 발송 대상, 발송 일정을 모두 초기화했습니다.', '🗑️');
 }
 
 /* ─────────────────────────────────
-   CONFIRM MODAL
+   CONFIRM DIALOG (공용)
 ───────────────────────────────── */
-function openConfirm() {
-  const title = document.getElementById('pushTitle').value.trim();
-  if (!title) { toast('푸시 제목을 입력해주세요.', '⚠️'); return; }
-  const body = document.getElementById('pushBody').value.trim();
-  if (!body)  { toast('푸시 내용을 입력해주세요.', '⚠️'); return; }
-  const isReserve = document.querySelector('input[name="sendType"]:checked')?.value === 'reserve';
-  document.getElementById('confirmTitle').textContent = isReserve ? '예약 발송 확인' : '즉시 발송 확인';
+let dialogOnOk = null;
+function openDialog({ icon, title, desc, okLabel, okClass = 'btn-send', onOk }) {
+  document.getElementById('confirmIcon').textContent = icon;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmDesc').innerHTML = desc;
+  const ok = document.getElementById('confirmOkBtn');
+  ok.className = 'btn ' + okClass;
+  ok.textContent = okLabel;
+  dialogOnOk = onOk;
   document.getElementById('confirmOverlay').classList.add('show');
 }
-function closeConfirm() {
+function cancelDialog() {
+  dialogOnOk = null;
   document.getElementById('confirmOverlay').classList.remove('show');
 }
+function confirmDialog() {
+  const cb = dialogOnOk;
+  cancelDialog();
+  if (cb) cb();
+}
+
+/* ─────────────────────────────────
+   SEND — 검증 → 확인 → 발송/예약 등록
+───────────────────────────────── */
+// 발송 설정 + 메시지 검증 (발송하기 / 테스트 발송 공통)
+function validateMessage() {
+  if (!getReceiveApp()) { toast('수신 앱을 선택해주세요.', '⚠️'); return false; }
+  const title = document.getElementById('pushTitle').value.trim();
+  if (!title) { toast('푸시 제목을 입력해주세요.', '⚠️'); return false; }
+  const body = document.getElementById('pushBody').value.trim();
+  if (!body)  { toast('푸시 내용을 입력해주세요.', '⚠️'); return false; }
+  if (title.length > TITLE_MAX || body.length > BODY_MAX) { toast('제목은 ' + TITLE_MAX + '자, 내용은 ' + BODY_MAX + '자 이내로 입력해주세요.', '⚠️'); return false; }
+  const move = checkMove();
+  if (move) { validateMove(); toast(move.msg, '⚠️'); return false; }
+  return true;
+}
+function sendSummaryHtml(total, excluded, orgCount, orgTotal) {
+  const notes = [];
+  if (excluded) notes.push('수신 미동의 ' + excluded.toLocaleString() + '명 제외');
+  if (orgCount !== null && orgCount < orgTotal) notes.push('제외 기관 ' + (orgTotal - orgCount) + '개');
+  return `[${PURPOSES[getPurpose()].label}] <strong>${RECEIVE_APPS[getReceiveApp()].label}</strong> <strong>${total.toLocaleString()}명</strong>`
+    + (notes.length ? ' (' + notes.join(' · ') + ')' : '');
+}
+function openConfirm() {
+  if (!validateMessage()) return;
+  const def = getTargetDef();
+  if (!def) { toast('발송 대상을 선택해주세요.', '⚠️'); return; }
+  const { total, excluded, orgCount, orgTotal } = getTargetSummary();
+  if (!total) {
+    const none = '발송 가능한 대상이 없습니다. (마케팅 수신 동의 대상 없음)';
+    toast(def.value === 'custom'
+      ? (selectedUsers.length ? none : '발송 대상을 추가해주세요.')
+      : (orgCount === 0 ? '발송 대상 기관을 1개 이상 선택해주세요.' : none), '⚠️');
+    return;
+  }
+
+  if (getSendType() === 'reserve') {
+    const sched = checkSchedule();
+    if (sched.msg) { showScheduleError(sched.msg); toast(sched.msg, '⚠️'); return; }
+    openDialog({
+      icon:'🕐', title:'예약 발송 확인',
+      desc:`<strong>${fmtDateTime(sched.at, true)}</strong>에 ${sendSummaryHtml(total, excluded, orgCount, orgTotal)}에게 발송되도록 예약합니다.<br>예약 건은 발송 전까지 푸시 발송 이력에서 취소할 수 있습니다.`,
+      okLabel:'예약 등록', okClass:'btn-send',
+      onOk:doSend,
+    });
+  } else {
+    openDialog({
+      icon:'📨', title:'즉시 발송 확인',
+      desc:`${sendSummaryHtml(total, excluded, orgCount, orgTotal)}에게 푸시 알림을 즉시 발송합니다.<br>발송 후에는 취소할 수 없습니다. 계속하시겠습니까?`,
+      okLabel:'발송하기', okClass:'btn-send',
+      onOk:doSend,
+    });
+  }
+}
+
+/* 테스트 발송 — 실제 발송 대상과 별개로 수신 앱별 테스트 대상에게만 발송 (샘플 회원 기준)
+   - 학부모 앱 → 학부모 / 키드키즈 앱 → 교사·원장 (RECEIVE_APPS[app].roles)
+   - testAccounts: 수신 앱별 등록된 테스트 대상, testSelected: 발송 선택된 대상 */
+const TEST_PUSH_BLOCKED = new Set(['u07']); // 푸시 수신 불가 샘플 계정 (선택 불가)
+const testAccounts = { parentApp:['u04', 'u08'], kidkidsApp:['u01', 'u03'] };
+const testSelected = new Set(['u04', 'u08', 'u01', 'u03']);
+const testUi = { manage:false, query:'', searched:false };
+const getTestUser = id => PUSH_USERS.find(u => u.id === id);
+// 현재 수신 앱의 등록 대상 중 발송 선택된(푸시 가능) 계정
+function getTestTargets() {
+  return (testAccounts[getReceiveApp()] || []).map(getTestUser).filter(u => testSelected.has(u.id) && !TEST_PUSH_BLOCKED.has(u.id));
+}
+function openTestSend() {
+  if (!validateMessage()) return;
+  testUi.manage = false; testUi.query = ''; testUi.searched = false;
+  document.getElementById('panelTitle').textContent = '테스트 발송';
+  document.getElementById('panelBody').innerHTML = '<div id="testSendBox"></div>';
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="btn btn-secondary" onclick="closePanel()">취소</button>
+    <button class="btn btn-primary" onclick="doTestSend()">테스트 발송</button>`;
+  renderTestSend();
+  document.getElementById('panelOverlay').classList.add('show');
+}
+function renderTestSend() {
+  const box = document.getElementById('testSendBox');
+  if (!box) return;
+  const app = getReceiveApp();
+  const appDef = RECEIVE_APPS[app];
+  const list = testAccounts[app].map(getTestUser);
+  const picked = getTestTargets().length;
+  const meta = u => esc([ROLE_LABEL[u.role], u.org, u.loginId, TEST_PUSH_BLOCKED.has(u.id) ? '푸시 수신 불가' : ''].filter(Boolean).join(' · '));
+  const rows = list.map(u => {
+    const blocked = TEST_PUSH_BLOCKED.has(u.id);
+    return `<div class="user-result-row">
+      <label style="display:flex;align-items:center;gap:8px;flex:1${blocked ? ';opacity:.55' : ''}">
+        <input type="checkbox" class="chk" ${testSelected.has(u.id) && !blocked ? 'checked' : ''} ${blocked ? 'disabled' : ''} onchange="toggleTestTarget('${u.id}', this.checked)" aria-label="${esc(u.name)} 테스트 발송 대상">
+        <span><strong>${esc(u.name)}</strong><span class="user-result-meta">${meta(u)}</span></span>
+      </label>
+      ${testUi.manage ? `<button class="btn btn-secondary btn-sm" onclick="removeTestAccount('${u.id}')">삭제</button>` : ''}
+    </div>`;
+  }).join('');
+  let manage = '';
+  if (testUi.manage) {
+    const q = testUi.query.trim().toLowerCase();
+    const results = PUSH_USERS.filter(u => appDef.roles.includes(u.role) && (u.name.toLowerCase().includes(q) || u.loginId.toLowerCase().includes(q)));
+    const resultHtml = !testUi.searched
+      ? '<div class="user-results-empty">이름 또는 아이디로 검색해 테스트 대상을 등록하세요.</div>'
+      : results.length
+        ? results.map(u => {
+            const added = testAccounts[app].includes(u.id);
+            return `<div class="user-result-row"><div><strong>${esc(u.name)}</strong><span class="user-result-meta">${meta(u)}</span></div>
+              <button class="btn btn-secondary btn-sm" onclick="addTestAccount('${u.id}')" ${added ? 'disabled' : ''}>${added ? '등록됨' : '등록'}</button></div>`;
+          }).join('')
+        : '<div class="user-results-empty">검색 결과가 없습니다.</div>';
+    manage = `
+      <div class="dp-section">
+        <div class="dp-sec-title">테스트 대상 관리</div>
+        <div class="te-toolbar">
+          <input class="f-input" style="flex:1" id="testQuery" value="${esc(testUi.query)}" placeholder="이름 또는 아이디 검색" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTestUsers();}">
+          <button class="btn btn-primary btn-sm" onclick="searchTestUsers()">검색</button>
+        </div>
+        <div class="user-results" style="display:block;max-height:none;margin-top:8px">${resultHtml}</div>
+      </div>`;
+  }
+  box.innerHTML = `
+    <div class="dp-section">
+      <div class="dp-sec-title">수신 앱</div>
+      <div class="dp-val"><span class="tbadge t-cyan">${appDef.label}</span> <span class="form-hint" style="display:inline">${appDef.roles.map(r => ROLE_LABEL[r]).join('·')} 테스트 계정만 등록할 수 있습니다.</span></div>
+    </div>
+    <div class="dp-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="dp-sec-title" style="margin:0">테스트 대상 <span style="font-weight:500;color:var(--text-muted)">· 선택 ${picked}명 / 등록 ${list.length}명</span></div>
+        <button class="btn btn-secondary btn-sm" onclick="toggleTestManage()">${testUi.manage ? '관리 닫기' : '대상 관리'}</button>
+      </div>
+      <div class="user-results" style="display:block;max-height:none">${rows || '<div class="user-results-empty">등록된 테스트 대상이 없습니다. 대상 관리에서 등록해주세요.</div>'}</div>
+      <div class="form-hint">작성 중인 푸시를 선택한 테스트 대상에게만 발송하며, 실제 발송 이력에는 추가되지 않습니다.</div>
+    </div>${manage}`;
+}
+function toggleTestManage() { testUi.manage = !testUi.manage; renderTestSend(); }
+function toggleTestTarget(id, checked) {
+  if (checked) testSelected.add(id); else testSelected.delete(id);
+  renderTestSend();
+}
+function searchTestUsers() {
+  testUi.query = document.getElementById('testQuery').value;
+  testUi.searched = true;
+  renderTestSend();
+}
+function addTestAccount(id) {
+  const app = getReceiveApp();
+  const user = getTestUser(id);
+  if (!user || !RECEIVE_APPS[app].roles.includes(user.role)) { toast('선택한 수신 앱의 계정만 등록할 수 있습니다.', '⚠️'); return; }
+  if (testAccounts[app].includes(id)) { toast('이미 등록된 테스트 대상입니다.', '⚠️'); return; }
+  testAccounts[app].push(id);
+  if (!TEST_PUSH_BLOCKED.has(id)) testSelected.add(id);
+  renderTestSend();
+}
+function removeTestAccount(id) {
+  const app = getReceiveApp();
+  testAccounts[app] = testAccounts[app].filter(x => x !== id);
+  testSelected.delete(id);
+  renderTestSend();
+}
+function doTestSend() {
+  const targets = getTestTargets();
+  if (!targets.length) { toast('테스트 발송 대상을 1명 이상 선택해주세요.', '⚠️'); return; }
+  const label = RECEIVE_APPS[getReceiveApp()].label;
+  closePanel(); // 작성 중인 푸시 내용은 유지, 발송 이력에는 추가하지 않음
+  toast('테스트 발송이 완료되었습니다. (' + label + ' 테스트 대상 ' + targets.length + '명)', '🧪');
+}
+
+function closeConfirm() { cancelDialog(); }
+
 function doSend() {
-  const isReserve = document.querySelector('input[name="sendType"]:checked')?.value === 'reserve';
-  closeConfirm();
-  clearForm();
+  const isReserve = getSendType() === 'reserve';
+  let at = new Date();
+  if (isReserve) {
+    const sched = checkSchedule(); // 확인창이 열려 있는 동안 시각이 지난 경우 대비
+    if (sched.msg) { showScheduleError(sched.msg); toast(sched.msg, '⚠️'); return; }
+    at = sched.at;
+  }
+  const type = getTargetType();
+  const ev = EVENT_DATA.find(item => String(item.idx) === document.getElementById('templateSelect').value);
+  const { total, excluded, orgCount, orgTotal } = getTargetSummary();
+  addHistoryRecord({
+    id: 'P' + Date.now(),
+    at, isReserve,
+    purpose: getPurpose(),
+    app: getReceiveApp(),
+    excluded,
+    status: isReserve ? 'reserve' : 'sending',
+    title: document.getElementById('pushTitle').value.trim(),
+    body: document.getElementById('pushBody').value.trim(),
+    move: getMove(),
+    template: ev ? ev.name : '',
+    targetType: type,
+    users: type === 'custom' ? [...selectedUsers] : [],
+    count: total,
+    orgs: orgCount === null ? null : { selected: orgCount, total: orgTotal },
+  });
+  // 발송/예약 완료 후 전체 입력값 기본 상태로 초기화 (초기화 토스트는 노출하지 않음)
+  resetAll(true);
   if (isReserve) toast('예약 발송이 등록되었습니다. 푸시 발송 이력에서 확인하세요.', '🕐');
   else           toast('푸시 알림이 발송되었습니다. 결과는 발송 이력에서 확인하세요.', '✅');
+}
+
+/* ─────────────────────────────────
+   발송 이력 연동 — 수동 발송 이력만 관리 (자동 푸시는 자동 푸시 모니터링에서 별도 확인)
+   신규 발송/예약 건 추가, 예약 취소
+───────────────────────────────── */
+const SEND_RECORDS = [];
+// 수동 발송 이력 샘플 (오래된 순으로 추가 → 최신 건이 목록 상단)
+const SAMPLE_SEND_RECORDS = (() => {
+  // 샘플 이력의 대상 인원은 현재 샘플 기관 데이터 합계 기준 (공지/안내: 전체 / 마케팅·이벤트: 수신 동의만)
+  const calc = (roles, marketing) => ({
+    count: roles.reduce((sum, r) => sum + sumOrgs(ORG_TARGETS, r, marketing ? 1 : 0), 0),
+    excluded: marketing ? roles.reduce((sum, r) => sum + sumOrgs(ORG_TARGETS, r, 0) - sumOrgs(ORG_TARGETS, r, 1), 0) : 0,
+  });
+  const t5 = calc(['teacher'], true), t4 = calc(['parent'], true), t3 = calc(['teacher', 'director'], false), t2 = calc(['parent'], false);
+  const orgs = { selected: ORG_TARGETS.length, total: ORG_TARGETS.length };
+  // 페이지·건수 선택 확인용 과거 발송 완료 샘플 (10월 초~중순)
+  const pool = [
+    { purpose:'service',   app:'parentApp',  targetType:'allParent', roles:['parent'],             title:'[알림장] 정기 소독 안내' },
+    { purpose:'service',   app:'kidkidsApp', targetType:'allStaff',  roles:['teacher', 'director'], title:'[키드키즈] 시스템 점검 안내' },
+    { purpose:'marketing', app:'parentApp',  targetType:'allParent', roles:['parent'],             title:'[알림장] 가을 사진전 이벤트' },
+    { purpose:'marketing', app:'kidkidsApp', targetType:'teacher',   roles:['teacher'],            title:'[키드키즈] 우수 교사 선정 이벤트' },
+    { purpose:'service',   app:'parentApp',  targetType:'allParent', roles:['parent'],             title:'[알림장] 앱 업데이트 안내' },
+    { purpose:'service',   app:'kidkidsApp', targetType:'director',  roles:['director'],           title:'[키드키즈] 원장님 운영 안내' },
+  ];
+  const filler = Array.from({ length: 41 }, (_, i) => {
+    const t = pool[i % pool.length], c = calc(t.roles, t.purpose === 'marketing');
+    const canceled = i % 13 === 5;
+    const fail = canceled ? 0 : (i % 4 === 0 ? 3 + (i % 5) : 0);
+    return { id:'G' + String(i + 1).padStart(2, '0'), at:new Date(2026, 9, 1 + Math.floor(i * 0.43), 9 + (i % 9), (i * 11) % 60),
+      isReserve:canceled, status:canceled ? 'canceled' : 'done', purpose:t.purpose, app:t.app, targetType:t.targetType,
+      title:t.title + ' (' + (i + 1) + ')', body:'샘플 발송 이력입니다.', move:{ type:'none' }, template:'', users:[],
+      count:c.count, excluded:c.excluded, success:c.count - fail, fail, orgs };
+  });
+  return [
+    ...filler,
+    { id:'S5', at:new Date(2026, 9, 20, 10, 5), isReserve:false, status:'done', purpose:'marketing', app:'kidkidsApp', targetType:'teacher',
+      title:'[키드키즈] 이번 주 알림장을 작성해 보세요', body:'학부모님과 알림장으로 소통해 보세요.', move:{ type:'screen', value:'/home', label:'가입/승인 · /home' }, template:'이용 독려', users:[],
+      count:t5.count, excluded:t5.excluded, success:t5.count, fail:0, orgs },
+    { id:'S4', at:new Date(2026, 9, 25, 15, 22), isReserve:false, status:'done', purpose:'marketing', app:'parentApp', targetType:'allParent',
+      title:'[알림장] 참여 이벤트가 시작되었어요', body:'지금 이벤트에 참여하고 선물을 받아보세요!', move:{ type:'link', value:'https://example.com/event' }, template:'이벤트 안내', users:[],
+      count:t4.count, excluded:t4.excluded, success:t4.count - 7, fail:7, orgs },
+    { id:'S3', at:new Date(2026, 9, 27, 9, 0), isReserve:false, status:'done', purpose:'service', app:'kidkidsApp', targetType:'allStaff',
+      title:'[키드키즈] 새로운 기능이 추가되었어요', body:'키드키즈에 새로운 기능이 추가되었습니다. 지금 확인해 보세요.', move:{ type:'screen', value:'/home', label:'가입/승인 · /home' }, template:'신규 기능 안내', users:[],
+      count:t3.count, excluded:t3.excluded, success:t3.count, fail:0, orgs },
+    { id:'S2', at:new Date(2026, 9, 27, 14, 30), isReserve:false, status:'done', purpose:'service', app:'parentApp', targetType:'allParent',
+      title:'[알림장] 서비스 점검 안내', body:'서비스 점검이 예정되어 있습니다. 점검 시간에는 일부 기능 이용이 제한됩니다.', move:{ type:'none' }, template:'서비스 점검 안내', users:[],
+      count:t2.count, excluded:t2.excluded, success:t2.count - 7, fail:7, orgs },
+    { id:'S1', at:(() => { const d = new Date(); d.setDate(d.getDate() + 7); d.setHours(9, 0, 0, 0); return d; })(), isReserve:true, status:'reserve', purpose:'service', app:'parentApp', targetType:'allParent',
+      title:'시스템 점검 사전 안내', body:'새벽 시스템 점검이 예정되어 있습니다.', move:{ type:'screen', value:'/notice/list', label:'알림장 · /notice/list' }, template:'', users:[],
+      count:t2.count, excluded:t2.excluded, orgs },
+  ];
+})();
+const TARGET_BADGE = {
+  allParent:['전체 학부모','t-amber'], allStaff:['전체 교직원','t-green'], teacher:['교사','t-green'],
+  director:['원장','t-purple'], custom:['직접 지정','t-gray'],
+};
+const STATUS_BADGE = {
+  sending:['발송 중','s-sending'], done:['완료','s-success'], reserve:['예약','s-reserve'], canceled:['예약 취소','s-inactive'],
+};
+const PURPOSE_BADGE_CLS = { service:'t-blue', marketing:'t-amber' };
+function addHistoryRecord(rec) {
+  SEND_RECORDS.unshift(rec);
+  histState.page = 1;
+  renderHistoryTable();
+}
+
+/* 수동 발송 이력 목록 — 조회 조건(검색/초기화 시 확정)을 AND 적용 → 건수·페이지 재계산 */
+const histState = { from:'', to:'', purpose:'', app:'', status:'', query:'', size:20, page:1 };
+function getFilteredHistory() {
+  const f = histState;
+  const from = f.from ? new Date(f.from + 'T00:00:00') : null;
+  const to = f.to ? new Date(f.to + 'T23:59:59.999') : null;
+  const q = f.query.trim().toLowerCase();
+  return SEND_RECORDS.filter(r =>
+    (!from || r.at >= from) && (!to || r.at <= to)
+    && (!f.purpose || r.purpose === f.purpose) && (!f.app || r.app === f.app) && (!f.status || r.status === f.status)
+    && (!q || r.title.toLowerCase().includes(q)));
+}
+function renderHistoryTable() {
+  const all = getFilteredHistory();
+  const pages = Math.max(1, Math.ceil(all.length / histState.size));
+  histState.page = Math.min(Math.max(1, histState.page), pages);
+  const start = (histState.page - 1) * histState.size;
+  const rows = all.slice(start, start + histState.size);
+  document.getElementById('histTableBody').innerHTML = rows.length
+    ? rows.map(r => '<tr id="hist-' + r.id + '"></tr>').join('')
+    : '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:36px 0">조건에 해당하는 발송 이력이 없습니다.</td></tr>';
+  rows.forEach(renderHistoryRow);
+  document.getElementById('histTotal').textContent = all.length.toLocaleString();
+  document.getElementById('histPgInfo').textContent = all.length ? (start + 1) + ' – ' + (start + rows.length) + ' / ' + all.length.toLocaleString() + '건' : '0건';
+  let pager = '';
+  if (pages > 1) {
+    let a = Math.max(1, histState.page - 2);
+    const b = Math.min(pages, a + 4);
+    a = Math.max(1, b - 4);
+    const first = histState.page === 1, last = histState.page === pages;
+    pager = `<button class="pg-btn" onclick="goHistPage(1)" ${first ? 'disabled' : ''} aria-label="첫 페이지">‹‹</button>
+      <button class="pg-btn" onclick="goHistPage(${histState.page - 1})" ${first ? 'disabled' : ''} aria-label="이전 페이지">‹</button>`;
+    for (let n = a; n <= b; n++) pager += `<button class="pg-btn${n === histState.page ? ' active' : ''}" onclick="goHistPage(${n})">${n}</button>`;
+    pager += `<button class="pg-btn" onclick="goHistPage(${histState.page + 1})" ${last ? 'disabled' : ''} aria-label="다음 페이지">›</button>
+      <button class="pg-btn" onclick="goHistPage(${pages})" ${last ? 'disabled' : ''} aria-label="마지막 페이지">››</button>`;
+  }
+  document.getElementById('histPager').innerHTML = pager;
+}
+function goHistPage(n) { histState.page = n; renderHistoryTable(); }
+function onHistPageSize() {
+  histState.size = +document.getElementById('histPageSize').value;
+  histState.page = 1;
+  renderHistoryTable();
+}
+function searchHistory() {
+  const val = id => document.getElementById(id).value;
+  const from = val('histFFrom'), to = val('histFTo');
+  if (from && to && from > to) { toast('기간의 시작일은 종료일보다 늦을 수 없습니다.', '⚠️'); return; }
+  Object.assign(histState, { from, to, purpose:val('histFPurpose'), app:val('histFApp'), status:val('histFStatus'), query:val('histQuery'), page:1 });
+  renderHistoryTable();
+}
+function resetHistoryFilter() {
+  ['histFFrom', 'histFTo', 'histFPurpose', 'histFApp', 'histFStatus', 'histQuery'].forEach(id => { document.getElementById(id).value = ''; });
+  searchHistory();
+}
+// 현재 조회 조건에 해당하는 전체 결과(전 페이지)를 엑셀에서 열 수 있는 CSV(UTF-8 BOM)로 다운로드
+function exportHistoryCsv() {
+  const all = getFilteredHistory();
+  if (!all.length) { toast('다운로드할 발송 이력이 없습니다.', '⚠️'); return; }
+  const cell = v => {
+    let t = String(v ?? '');
+    if (/^[=+\-@]/.test(t)) t = "'" + t; // 수식 실행 방지
+    return '"' + t.replace(/"/g, '""') + '"';
+  };
+  const head = ['발송 일시', '제목', '발송 유형', '사용 템플릿', '발송 목적', '수신 앱', '대상', '발송 수', '성공 수', '실패 수', '상태'];
+  const lines = all.map(r => {
+    const counted = r.status === 'sending' || r.status === 'done';
+    return [fmtDateTime(r.at, true), r.title, r.isReserve ? '예약 발송' : '즉시 발송', r.template || '직접 작성', PURPOSES[r.purpose].label,
+      RECEIVE_APPS[r.app].label, TARGET_BADGE[r.targetType][0], counted ? r.count : '', r.status === 'done' ? r.success : '', r.status === 'done' ? r.fail : '',
+      STATUS_BADGE[r.status][0]].map(cell).join(',');
+  });
+  const blob = new Blob(['﻿' + [head.map(cell).join(','), ...lines].join('\r\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '푸시_발송이력_' + todayStr().replace(/-/g, '') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('발송 이력 ' + all.length.toLocaleString() + '건을 다운로드했습니다.', '📥');
+}
+
+function renderHistoryRow(rec) {
+  const tr = document.getElementById('hist-' + rec.id);
+  if (!tr) return;
+  const [tLabel, tCls] = TARGET_BADGE[rec.targetType];
+  const [sLabel, sCls] = STATUS_BADGE[rec.status];
+  const sub = [rec.template ? rec.template + ' 템플릿' : '직접 작성', rec.isReserve ? '예약 발송' : '즉시 발송'].join(' · ');
+  const dash = '<td style="text-align:right;font-family:monospace;color:var(--text-muted)">-</td>';
+  const num = (n, style = '') => `<td style="text-align:right;font-family:monospace;${style}">${n.toLocaleString()}</td>`;
+  const isDone = rec.status === 'done';
+  tr.onclick = () => showSendRecord(rec.id);
+  tr.innerHTML = `
+    <td style="font-family:monospace;font-size:12px">${fmtDateTime(rec.at)}</td>
+    <td>
+      <div style="font-weight:600">${esc(rec.title)}</div>
+      <div style="font-size:11.5px;color:var(--text-muted)">${esc(sub)}</div>
+    </td>
+    <td><span class="tbadge ${PURPOSE_BADGE_CLS[rec.purpose]}">${PURPOSES[rec.purpose].label}</span></td>
+    <td>${RECEIVE_APPS[rec.app].label}</td>
+    <td><span class="tbadge ${tCls}">${tLabel}</span></td>
+    ${rec.status === 'sending' || isDone ? num(rec.count) : dash}
+    ${isDone ? num(rec.success, 'color:var(--green-text);font-weight:700') : dash}
+    ${isDone ? num(rec.fail, rec.fail ? 'color:var(--red-text)' : 'color:var(--text-muted)') : dash}
+    <td><span class="sbadge ${sCls}"><span class="sdot"></span>${sLabel}</span></td>
+    <td><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+      <button class="view-btn" onclick="event.stopPropagation();showSendRecord('${rec.id}')">상세</button>
+      ${rec.status === 'reserve' ? `<button class="view-btn" onclick="event.stopPropagation();cancelReservation('${rec.id}')">취소</button>` : ''}
+    </div></td>`;
+}
+function cancelReservation(id) {
+  const rec = SEND_RECORDS.find(r => r.id === id);
+  if (!rec || rec.status !== 'reserve') return;
+  if (rec.at <= new Date()) { toast('예약 시각이 지나 취소할 수 없습니다.', '⚠️'); return; }
+  openDialog({
+    icon:'🗑️', title:'예약 발송 취소',
+    desc:`<strong>${fmtDateTime(rec.at, true)}</strong> 예약 건을 취소합니다.<br>취소하면 해당 푸시는 발송되지 않습니다.`,
+    okLabel:'예약 취소', okClass:'btn-danger',
+    onOk:() => {
+      rec.status = 'canceled';
+      renderHistoryTable();
+      closePanel();
+      toast('예약 발송이 취소되었습니다.', '🗑️');
+    },
+  });
+}
+function showSendRecord(id) {
+  const rec = SEND_RECORDS.find(r => r.id === id);
+  if (!rec) return;
+  const [tLabel, tCls] = TARGET_BADGE[rec.targetType];
+  const [sLabel, sCls] = STATUS_BADGE[rec.status];
+  document.getElementById('panelTitle').textContent = '발송 상세';
+  document.getElementById('panelBody').innerHTML = `
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 기본 정보</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">${rec.isReserve ? '예약 일시' : '발송 일시'}</div><div class="dp-val" style="font-family:monospace;font-size:12px">${fmtDateTime(rec.at, true)}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 유형</div><div class="dp-val">${rec.isReserve ? '예약 발송' : '즉시 발송'}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 목적</div><div class="dp-val">${PURPOSES[rec.purpose].label}</div></div>
+        <div class="dp-item"><div class="dp-key">수신 앱</div><div class="dp-val">${RECEIVE_APPS[rec.app].label}</div></div>
+        <div class="dp-item"><div class="dp-key">사용 템플릿</div><div class="dp-val">${esc(rec.template || '직접 작성')}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 관리자</div><div class="dp-val">슈퍼관리자</div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 내용</div>
+      <div style="background:var(--bg-base);border-radius:var(--radius-md);padding:14px;border:1px solid var(--border-light)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">제목</div>
+        <div style="font-size:13.5px;font-weight:700;margin-bottom:10px">${esc(rec.title)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">내용</div>
+        <div style="font-size:13px;line-height:1.6;margin-bottom:10px">${esc(rec.body)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">이동 방식</div>
+        <div style="font-size:13px">${esc(moveText(rec.move))}</div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 대상 조건</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">발송 대상</div><div class="dp-val"><span class="tbadge ${tCls}">${tLabel}</span></div></div>
+        ${rec.orgs ? `<div class="dp-item"><div class="dp-key">대상 기관</div><div class="dp-val">${rec.orgs.selected}개${rec.orgs.selected < rec.orgs.total ? ' (' + (rec.orgs.total - rec.orgs.selected) + '개 제외)' : ''}</div></div>` : ''}
+        <div class="dp-item"><div class="dp-key">발송 가능</div><div class="dp-val">${rec.count.toLocaleString()}명</div></div>
+        ${rec.excluded ? `<div class="dp-item"><div class="dp-key">수신 미동의 제외</div><div class="dp-val">${rec.excluded.toLocaleString()}명</div></div>` : ''}
+      </div>
+      ${rec.users.length ? `<div class="user-results" style="max-height:none;margin-top:10px">${rec.users.map(u => `
+        <div class="user-result-row"><div><strong>${esc(u.name)}</strong><span class="user-result-meta">${esc([ROLE_LABEL[u.role], u.org, u.cls, rec.purpose === 'marketing' && !u.marketing ? '마케팅 수신 미동의(발송 제외)' : ''].filter(Boolean).join(' · '))}</span></div></div>`).join('')}</div>` : ''}
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">발송 결과</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-key">상태</div><div class="dp-val"><span class="sbadge ${sCls}"><span class="sdot"></span>${sLabel}</span></div></div>
+        ${rec.status === 'done' ? `
+        <div class="dp-item"><div class="dp-key">발송 수</div><div class="dp-val">${rec.count.toLocaleString()}명</div></div>
+        <div class="dp-item"><div class="dp-key">성공</div><div class="dp-val" style="color:var(--green-text);font-weight:700">${rec.success.toLocaleString()}명</div></div>
+        <div class="dp-item"><div class="dp-key">실패</div><div class="dp-val" style="color:var(--red-text);font-weight:700">${rec.fail.toLocaleString()}명</div></div>` : ''}
+      </div>
+    </div>`;
+  document.getElementById('panelFooter').innerHTML = rec.status === 'reserve'
+    ? `<button class="btn btn-danger btn-sm" style="margin-right:auto" onclick="cancelReservation('${rec.id}')">예약 취소</button>
+       <button class="btn btn-secondary" onclick="closePanel()">닫기</button>`
+    : '<button class="btn btn-secondary" onclick="closePanel()">닫기</button>';
+  document.getElementById('panelOverlay').classList.add('show');
+}
+
+/* ─────────────────────────────────
+   발송 이력 탭 — 수동 발송 이력 / 자동 푸시 모니터링
+───────────────────────────────── */
+function showHistoryTab(tab) {
+  const isAuto = tab === 'auto';
+  document.getElementById('histManualArea').style.display = isAuto ? 'none' : 'block';
+  document.getElementById('histAutoArea').style.display = isAuto ? 'block' : 'none';
+  document.getElementById('histExcelBtn').style.display = isAuto ? 'none' : ''; // 엑셀 다운로드는 수동 발송 이력 전용
+  document.getElementById('histTabManual').className = 'btn btn-sm ' + (isAuto ? 'btn-secondary' : 'btn-primary');
+  document.getElementById('histTabAuto').className = 'btn btn-sm ' + (isAuto ? 'btn-primary' : 'btn-secondary');
+  if (isAuto) renderAutoMonitor();
+}
+// 자동 푸시 모니터링 샘플: 트리거(자동 발송 템플릿 idx)별 최근 24시간 실패 건수
+const AUTO_PUSH_FAILURES = { 2:12, 6:3 };
+function renderAutoMonitor() {
+  const autos = EVENT_DATA.filter(ev => ev.templateType === 'auto');
+  document.getElementById('autoMonitorBody').innerHTML = autos.map(ev => {
+    // 미사용 트리거는 과거 샘플 실패 수를 현재 실패처럼 보이지 않도록 표시하지 않음
+    const fail = ev.active ? (AUTO_PUSH_FAILURES[ev.idx] || 0) : 0;
+    const status = !ev.active
+      ? '<span class="sbadge s-inactive"><span class="sdot"></span>미사용</span>'
+      : fail ? '<span class="sbadge s-fail"><span class="sdot"></span>실패 발생</span>'
+             : '<span class="sbadge s-success"><span class="sdot"></span>정상</span>';
+    return `<tr>
+      <td>${ev.view.svc}</td>
+      <td><div style="font-weight:600;font-size:13px">${esc(ev.name)}</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">${esc(ev.view.short)}</div></td>
+      <td>${ev.view.type}</td>
+      <td>${status}</td>
+      <td style="text-align:right;font-family:monospace;${fail ? 'color:var(--red-text);font-weight:700' : 'color:var(--text-muted)'}">${ev.active ? fail.toLocaleString() : '-'}</td>
+    </tr>`;
+  }).join('');
+  const failTriggers = autos.filter(ev => ev.active && AUTO_PUSH_FAILURES[ev.idx]);
+  const failTotal = failTriggers.reduce((sum, ev) => sum + AUTO_PUSH_FAILURES[ev.idx], 0);
+  document.getElementById('autoMonitorSummary').innerHTML = failTriggers.length
+    ? `최근 24시간 실패 <strong>${failTotal}</strong>건 · 실패 트리거 <strong>${failTriggers.length}</strong>개 (${failTriggers.map(ev => esc(ev.name)).join(', ')})`
+    : '최근 24시간 자동 푸시 실패 없음';
 }
 
 /* ─────────────────────────────────
@@ -1271,6 +2317,265 @@ const EVENT_DATA = [
   },
 ];
 
+/* ─────────────────────────────────
+   템플릿 구분 (templateType)
+   - 발송 방식 '자동 발송': auto — 트리거 조건에 따라 시스템이 자동 발송, 수동 발송 화면 미노출
+   - 발송 방식 '수동 발송': 발송 목적으로 추가 구분
+       service  : 공지/안내 (푸시 발송 관리 발송 목적 = 공지/안내일 때 노출)
+       marketing: 마케팅·이벤트 (발송 목적 = 마케팅·이벤트일 때 노출)
+───────────────────────────────── */
+const SEND_MODES = {
+  auto:   { label:'자동 발송', cls:'t-gray' },
+  manual: { label:'수동 발송', cls:'t-purple' },
+};
+const TEMPLATE_TYPES = {
+  auto:      { label:'자동 발송',     cls:'t-gray' },
+  service:   { label:'공지/안내',     cls:'t-blue' },
+  marketing: { label:'마케팅·이벤트', cls:'t-amber' },
+};
+function getSendMode(ev) { return ev.templateType === 'auto' ? 'auto' : 'manual'; }
+const TEMPLATE_APPS = { parentApp:'학부모 앱', kidkidsApp:'키드키즈 앱', all:'전체 앱' };
+
+// 기존 트리거형 템플릿 = 자동 발송 (목록 표시용 배지·발송 조건 요약 포함)
+const AUTO_TEMPLATE_VIEW = {
+  0:{ short:'교사가 알림장 게시 시', svc:'<span class="tbadge t-blue">알림장</span>', type:'<span class="tbadge t-green">등록</span>', target:'<span class="tbadge t-purple">학부모</span>' },
+  1:{ short:'교사가 앨범 게시 시', svc:'<span class="tbadge t-cyan">앨범</span>', type:'<span class="tbadge t-green">등록</span>', target:'<span class="tbadge t-purple">학부모</span>' },
+  2:{ short:'예약된 투약 시간 도래 시', svc:'<span class="tbadge t-amber">투약</span>', type:'<span class="tbadge" style="background:#FEF3C7;color:#92400E">시간도래</span>', target:'<span class="tbadge t-green">교사</span>' },
+  3:{ short:'일정 등록 시', svc:'<span class="tbadge t-blue">스케줄</span>', type:'<span class="tbadge t-green">등록</span>', target:'<span class="tbadge t-purple">학부모</span>' },
+  4:{ short:'식단표 게시 시', svc:'<span class="tbadge t-green">식단표</span>', type:'<span class="tbadge t-green">등록</span>', target:'<span class="tbadge t-purple">학부모</span>' },
+  5:{ short:'초대장 발송 시', svc:'<span class="tbadge t-purple">초대장</span>', type:'<span class="tbadge" style="background:#EDE9FE;color:#5B21B6">초대</span>', target:'<span class="tbadge t-purple">학부모</span>' },
+  6:{ short:'가입 승인 완료 시', svc:'<span class="tbadge t-gray">가입/승인</span>', type:'<span class="tbadge" style="background:#D1FAE5;color:#065F46">완료</span>', target:'<span class="tbadge t-green">교사</span>' },
+  7:{ short:'승인 반려 시', svc:'<span class="tbadge t-gray">가입/승인</span>', type:'<span class="tbadge t-red">반려</span>', target:'<span class="tbadge t-gray" style="background:#FEF3C7;color:#92400E">원장/교사</span>' },
+};
+EVENT_DATA.forEach(ev => {
+  ev.templateType = 'auto';
+  ev.name = ev.eventName;
+  ev.view = AUTO_TEMPLATE_VIEW[ev.idx];
+});
+
+// 수동 발송용 템플릿 (샘플) — 랜딩 경로는 기존 확인된 경로만 사용
+EVENT_DATA.push(
+  { idx:8,  templateType:'service',   name:'서비스 점검 안내', app:'all',
+    title:'[알림장] 서비스 점검 안내', body:'서비스 점검이 예정되어 있습니다. 점검 시간에는 일부 기능 이용이 제한됩니다.',
+    landing:'/notice/list', active:true, modifiedAt:'2026.10.20', modifiedBy:'김관리자' },
+  { idx:9,  templateType:'service',   name:'신규 기능 안내', app:'kidkidsApp',
+    title:'[키드키즈] 새로운 기능이 추가되었어요', body:'키드키즈에 새로운 기능이 추가되었습니다. 지금 확인해 보세요.',
+    landing:'/home', active:true, modifiedAt:'2026.10.15', modifiedBy:'김관리자' },
+  { idx:10, templateType:'marketing', name:'이벤트 안내', app:'parentApp',
+    title:'[알림장] 참여 이벤트가 시작되었어요', body:'지금 이벤트에 참여하고 선물을 받아보세요!',
+    landing:'/notice/list', active:true, modifiedAt:'2026.10.10', modifiedBy:'슈퍼관리자' },
+  { idx:11, templateType:'marketing', name:'이용 독려', app:'kidkidsApp',
+    title:'[키드키즈] 이번 주 알림장을 작성해 보세요', body:'학부모님과 알림장으로 소통해 보세요.',
+    landing:'/home', active:true, modifiedAt:'2026.10.05', modifiedBy:'김관리자' },
+);
+
+function fmtYmd(d) {
+  return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
+}
+
+/* 템플릿 목록 / 요약 카드 렌더링 */
+const TMPL_PAGE_SIZE = 20;
+let tmplPage = 1;
+// 발송 방식 / 서비스 / 발송 대상 / 이벤트 유형 / 사용여부 / 검색어를 AND 조건으로 적용
+// 서비스·발송 대상·이벤트 유형은 자동 발송 템플릿에만 있는 속성이므로 해당 조건 선택 시 수동 발송 템플릿은 제외
+function getFilteredTemplates() {
+  const val = id => document.getElementById(id).value;
+  const mode = val('tmplFMode'), svc = val('tmplFService'), tgt = val('tmplFTarget'), type = val('tmplFType'), st = val('tmplFStatus');
+  const q = val('tmplQuery').trim().toLowerCase();
+  return EVENT_DATA.filter(ev => {
+    const isAuto = ev.templateType === 'auto';
+    if (mode && getSendMode(ev) !== mode) return false;
+    if (svc && !(isAuto && ev.service === svc)) return false;
+    if (tgt && !(isAuto && ev.target.includes(tgt))) return false;
+    if (type && !(isAuto && ev.eventType === type)) return false;
+    if (st && ev.active !== (st === '사용')) return false;
+    if (q && !(ev.name.toLowerCase().includes(q) || ev.title.toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+function onTmplFilter() { tmplPage = 1; renderTemplateTable(); }
+function resetTmplFilter() {
+  ['tmplFMode', 'tmplFService', 'tmplFTarget', 'tmplFType', 'tmplFStatus'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('tmplQuery').value = '';
+  onTmplFilter();
+}
+function goTmplPage(n) { tmplPage = n; renderTemplateTable(); }
+function renderTemplateTable() {
+  const filtered = getFilteredTemplates();
+  const pages = Math.max(1, Math.ceil(filtered.length / TMPL_PAGE_SIZE));
+  tmplPage = Math.min(Math.max(1, tmplPage), pages);
+  const start = (tmplPage - 1) * TMPL_PAGE_SIZE;
+  const rows = filtered.slice(start, start + TMPL_PAGE_SIZE);
+  const emptyRow = '<tr><td colspan="11" style="text-align:center;color:var(--text-muted);padding:36px 0">조건에 해당하는 템플릿이 없습니다.</td></tr>';
+  document.getElementById('tmplTableBody').innerHTML = !rows.length ? emptyRow : rows.map(ev => {
+    const isAuto = ev.templateType === 'auto';
+    const mode = SEND_MODES[getSendMode(ev)];
+    const purpose = TEMPLATE_TYPES[ev.templateType];
+    const openFn = isAuto ? `showEventPanel(${ev.idx})` : `showManualTemplatePanel(${ev.idx})`;
+    return `
+      <tr onclick="${openFn}" style="cursor:pointer">
+        <td><span class="tbadge ${mode.cls}">${mode.label}</span></td>
+        <td>${isAuto ? '<span style="color:var(--text-muted)">-</span>' : `<span class="tbadge ${purpose.cls}">${purpose.label}</span>`}</td>
+        <td>${isAuto ? ev.view.svc : '<span style="color:var(--text-muted)">-</span>'}</td>
+        <td>${isAuto ? ev.view.type : '<span style="color:var(--text-muted)">-</span>'}</td>
+        <td>
+          <div style="font-weight:600;font-size:13px">${esc(ev.name)}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px">${isAuto ? esc(ev.view.short) : '운영자 직접 발송용'}</div>
+        </td>
+        <td>${isAuto ? ev.view.target : `<span class="tbadge t-cyan">${TEMPLATE_APPS[ev.app]}</span>`}</td>
+        <td style="max-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          <div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(ev.title)}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(ev.body)}</div>
+        </td>
+        <td>${ev.active ? '<span class="sbadge s-active"><span class="sdot"></span>사용</span>' : '<span class="sbadge s-inactive"><span class="sdot"></span>미사용</span>'}</td>
+        <td style="color:var(--text-muted);font-size:12px">${esc(String(ev.modifiedAt).slice(2))}</td>
+        <td style="color:var(--text-muted);font-size:12px">${esc(ev.modifiedBy)}</td>
+        <td><button class="view-btn" onclick="event.stopPropagation();${openFn}">수정</button></td>
+      </tr>`;
+  }).join('');
+  const total = EVENT_DATA.length;
+  const autoCount = EVENT_DATA.filter(ev => ev.templateType === 'auto').length;
+  const activeCount = EVENT_DATA.filter(ev => ev.active).length;
+  document.getElementById('tmplKpiTotal').textContent = total;
+  document.getElementById('tmplKpiTotalSub').textContent = '자동 발송 ' + autoCount + ' · 수동 발송 ' + (total - autoCount);
+  document.getElementById('tmplKpiActive').textContent = activeCount;
+  document.getElementById('tmplKpiInactive').textContent = total - activeCount;
+  document.getElementById('tmplResultCount').textContent = filtered.length;
+  document.getElementById('tmplPgInfo').textContent = filtered.length ? (start + 1) + ' – ' + (start + rows.length) + ' / ' + filtered.length + '건' : '0건';
+  // 페이지 번호는 결과가 한 페이지(20건)를 넘을 때만 노출
+  document.getElementById('tmplPager').innerHTML = pages > 1
+    ? Array.from({ length: pages }, (_, i) => `<button class="pg-btn${i + 1 === tmplPage ? ' active' : ''}" onclick="goTmplPage(${i + 1})">${i + 1}</button>`).join('')
+    : '';
+}
+
+/* 수동 발송용 템플릿 등록/수정 (공지/안내 · 마케팅·이벤트) — 자동 트리거 입력 영역 없음 */
+function showManualTemplatePanel(idx) {
+  const isNew = idx === undefined || idx === null;
+  const ev = isNew
+    ? { templateType:'service', name:'', app:'all', title:'', body:'', landing:'', active:true }
+    : EVENT_DATA[idx];
+  if (!ev || ev.templateType === 'auto') return;
+  document.getElementById('panelTitle').textContent = isNew ? '템플릿 등록' : ev.name + ' — 템플릿 수정';
+  document.getElementById('panelBody').innerHTML = `
+    <div class="dp-section">
+      <div class="dp-sec-title">템플릿 정보</div>
+      <div class="form-group">
+        <label class="form-label">발송 방식</label>
+        <div><span class="tbadge ${SEND_MODES.manual.cls}">${SEND_MODES.manual.label}</span></div>
+        <div class="form-hint">자동 발송 템플릿은 시스템 트리거 이벤트로만 생성되며 여기서 등록할 수 없습니다.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">발송 목적 <span class="form-required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="mtType" value="service" ${ev.templateType === 'service' ? 'checked' : ''}> 공지/안내</label>
+          <label class="radio-item"><input type="radio" name="mtType" value="marketing" ${ev.templateType === 'marketing' ? 'checked' : ''}> 마케팅·이벤트</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">템플릿명 <span class="form-required">*</span></label>
+        <input class="form-control" id="mtName" maxlength="30" value="${esc(ev.name)}" placeholder="예: 서비스 점검 안내">
+      </div>
+      <div class="form-group">
+        <label class="form-label">수신 앱 <span class="form-required">*</span></label>
+        <div class="f-select-wrap"><select class="f-select" style="width:100%" id="mtApp" onchange="validateManualLanding()">
+          ${Object.entries(TEMPLATE_APPS).map(([v, l]) => `<option value="${v}" ${ev.app === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">푸시 문구</div>
+      <div class="form-group">
+        <label class="form-label">푸시 제목 <span class="form-required">*</span></label>
+        <input class="form-control" id="mtTitle" maxlength="${TITLE_MAX}" value="${esc(ev.title)}" oninput="updateManualPreview()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">푸시 내용 <span class="form-required">*</span></label>
+        <textarea class="form-textarea" id="mtBody" maxlength="${BODY_MAX}" style="min-height:80px" oninput="updateManualPreview()">${esc(ev.body)}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">링크/랜딩 경로</label>
+        <input class="form-control" id="mtLanding" value="${esc(ev.landing)}" placeholder="/notice/list" oninput="validateManualLanding()">
+        <div class="form-error" id="mtLandingError" style="display:none"></div>
+        <div class="form-hint">알림 클릭 시 이동할 앱 내 경로 (선택)</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">사용 여부</label>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:6px">
+          <label class="radio-item"><input type="radio" name="mtActive" value="true" ${ev.active ? 'checked' : ''}> 사용</label>
+          <label class="radio-item"><input type="radio" name="mtActive" value="false" ${!ev.active ? 'checked' : ''}> 미사용</label>
+        </div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">푸시 미리보기</div>
+      <div style="display:flex;justify-content:center">
+        <div class="phone-mock" style="width:180px">
+          <div class="phone-screen">
+            <div class="phone-status"><div class="phone-notch"></div></div>
+            <div class="push-preview-wrap">
+              <div class="push-preview-card">
+                <div class="push-preview-app">
+                  <div class="push-preview-appicon">A</div>
+                  <div class="push-preview-appname">알림장</div>
+                  <div class="push-preview-time">방금 전</div>
+                </div>
+                <div class="push-preview-title" id="mtPreviewTitle"></div>
+                <div class="push-preview-body" id="mtPreviewBody"></div>
+              </div>
+            </div>
+          </div>
+          <div class="push-mock-label">미리보기</div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="btn btn-secondary" onclick="closePanel()">취소</button>
+    <button class="btn btn-primary" onclick="saveManualTemplate(${isNew ? 'null' : idx})">${isNew ? '등록' : '저장'}</button>`;
+  updateManualPreview();
+  validateManualLanding();
+  document.getElementById('panelOverlay').classList.add('show');
+}
+function updateManualPreview() {
+  const t = document.getElementById('mtTitle').value;
+  const b = document.getElementById('mtBody').value;
+  document.getElementById('mtPreviewTitle').textContent = t || '제목을 입력해주세요';
+  document.getElementById('mtPreviewBody').textContent  = b || '내용을 입력해주세요';
+}
+function validateManualLanding() {
+  const input = document.getElementById('mtLanding');
+  const errEl = document.getElementById('mtLandingError');
+  const app = document.getElementById('mtApp').value;
+  const msg = checkLinkPath(input.value.trim(), app === 'all' ? '' : app);
+  input.classList.toggle('is-invalid', !!msg);
+  errEl.textContent = msg;
+  errEl.style.display = msg ? 'block' : 'none';
+  return !msg;
+}
+function saveManualTemplate(idx) {
+  const name  = document.getElementById('mtName').value.trim();
+  const title = document.getElementById('mtTitle').value.trim();
+  const body  = document.getElementById('mtBody').value.trim();
+  if (!name)  { toast('템플릿명을 입력해주세요.', '⚠️'); return; }
+  if (!title) { toast('푸시 제목을 입력해주세요.', '⚠️'); return; }
+  if (!body)  { toast('푸시 내용을 입력해주세요.', '⚠️'); return; }
+  if (!validateManualLanding()) { toast('링크/랜딩 경로를 확인해주세요.', '⚠️'); return; }
+  const data = {
+    templateType: document.querySelector('input[name="mtType"]:checked').value,
+    name, title, body,
+    app: document.getElementById('mtApp').value,
+    landing: document.getElementById('mtLanding').value.trim(),
+    active: document.querySelector('input[name="mtActive"]:checked').value === 'true',
+    modifiedAt: fmtYmd(new Date()),
+    modifiedBy: '슈퍼관리자',
+  };
+  if (idx === null) EVENT_DATA.push({ idx: EVENT_DATA.length, ...data });
+  else Object.assign(EVENT_DATA[idx], data);
+  renderTemplateTable();
+  renderTemplateOptions(); // 푸시 발송 관리 템플릿 선택 목록 갱신 (유형·수신 앱·사용 여부 반영)
+  closePanel();
+  toast(idx === null ? '템플릿이 등록되었습니다.' : '템플릿이 저장되었습니다. 이후 발송 건부터 반영됩니다.', '✅');
+}
+
 function showEventPanel(idx) {
   const ev = EVENT_DATA[idx];
   if (!ev) return;
@@ -1285,13 +2590,14 @@ function showEventPanel(idx) {
     <div class="dp-section">
       <div class="dp-sec-title">이벤트 정보 (읽기전용)</div>
       <div class="dp-grid">
-        <div class="dp-item"><div class="dp-key">서비스 구분</div><div class="dp-val">${ev.service}</div></div>
-        <div class="dp-item"><div class="dp-key">이벤트 유형</div><div class="dp-val">${ev.eventType}</div></div>
-        <div class="dp-item"><div class="dp-key">이벤트명</div><div class="dp-val">${ev.eventName}</div></div>
-        <div class="dp-item"><div class="dp-key">발송 대상</div><div class="dp-val">${ev.target}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 방식</div><div class="dp-val"><span class="tbadge t-gray">자동 발송</span></div></div>
+        <div class="dp-item"><div class="dp-key">서비스 구분</div><div class="dp-val">${esc(ev.service)}</div></div>
+        <div class="dp-item"><div class="dp-key">이벤트 유형</div><div class="dp-val">${esc(ev.eventType)}</div></div>
+        <div class="dp-item"><div class="dp-key">이벤트명</div><div class="dp-val">${esc(ev.eventName)}</div></div>
+        <div class="dp-item"><div class="dp-key">발송 대상</div><div class="dp-val">${esc(ev.target)}</div></div>
       </div>
       <div style="background:#F4F5F7;border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--text-secondary);border-left:3px solid var(--border-medium)">
-        <span style="font-weight:600;color:var(--text-secondary)">발송 조건:</span> ${ev.condition}
+        <span style="font-weight:600;color:var(--text-secondary)">발송 조건:</span> ${esc(ev.condition)}
       </div>
     </div>
 
@@ -1300,11 +2606,11 @@ function showEventPanel(idx) {
       <div class="dp-sec-title">푸시 문구 수정</div>
       <div class="form-group">
         <label class="form-label">푸시 제목 <span class="form-required">*</span></label>
-        <input class="form-control" id="evTitle_${idx}" value="${ev.title}" oninput="updateEventPreview(${idx})">
+        <input class="form-control" id="evTitle_${idx}" maxlength="${TITLE_MAX}" value="${esc(ev.title)}" oninput="updateEventPreview(${idx})">
       </div>
       <div class="form-group">
         <label class="form-label">푸시 본문 <span class="form-required">*</span></label>
-        <textarea class="form-textarea" id="evBody_${idx}" style="min-height:80px" oninput="updateEventPreview(${idx})">${ev.body}</textarea>
+        <textarea class="form-textarea" id="evBody_${idx}" maxlength="${BODY_MAX}" style="min-height:80px" oninput="updateEventPreview(${idx})">${esc(ev.body)}</textarea>
       </div>
       <div class="form-group">
         <label class="form-label">치환 변수 안내</label>
@@ -1324,8 +2630,9 @@ function showEventPanel(idx) {
       <div class="dp-sec-title">랜딩 및 설정</div>
       <div class="form-group">
         <label class="form-label">랜딩 경로</label>
-        <input class="form-control" id="evLanding_${idx}" value="${ev.landing}" placeholder="/notice/list">
-        <div class="form-hint">알림 클릭 시 이동할 앱 내 경로</div>
+        <input class="form-control" id="evLanding_${idx}" value="${esc(ev.landing)}" placeholder="/notice/list" oninput="validateEventLanding(${idx})">
+        <div class="form-error" id="evLandingError_${idx}" style="display:none"></div>
+        <div class="form-hint">알림 클릭 시 이동할 앱 내 경로 (선택)</div>
       </div>
       <div class="form-group">
         <label class="form-label">사용 여부</label>
@@ -1350,8 +2657,8 @@ function showEventPanel(idx) {
                   <div class="push-preview-appname">알림장</div>
                   <div class="push-preview-time">방금 전</div>
                 </div>
-                <div class="push-preview-title" id="evPreviewTitle_${idx}">${ev.title}</div>
-                <div class="push-preview-body" id="evPreviewBody_${idx}">${ev.body}</div>
+                <div class="push-preview-title" id="evPreviewTitle_${idx}">${esc(ev.title)}</div>
+                <div class="push-preview-body" id="evPreviewBody_${idx}">${esc(ev.body)}</div>
               </div>
             </div>
           </div>
@@ -1391,16 +2698,34 @@ function insertEventVar(idx, v) {
   updateEventPreview(idx);
 }
 
+// 자동 템플릿 랜딩 경로 검증 (비워두면 허용). 오류 문구 표시 후 정상 여부 반환
+function validateEventLanding(idx) {
+  const input = document.getElementById('evLanding_' + idx);
+  const errEl = document.getElementById('evLandingError_' + idx);
+  const msg = checkLinkPath(input.value.trim(), '');
+  input.classList.toggle('is-invalid', !!msg);
+  errEl.textContent = msg;
+  errEl.style.display = msg ? 'block' : 'none';
+  return !msg;
+}
 function saveEventPanel(idx) {
-  const t = document.getElementById('evTitle_' + idx)?.value;
-  const b = document.getElementById('evBody_' + idx)?.value;
+  const t = document.getElementById('evTitle_' + idx)?.value.trim();
+  const b = document.getElementById('evBody_' + idx)?.value.trim();
   if (!t || !b) { toast('제목과 본문을 모두 입력해주세요.','⚠️'); return; }
+  if (t.length > TITLE_MAX || b.length > BODY_MAX) { toast('제목은 ' + TITLE_MAX + '자, 본문은 ' + BODY_MAX + '자 이내로 입력해주세요.', '⚠️'); return; }
+  if (!validateEventLanding(idx)) { toast('랜딩 경로를 확인해주세요.', '⚠️'); return; }
   if (EVENT_DATA[idx]) {
     EVENT_DATA[idx].title = t;
     EVENT_DATA[idx].body = b;
-    EVENT_DATA[idx].landing = document.getElementById('evLanding_' + idx)?.value || EVENT_DATA[idx].landing;
-    EVENT_DATA[idx].modifiedAt = new Date().toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace('.','');
+    EVENT_DATA[idx].landing = document.getElementById('evLanding_' + idx).value.trim();
+    // 사용 여부 저장 → 미사용 템플릿은 푸시 발송 관리 템플릿 선택 목록에서 제외
+    EVENT_DATA[idx].active = document.querySelector('input[name="evActive_' + idx + '"]:checked')?.value === 'true';
+    EVENT_DATA[idx].modifiedAt = fmtYmd(new Date());
+    EVENT_DATA[idx].modifiedBy = '슈퍼관리자';
   }
+  renderTemplateTable();
+  renderTemplateOptions(); // 푸시 발송 관리 템플릿 선택 목록 갱신
+  renderAutoMonitor();     // 자동 푸시 모니터링 갱신
   closePanel();
   toast('이벤트 문구가 저장되었습니다. 이후 발송 건부터 반영됩니다.','✅');
 }
@@ -1468,6 +2793,8 @@ function showPanel(type, ...args) {
 }
 
 function closePanel() {
+  // 대상 확인/편집 중 취소·X·배경 클릭으로 닫으면 이번 패널에서 수정한 선택을 폐기
+  if (teSnapshot) { excludedUsers = teSnapshot; teSnapshot = null; }
   document.getElementById('panelOverlay').classList.remove('show');
 }
 
@@ -1482,6 +2809,21 @@ function toast(msg, icon = '✅') {
   wrap.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
+
+/* ─────────────────────────────────
+   INIT — 푸시 발송 관리
+───────────────────────────────── */
+renderTemplateTable();
+renderTemplateOptions();
+SAMPLE_SEND_RECORDS.forEach(r => SEND_RECORDS.unshift(r));
+renderHistoryTable();
+renderCustomOrgOptions();
+renderTargetOptions();
+renderScreenOptions();
+toggleSchedule(false);
+updateTarget();
+updatePreview();
 </script>
+<script src="nav-links.js"></script>
 </body>
 </html>

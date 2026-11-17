@@ -585,6 +585,137 @@ tr.row-sel td { background: var(--accent-primary-light); }
 .status-dot-lg.gray { background: #9CA3AF; }
 .status-text { font-size: 13px; font-weight: 600; }
 .status-sub { font-size: 12px; color: var(--text-secondary); }
+
+/* ═══ 승인대기 홈 관리 ═══ */
+.ph-wrap { display: grid; grid-template-columns: 250px 392px minmax(360px, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 1480px) { .ph-wrap { grid-template-columns: 230px 392px 1fr; } }
+.ph-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.ph-card-hd { padding: 14px 18px; border-bottom: 1px solid var(--border-light); font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.ph-card-bd { padding: 16px 18px; }
+.ph-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.ph-dirty { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: #F3F4F6; color: var(--text-muted); }
+.ph-dirty.on { background: var(--amber-bg); color: var(--amber-text); }
+.ph-note { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin: 0 0 14px; }
+
+/* 섹션 목록 */
+.ph-sec { display: flex; align-items: center; gap: 8px; padding: 11px 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; }
+.ph-sec:last-child { border-bottom: none; }
+.ph-sec:hover { background: #FAFBFC; }
+.ph-sec.selected { background: var(--accent-primary-light); }
+.ph-sec.hidden .section-name { color: var(--text-muted); text-decoration: line-through; }
+.ph-mv { display: flex; flex-direction: column; gap: 1px; }
+.ph-mv button, .ph-ic-btn { border: 1px solid var(--border-medium); background: #fff; border-radius: 4px; font-size: 10px; line-height: 1; width: 20px; height: 15px; cursor: pointer; color: var(--text-secondary); padding: 0; }
+.ph-mv button:hover, .ph-ic-btn:hover { background: var(--bg-base); }
+.ph-mv button:disabled { opacity: .3; cursor: default; }
+.ph-sw { width: 34px; height: 19px; border-radius: 10px; background: #D1D5DB; border: none; position: relative; cursor: pointer; flex-shrink: 0; transition: background .2s; }
+.ph-sw.on { background: var(--accent-primary); }
+.ph-sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: left .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.ph-sw.on::after { left: 17px; }
+.ph-sw:disabled { opacity: .45; cursor: not-allowed; }
+
+/* 휴대폰 미리보기 */
+.ph-phone { width: 392px; background: #fff; border: 10px solid #1A1D2E; border-radius: 40px; overflow: hidden; box-shadow: var(--shadow-lg); position: sticky; top: 76px; }
+.ph-status { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 6px 24px 0; font-size: 14px; font-weight: 700; background: #fff; }
+.ph-body { height: 720px; overflow-y: auto; padding: 4px 18px 18px; font-family: 'Pretendard', sans-serif; color: #1c1f2a; scrollbar-width: thin; }
+.ph-zone { position: relative; border-radius: 14px; cursor: pointer; transition: outline-color .15s; outline: 2px solid transparent; outline-offset: 3px; }
+.ph-zone:hover { outline-color: rgba(67,97,238,.35); }
+.ph-zone.sel { outline-color: var(--accent-primary); }
+.ph-ban { display: flex; align-items: center; justify-content: space-between; border-radius: 14px; padding: 16px 14px 16px 16px; min-height: 96px; position: relative; overflow: hidden; }
+.ph-ban .ic { width: 24px; height: 24px; border-radius: 7px; background: #FFC93C; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 8px; }
+.ph-ban .t { font-weight: 800; font-size: 16.5px; line-height: 1.35; }
+.ph-ban .s { font-size: 15px; line-height: 1.4; }
+.ph-ban .img { width: 78px; height: 78px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 54px; margin-right: -4px; }
+.ph-ban .img img { width: 100%; height: 100%; object-fit: contain; }
+.ph-dots { display: flex; gap: 5px; justify-content: center; margin-top: 8px; }
+.ph-dots i { width: 6px; height: 6px; border-radius: 50%; background: #D5D8E0; display: block; cursor: pointer; }
+.ph-dots i.on { background: #4361EE; }
+.ph-h { font-size: 17px; font-weight: 800; margin: 20px 0 9px; letter-spacing: -.3px; }
+.ph-prof { background: #F2F4FA; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+.ph-av { width: 40px; height: 40px; border-radius: 50%; background: #E6F5D0; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.ph-prof .nm { font-weight: 800; font-size: 15px; }
+.ph-prof .sb { font-size: 12.5px; color: #8A90A0; }
+.ph-badge { margin-left: auto; background: #DCE7FF; color: #3558C8; font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+.ph-chev { color: #444; font-size: 14px; margin-left: 8px; }
+.ph-story { background: #F2F4FA; border-radius: 14px; padding: 12px 10px; }
+.ph-sl-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.ph-sl { flex: 0 0 66px; text-align: center; font-size: 11.5px; color: #333; }
+.ph-sl-img { width: 66px; height: 66px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; margin-bottom: 5px; }
+.ph-sl-img img { width: 100%; height: 100%; object-fit: cover; }
+.ph-menus { display: flex; justify-content: space-around; margin: 22px 0 14px; gap: 6px; flex-wrap: wrap; row-gap: 14px; }
+.ph-mn { text-align: center; font-size: 12.5px; width: 84px; cursor: pointer; line-height: 1.3; word-break: keep-all; }
+.ph-mn-ic { width: 48px; height: 48px; border-radius: 13px; margin: 0 auto 7px; display: flex; align-items: center; justify-content: center; font-size: 25px; position: relative; transition: transform .12s; }
+.ph-mn:hover .ph-mn-ic { transform: translateY(-2px); }
+.ph-mn-ic em { position: absolute; right: -6px; top: -6px; background: #4361EE; color: #fff; font-size: 9.5px; font-style: normal; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
+.ph-promo { display: flex; align-items: center; gap: 12px; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.ph-promo .pi { width: 40px; height: 40px; border-radius: 11px; background: rgba(255,255,255,.55); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; overflow: hidden; }
+.ph-promo .pi img { width: 100%; height: 100%; object-fit: cover; }
+.ph-promo .pt { font-weight: 800; font-size: 16px; }
+.ph-promo .ps { font-size: 12px; color: #3a3f4d; margin-top: 1px; }
+.ph-inq { text-align: center; color: #8A90A0; font-size: 13px; margin: 18px 0 6px; padding: 6px; }
+.ph-empty { text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px 0; }
+
+/* 편집 영역 */
+.ph-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-md); margin-bottom: 8px; background: #fff; }
+.ph-row.off { opacity: .55; background: #FAFAFB; }
+.ph-th { width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; border: 1px solid var(--border-light); }
+.ph-th img { width: 100%; height: 100%; object-fit: cover; }
+.ph-info { flex: 1; min-width: 0; }
+.ph-info .tt { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-info .mm { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-acts { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ph-acts .mv { display: flex; flex-direction: column; gap: 1px; }
+.ph-acts .mv button { border: 1px solid var(--border-medium); background: #fff; border-radius: 4px; font-size: 9px; width: 20px; height: 14px; cursor: pointer; padding: 0; line-height: 1; color: var(--text-secondary); }
+.ph-acts .mv button:disabled { opacity: .3; cursor: default; }
+.ph-add { width: 100%; border: 1.5px dashed var(--border-medium); background: var(--bg-base); border-radius: var(--radius-md); padding: 11px; font-size: 13px; font-weight: 600; color: var(--accent-primary); cursor: pointer; font-family: inherit; }
+.ph-add:hover { background: var(--accent-primary-light); border-color: var(--accent-primary); }
+.ph-back { background: none; border: none; color: var(--accent-primary); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 10px; font-family: inherit; }
+.ph-chk { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 0; }
+.ph-swatch { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ph-swatch button { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border-medium); cursor: pointer; padding: 0; }
+.ph-swatch button.on { box-shadow: 0 0 0 2px var(--accent-primary); }
+.ph-swatch input[type=color] { width: 30px; height: 26px; padding: 0; border: 1px solid var(--border-medium); border-radius: 6px; background: #fff; cursor: pointer; }
+.ph-up { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--bg-base); }
+.ph-up .pv { width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; background: #fff; border: 1px solid var(--border-light); flex-shrink: 0; }
+.ph-up .pv img { width: 100%; height: 100%; object-fit: cover; }
+.ph-err { color: var(--red); font-size: 11.5px; margin-top: 4px; min-height: 0; }
+
+.ph-sl { cursor: pointer; }
+.ph-sl-img { position: relative; }
+.ph-sl-n { position: absolute; right: 3px; bottom: 3px; background: rgba(0,0,0,.55); color: #fff; font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 8px; }
+.ph-hint2 { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; }
+.ph-ph-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.ph-ph-img { position: relative; height: 72px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; border: 1px solid var(--border-light); }
+.ph-ph-img img { width: 100%; height: 100%; object-fit: cover; }
+.ph-ph-img b { position: absolute; left: 4px; top: 4px; background: rgba(0,0,0,.55); color: #fff; font-size: 10px; border-radius: 8px; padding: 0 5px; }
+.ph-ph-act { display: flex; gap: 2px; margin-top: 3px; justify-content: center; }
+.ph-ph-act button { border: 1px solid var(--border-medium); background: #fff; border-radius: 4px; font-size: 9px; width: 24px; height: 16px; cursor: pointer; padding: 0; color: var(--text-secondary); }
+.ph-ph-act button:disabled { opacity: .3; cursor: default; }
+.ph-ss-bars { display: flex; gap: 4px; padding: 0 16px 10px; }
+.ph-ss-bars i { flex: 1; height: 3px; background: #E3E6EE; border-radius: 2px; overflow: hidden; display: block; }
+.ph-ss-bars i u { display: block; height: 100%; width: 0; background: #4361EE; }
+.ph-ss-bars i.done u { width: 100%; }
+.ph-ss-bars i.cur u { animation: phBar linear forwards; }
+@keyframes phBar { from { width: 0; } to { width: 100%; } }
+/* 모달 / 슬라이드 뷰어 */
+.ph-ov { position: fixed; inset: 0; background: rgba(15,18,30,.5); z-index: 2150; display: none; align-items: center; justify-content: center; padding: 20px; }
+.ph-ov.show { display: flex; }
+.ph-md { background: #fff; border-radius: var(--radius-xl); width: 460px; max-width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow-modal); }
+.ph-md-hd { padding: 18px 22px 12px; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.ph-md-bd { padding: 4px 22px 8px; overflow-y: auto; }
+.ph-md-ft { padding: 14px 22px 18px; display: flex; justify-content: flex-end; gap: 8px; }
+#phViewer { z-index: 2200; }
+.ph-vw { width: 380px; max-width: 100%; background: #fff; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow-modal); }
+.ph-vw-hd { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; font-size: 15px; font-weight: 800; }
+.ph-vw-x { border: none; background: #F3F4F6; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 13px; }
+.ph-vw-media { height: 250px; margin: 0 16px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 100px; overflow: hidden; cursor: pointer; user-select: none; }
+.ph-vw-media img { width: 100%; height: 100%; object-fit: cover; }
+.ph-vw-tt { font-size: 18px; font-weight: 800; padding: 16px 20px 4px; letter-spacing: -.3px; }
+.ph-vw-ds { font-size: 13.5px; color: #5a6072; padding: 0 20px; line-height: 1.6; min-height: 44px; }
+.ph-vw-ft { display: flex; align-items: center; gap: 8px; padding: 14px 16px 18px; }
+.ph-vw-ft .cta { flex: 1; height: 42px; border: none; border-radius: 12px; background: #4361EE; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
+.ph-vw-ft .nv { width: 42px; height: 42px; border: 1px solid #E1E4EC; border-radius: 12px; background: #fff; font-size: 16px; cursor: pointer; }
+.ph-vw-ft .nv:disabled { opacity: .35; cursor: default; }
+.ph-vw-hint { text-align: center; font-size: 11px; color: #9CA3AF; padding: 0 0 12px; }
 </style>
 </head>
 <body>
@@ -611,12 +742,12 @@ tr.row-sel td { background: var(--accent-primary-light); }
       <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </div>
     <div class="nav-sub" id="subCommon" style="display:none">
-      <div class="nav-item" onclick="location.href='common-admin.html'">코드 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">카테고리 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">약관/동의 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">다국어 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">권한/그룹 관리</div>
-      <div class="nav-item" onclick="location.href='common-admin.html'">로그 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#code'" style="opacity:0.55">코드관리(Ver2)</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#category'">카테고리 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#terms'">약관/동의 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#i18n'" style="opacity:0.55">다국어관리(Ver2)</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#permission'">권한/그룹 관리</div>
+      <div class="nav-item" onclick="location.href='common-admin.html#log'">로그 관리</div>
     </div>
 
     <!-- 회원/승인관리 -->
@@ -627,26 +758,34 @@ tr.row-sel td { background: var(--accent-primary-light); }
     </div>
     <div class="nav-sub" id="subMember" style="display:none">
       <div class="nav-item" onclick="location.href='member-list-admin.html'">통합회원 조회</div>
-      <div class="nav-item" onclick="location.href='member-approval.html'">가입/승인 관리</div>
-      <div class="nav-item" onclick="location.href='invitation-admin.html'">초대 관리</div>
-      <div class="nav-item" onclick="location.href='member-status-admin.html'">회원 상태관리</div>
+      <div class="nav-item" onclick="location.href='member-approval.html'">가입 승인 관리</div>
     </div>
 
  <div class="nav-item" onclick="toggleSub('subOrg','navOrg')" id="navOrg">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-  기관관리
+  기관/승인관리
   <span class="nav-badge">5</span>
   <svg class="nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 </div>
 <div class="nav-sub" id="subOrg" style="display:none">
   <div class="nav-item" onclick="location.href='org-admin.html'">기관 조회</div>
   <div class="nav-item" onclick="location.href='org-admin.html#approval'">기관 승인 관리 <span class="nav-badge">5</span></div>
-  <div class="nav-item" onclick="location.href='org-admin.html#status'">멤버십 관리</div>
+  <div class="nav-item" onclick="location.href='org-admin.html#membership'">멤버십 관리</div>
+  <div class="nav-item" onclick="var s=document.getElementById('sub-invite'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">초대관리<svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+  <div id="sub-invite" style="display:none;background:rgba(0,0,0,0.12)">
+    <div class="nav-item" onclick="location.href='service-invitation-admin.html'" style="cursor:pointer;padding-left:60px">서비스 초대관리</div>
+    <div class="nav-item" onclick="location.href='invitation-admin.html'" style="cursor:pointer;padding-left:60px">기관별 초대현황</div>
+  </div>
 </div>
 
- <div class="nav-item" style="cursor:default;opacity:0.5">
+ <div class="nav-item" onclick="var s=document.getElementById('sub-ops'),o=s.style.display==='block';s.style.display=o?'none':'block';this.querySelector('.nav-chevron').style.transform=o?'':'rotate(90deg)'" style="cursor:pointer">
   <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-  운영관리 <span style="font-size:10px;color:#9CA3AF;margin-left:auto">준비중</span>
+  운영관리
+  <svg class="nav-chevron" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:auto;opacity:0.5;transition:transform 0.2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+</div>
+<div class="nav-sub" id="sub-ops" style="display:none">
+  <div class="nav-item" onclick="location.href='inquiry-admin.html'" style="cursor:pointer">1:1 문의 관리</div>
+  <div class="nav-item" onclick="goOrgOpsAdmin()" style="cursor:pointer">기관운영관리<span style="margin-left:auto;opacity:.55;font-size:12px">↗</span></div>
 </div>
 
 <div class="nav-item" onclick="location.href='ops-tools-admin.html'" style="cursor:pointer">
@@ -662,10 +801,11 @@ tr.row-sel td { background: var(--accent-primary-light); }
     </div>
     <div class="nav-sub" id="subSite">
       <div class="nav-item active-sub" id="sub-basic"     onclick="showScreen('basic')">기본 설정 관리</div>
-      <div class="nav-item"            id="sub-layout"    onclick="showScreen('layout')">메인/화면 구성 관리</div>
-      <div class="nav-item"            id="sub-banner"    onclick="showScreen('banner')">배너 관리</div>
-      <div class="nav-item"            id="sub-popup"     onclick="showScreen('popup')">팝업 관리</div>
-      <div class="nav-item"            id="sub-notice"    onclick="showScreen('notice')">공지/안내 관리</div>
+      <div class="nav-item"            id="sub-layout"    onclick="showScreen('layout')" style="opacity:0.55">메인/화면 구성 관리(Ver2)</div>
+      <div class="nav-item"            id="sub-pendinghome" onclick="showScreen('pendinghome')">승인대기홈 관리</div>
+      <div class="nav-item"            id="sub-banner"    onclick="showScreen('banner')">배너 관리 (Web)</div>
+      <div class="nav-item"            id="sub-popup"     onclick="showScreen('popup')">팝업 관리 (Web)</div>
+      <div class="nav-item"            id="sub-notice"    onclick="showScreen('notice')">공지/안내 관리 (Web)</div>
       <div class="nav-item"            id="sub-appupdate" onclick="showScreen('appupdate')">앱 업데이트/점검 관리</div>
     </div>
 
@@ -1519,6 +1659,48 @@ tr.row-sel td { background: var(--accent-primary-light); }
       </div>
     </div>
 
+
+    <!-- ══════════════════════════════════
+         승인대기 홈 관리
+    ══════════════════════════════════ -->
+    <div id="screen-pendinghome" class="screen fade-up">
+      <div class="page-header">
+        <div>
+          <div class="page-title">승인대기 홈 관리</div>
+          <div class="page-subtitle">가입 후 승인을 기다리는 사용자에게 보이는 앱 홈 화면을 역할별로 구성합니다.</div>
+        </div>
+        <div class="ph-top">
+          <span class="ph-dirty" id="phDirty">저장됨</span>
+          <button class="btn btn-secondary" onclick="phCopyRole()">다른 역할 구성 복사</button>
+          <button class="btn btn-secondary" onclick="phReset()">샘플로 초기화</button>
+          <button class="btn btn-primary" onclick="phSave()">저장</button>
+        </div>
+      </div>
+
+      <div class="tab-bar" id="phRoleBar"></div>
+      <p class="ph-note" id="phRoleNote"></p>
+
+      <div class="ph-wrap">
+        <div class="ph-card">
+          <div class="ph-card-hd">화면 구성 <span style="font-weight:400;font-size:11.5px;color:var(--text-muted)">위에서 아래 순서</span></div>
+          <div id="phSecList"></div>
+        </div>
+
+        <div>
+          <div class="ph-phone">
+            <div class="ph-status"><span>9:41</span><span style="font-size:12px;letter-spacing:1px">▮▮▮ ◔ ▭</span></div>
+            <div class="ph-body" id="phPreview"></div>
+          </div>
+          <div class="ph-note" style="text-align:center;margin:10px 0 0">영역을 클릭하면 해당 설정이 열리고,<br>서비스 메뉴를 클릭하면 소개 슬라이드가 바로 열립니다.</div>
+        </div>
+
+        <div class="ph-card">
+          <div class="ph-card-hd" id="phEditHd">설정</div>
+          <div class="ph-card-bd" id="phEdit"></div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
 
@@ -1533,6 +1715,22 @@ tr.row-sel td { background: var(--accent-primary-light); }
     </div>
     <div class="dp-body" id="panelBody"></div>
     <div class="dp-footer" id="panelFooter"></div>
+  </div>
+</div>
+
+
+<!-- 승인대기 홈: 항목 편집 모달 / 서비스 소개 슬라이드 뷰어 -->
+<div class="ph-ov" id="phModalOv" onclick="if(event.target===this)phModalClose()">
+  <div class="ph-md">
+    <div class="ph-md-hd"><span id="phMdTitle"></span><button class="dp-close" onclick="phModalClose()">✕</button></div>
+    <div class="ph-md-bd" id="phMdBody"></div>
+    <div class="ph-md-ft"><button class="btn btn-secondary" onclick="phModalClose()">취소</button><button class="btn btn-primary" id="phMdOk" onclick="phModalSave()">확인</button></div>
+  </div>
+</div>
+<div class="ph-ov" id="phViewer" onclick="if(event.target===this)phViewClose()">
+  <div class="ph-vw">
+    <div class="ph-vw-hd"><span id="phVwName"></span><button class="ph-vw-x" onclick="phViewClose()">✕</button></div>
+    <div id="phVwBody"></div>
   </div>
 </div>
 
@@ -1557,6 +1755,7 @@ function toggleSub(id, navId) {
 const SCREEN_NAMES = {
   basic:     '기본 설정 관리',
   layout:    '메인/화면 구성 관리',
+  pendinghome: '승인대기홈 관리',
   banner:    '배너 관리',
   popup:     '팝업 관리',
   notice:    '공지/안내 관리',
@@ -1810,5 +2009,361 @@ function toast(msg, icon = '✅') {
   setTimeout(() => t.remove(), 3500);
 }
 </script>
+
+<script>
+/* ═══════════════════════════════════════════
+   승인대기 홈 관리 (프로토타입: 메모리 상태, 서버 저장 없음)
+═══════════════════════════════════════════ */
+(function () {
+  const ROLES = [['director', '원장'], ['teacher', '교사'], ['parent', '학부모']];
+  const SECS = { banner: '승인 안내 배너', profile: '소속·프로필', story: '우리반 이야기 (슬라이드쇼)', menus: '서비스 바로가기', promos: '부가 서비스 배너', inquiry: '하단 문의' };
+  const SWATCH = ['#FFF4CC', '#FFE0B5', '#CFF7F2', '#DCE7FF', '#F2F4FA', '#FFD9E0', '#E6F5D0'];
+  const LIMIT = { banners: 5, story: 10, photos: 20, menus: 6, promos: 4, mslides: 8 };
+  let uid = 100; const nid = () => 'p' + (++uid);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const $ = id => document.getElementById(id);
+
+  const slides = a => a.map(([title, desc, emoji, color]) => ({ id: nid(), title, desc, emoji, color, img: '', cta: '체험해보기' }));
+  function menuSet() {
+    return [
+      { id: nid(), label: '알림장', emoji: '📒', color: '#DCE7FF', link: '/notebook', on: true, slides: slides([['알림장으로 하루를 기록해요', '오늘의 활동과 컨디션을 간단하게 남길 수 있어요.', '📒', '#DCE7FF'], ['사진과 함께 소식을 전해요', '아이들의 사진을 함께 올려 생생하게 전달해요.', '📷', '#FFE9D6'], ['학부모와 바로 소통해요', '알림장에 남긴 소식에 학부모가 바로 답할 수 있어요.', '💬', '#E6F5D0']]) },
+      { id: nid(), label: 'VAN 결제', emoji: '💳', color: '#F2F4FA', link: '/van-pay', on: true, slides: slides([['간편하게 결제해요', '카드 결제 내역을 앱에서 바로 확인해요.', '💳', '#F2F4FA'], ['결제 내역을 한눈에', '월별 결제 내역과 영수증을 모아볼 수 있어요.', '🧾', '#FFF4CC']]) },
+      { id: nid(), label: '수업자료 함께보기', emoji: '🎬', color: '#EBDDFF', link: '/class-share', on: true, slides: slides([['수업자료를 함께 봐요', '교사가 올린 수업자료를 학부모와 함께 볼 수 있어요.', '🎬', '#EBDDFF'], ['아이의 수업 모습', '수업 영상과 활동 자료를 언제든 다시 볼 수 있어요.', '🎞️', '#DCE7FF']]) }
+    ];
+  }
+  /* 우리반 이야기: 한 항목 = 대표 이미지 1개 + 슬라이드쇼(사진 여러 장 + 배경음악) */
+  const MUSIC = {
+    none: { n: '음악 없음' },
+    m1: { n: '잔잔한 피아노 (샘플)', bpm: 84, w: 'sine', notes: [0, 4, 7, 12, 7, 4, 0, 4, 7, 9, 7, 4] },
+    m2: { n: '경쾌한 소풍 (샘플)', bpm: 132, w: 'triangle', notes: [0, 2, 4, 0, 0, 2, 4, 0, 4, 5, 7, 7, 4, 5, 7, 7] },
+    m3: { n: '신나는 물놀이 (샘플)', bpm: 150, w: 'square', notes: [7, 7, 9, 7, 12, 11, 7, 7, 9, 7, 14, 12] },
+    m4: { n: '따뜻한 자장가 (샘플)', bpm: 66, w: 'sine', notes: [4, 4, 7, 4, 4, 7, 4, 7, 12, 11, 9, 9, 7, 5, 4, 2] }
+  };
+  const photo = (emoji, color) => ({ id: nid(), img: '', emoji, color });
+  const story = (cap, music, list) => { const s = { id: nid(), cap, music, musicName: '', musicSrc: '', sec: 3, photos: list.map(p => photo(...p)) }; syncCover(s); return s; };
+  function syncCover(s) { const p = s.photos[0] || {}; s.emoji = p.emoji || '🖼️'; s.color = p.color || '#EEF1FD'; s.img = p.img || ''; }
+  function storySamples() {
+    return [
+      story('여름소풍', 'm2', [['🌳', '#CFE8C8'], ['🧺', '#FFE9B8'], ['🦋', '#DDEFFF']]),
+      story('여름소풍', 'm1', [['🍓', '#FFD9D0'], ['🌻', '#FFF1B8'], ['🐝', '#FFE3BF']]),
+      story('재밌는 물놀이', 'm3', [['💦', '#CDEBFF'], ['🛟', '#FFD9D0'], ['🐠', '#D5F3EE']]),
+      story('바다-소풍', 'm4', [['🌊', '#FFE3BF'], ['🐚', '#FFE8EE'], ['⛵', '#DCE7FF']])
+    ];
+  }
+  function mkRole(ban, prof) {
+    return {
+      order: ['banner', 'profile', 'story', 'menus', 'promos', 'inquiry'],
+      on: { banner: true, profile: true, story: true, menus: true, promos: true, inquiry: true },
+      banners: [{ id: nid(), title: ban[0], sub: ban[1], bg: '#FFF4CC', emoji: '🦊', img: '', link: '', on: true }],
+      profile: { org: '키드키즈 어린이집', name: prof[0], cls: prof[1], status: '승인대기', show: { org: true, name: true, cls: true, status: true } },
+      story: { title: '우리반 이야기', slides: storySamples() },
+      menus: { items: menuSet() },
+      promos: { items: [
+        { id: nid(), title: 'e-아울렛몰', sub: '이달의 인기상품 보러가기', bg: '#CFF7F2', emoji: '🛍️', img: '', link: '/outlet', on: true },
+        { id: nid(), title: '서비스 이용가이드', sub: '키드키즈 알림장 서비스 알아보기', bg: '#FFE0B5', emoji: '🔍', img: '', link: '/guide', on: true }] },
+      inquiry: { label: '1:1 문의하기', link: '/inquiry' }
+    };
+  }
+  function build() {
+    return {
+      director: mkRole(['기관 승인 검토 중입니다.', '승인이 완료되면 모든 기능을 이용할 수 있어요!'], ['박원장', '원장']),
+      teacher: mkRole(['승인 대기 중입니다.', '서비스 이용은 곧 가능해요!'], ['김티쳐', '위글위글반(2세)']),
+      parent: mkRole(['가입 승인 대기 중입니다.', '승인되면 우리 아이 소식을 바로 확인할 수 있어요!'], ['김하늘 학부모', '위글위글반(2세)'])
+    };
+  }
+  const PH = { role: 'teacher', sel: 'banner', sub: null, bn: 0, dirty: false, cfg: build() };
+  const C = () => PH.cfg[PH.role];
+  const roleName = k => (ROLES.find(r => r[0] === k) || [])[1];
+  const dirty = (v = true) => { PH.dirty = v; const e = $('phDirty'); e.textContent = v ? '저장되지 않은 변경사항' : '저장됨'; e.classList.toggle('on', v); };
+  const menuOf = id => C().menus.items.find(m => m.id === id);
+  function listOf(key) {
+    const c = C();
+    return { banners: c.banners, story: c.story.slides, menus: c.menus.items, promos: c.promos.items, mslides: (menuOf(PH.sub) || {}).slides, order: c.order }[key];
+  }
+  const musicLabel = s => s.music === 'upload' ? (s.musicName || '업로드 음악') : (MUSIC[s.music] || MUSIC.none).n;
+  const media = (o, bgKey) => o.img ? `<img src="${esc(o.img)}" alt="">` : esc(o.emoji || '🖼️');
+  const LINK_RE = /^(https?:\/\/|kidkids:\/\/|\/)\S*$/;
+
+  /* ── 렌더 ── */
+  function render() { roleBar(); secList(); preview(); editor(); }
+  function roleBar() {
+    $('phRoleBar').innerHTML = ROLES.map(([k, n]) => `<button class="tab-btn${k === PH.role ? ' active' : ''}" onclick="phRole('${k}')">${n} 승인대기 홈</button>`).join('');
+    $('phRoleNote').innerHTML = `<b>${roleName(PH.role)}</b>로 가입하고 승인을 기다리는 사용자에게만 이 구성이 노출됩니다. 역할마다 배너 문구·콘텐츠를 따로 관리합니다. <span style="color:var(--amber-text)">※ 화면의 문구·슬라이드는 샘플이며 운영 정책 확정 전입니다.</span>`;
+  }
+  function secList() {
+    const c = C();
+    $('phSecList').innerHTML = c.order.map((k, i) => {
+      const meta = { banner: `배너 ${c.banners.filter(b => b.on).length}/${c.banners.length}개 노출`, profile: '가입 정보 자동 표시', story: `슬라이드쇼 ${c.story.slides.length}개`, menus: `메뉴 ${c.menus.items.filter(m => m.on).length}/${c.menus.items.length}개 노출`, promos: `배너 ${c.promos.items.filter(p => p.on).length}/${c.promos.items.length}개 노출`, inquiry: c.inquiry.label }[k];
+      return `<div class="ph-sec${PH.sel === k ? ' selected' : ''}${c.on[k] ? '' : ' hidden'}" onclick="phSel('${k}')">
+        <div class="ph-mv"><button ${i === 0 ? 'disabled' : ''} onclick="event.stopPropagation();phMove('order',${i},-1)">▲</button><button ${i === c.order.length - 1 ? 'disabled' : ''} onclick="event.stopPropagation();phMove('order',${i},1)">▼</button></div>
+        <div class="section-info"><div class="section-name">${SECS[k]}</div><div class="section-meta">${esc(meta)}${k === 'profile' ? ' · 필수' : ''}</div></div>
+        <button class="ph-sw${c.on[k] ? ' on' : ''}" ${k === 'profile' ? 'disabled title="필수 영역은 숨길 수 없습니다"' : ''} onclick="event.stopPropagation();phSecTgl('${k}')"></button></div>`;
+    }).join('');
+  }
+  function preview() {
+    const c = C(), z = k => `class="ph-zone${PH.sel === k ? ' sel' : ''}" onclick="phSel('${k}')"`;
+    const out = c.order.filter(k => c.on[k]).map(k => {
+      if (k === 'banner') {
+        const bs = c.banners.filter(b => b.on); if (!bs.length) return '';
+        const b = bs[PH.bn % bs.length];
+        return `<div ${z('banner')} style="margin-top:6px"><div class="ph-ban" style="background:${esc(b.bg)}"><div><div class="ic">⟳</div><div class="t">${esc(b.title)}</div><div class="s">${esc(b.sub)}</div></div><div class="img">${media(b)}</div></div>${bs.length > 1 ? `<div class="ph-dots">${bs.map((_, i) => `<i class="${i === PH.bn % bs.length ? 'on' : ''}" onclick="event.stopPropagation();phBn(${i})"></i>`).join('')}</div>` : ''}</div>`;
+      }
+      if (k === 'profile') {
+        const p = c.profile, s = p.show;
+        return `<div ${z('profile')}><div class="ph-h" style="margin-top:22px">${s.org ? esc(p.org) : '&nbsp;'}</div><div class="ph-prof"><div class="ph-av">🙂</div><div><div class="nm">${s.name ? esc(p.name) : ''}</div><div class="sb">${s.cls ? esc(p.cls) : ''}</div></div>${s.status ? `<span class="ph-badge">${esc(p.status)}</span>` : ''}<span class="ph-chev">⌄</span></div></div>`;
+      }
+      if (k === 'story') return `<div ${z('story')}><div class="ph-h">${esc(c.story.title)}</div><div class="ph-story">${c.story.slides.length ? `<div class="ph-sl-row">${c.story.slides.map(s => `<div class="ph-sl" onclick="event.stopPropagation();phOpenStory('${s.id}')"><div class="ph-sl-img" style="background:${esc(s.color)}">${media(s)}<span class="ph-sl-n">▶ ${s.photos.length}${s.music !== 'none' ? ' ♪' : ''}</span></div>${esc(s.cap)}</div>`).join('')}</div>` : '<div class="ph-empty">등록된 우리반 이야기가 없습니다</div>'}</div></div>`;
+      if (k === 'menus') { const it = c.menus.items.filter(m => m.on); return it.length ? `<div ${z('menus')}><div class="ph-menus">${it.map(m => `<div class="ph-mn" onclick="event.stopPropagation();phOpenMenu('${m.id}')"><div class="ph-mn-ic" style="background:${esc(m.color)}">${esc(m.emoji)}${m.slides.length ? `<em>${m.slides.length}</em>` : ''}</div>${esc(m.label)}</div>`).join('')}</div></div>` : ''; }
+      if (k === 'promos') { const it = c.promos.items.filter(p => p.on); return it.length ? `<div ${z('promos')} style="margin-top:6px">${it.map(p => `<div class="ph-promo" style="background:${esc(p.bg)}"><div class="pi">${media(p)}</div><div><div class="pt">${esc(p.title)}</div><div class="ps">${esc(p.sub)}</div></div></div>`).join('')}</div>` : ''; }
+      if (k === 'inquiry') return `<div ${z('inquiry')}><div class="ph-inq">${esc(c.inquiry.label)}</div></div>`;
+      return '';
+    }).join('');
+    $('phPreview').innerHTML = out || '<div class="ph-empty">노출 중인 영역이 없습니다</div>';
+  }
+
+  /* ── 편집 영역 ── */
+  const rowHtml = (key, i, o, o_th, title, meta, hasOn, extra) => {
+    const L = listOf(key);
+    return `<div class="ph-row${hasOn && !o.on ? ' off' : ''}"><div class="ph-th" style="background:${esc(o_th)}">${media(o)}</div><div class="ph-info"><div class="tt">${esc(title)}</div><div class="mm">${esc(meta)}</div></div><div class="ph-acts">${extra || ''}${hasOn ? `<button class="ph-sw${o.on ? ' on' : ''}" title="노출" onclick="phTgl('${key}',${i})"></button>` : ''}<div class="mv"><button ${i === 0 ? 'disabled' : ''} onclick="phMove('${key}',${i},-1)">▲</button><button ${i === L.length - 1 ? 'disabled' : ''} onclick="phMove('${key}',${i},1)">▼</button></div><button class="btn btn-secondary btn-sm" onclick="phEdit('${key}',${i})">수정</button><button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="phDel('${key}',${i})">삭제</button></div></div>`;
+  };
+  const addBtn = (key, label) => `<button class="ph-add" onclick="phEdit('${key}',-1)">+ ${label}</button><div class="form-hint" style="margin-top:6px">최대 ${LIMIT[key]}개까지 등록할 수 있습니다.</div>`;
+  const hint = t => `<div class="form-hint" style="margin:0 0 12px">${t}</div>`;
+  function editor() {
+    const c = C(), k = PH.sel; let hd = SECS[k], h = '';
+    if (!c.on[k] && k !== 'profile') h += `<div class="info-banner" style="background:var(--amber-bg);color:var(--amber-text);border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:12px">이 영역은 현재 <b>숨김</b> 상태입니다. 왼쪽 목록의 스위치로 노출할 수 있습니다.</div>`;
+    if (k === 'banner') {
+      h += hint('상단 배너입니다. 여러 개를 등록하면 점(●)으로 넘겨 볼 수 있고, 노출 중인 배너만 앱에 표시됩니다.');
+      h += c.banners.map((b, i) => rowHtml('banners', i, b, b.bg, b.title, b.sub, true)).join('') || '<div class="ph-empty">등록된 배너가 없습니다. 배너가 없으면 이 영역은 앱에서 보이지 않습니다.</div>';
+      h += c.banners.length < LIMIT.banners ? addBtn('banners', '배너 추가') : `<div class="form-hint">배너는 최대 ${LIMIT.banners}개까지 등록할 수 있습니다.</div>`;
+    } else if (k === 'profile') {
+      const p = c.profile; hd = '소속·프로필 (자동 표시)';
+      h += hint('실제 앱에서는 사용자의 가입 정보(소속 기관·이름·반/직책)가 자동으로 표시됩니다. 여기서는 표시 항목과 상태 문구만 관리하고, 입력값은 미리보기용 샘플입니다.');
+      h += [['org', '소속 기관명'], ['name', '이름'], ['cls', roleName(PH.role) === '학부모' ? '자녀 반' : roleName(PH.role) === '원장' ? '직책' : '담당 반'], ['status', '승인 상태 배지']].map(([f, l]) => `<label class="ph-chk"><input type="checkbox" class="chk" ${p.show[f] ? 'checked' : ''} onchange="phProf('show.${f}',this.checked)"> ${l} 표시</label>`).join('');
+      h += `<div class="form-group" style="margin-top:12px"><label class="form-label">승인 상태 배지 문구</label><input class="form-control" value="${esc(p.status)}" maxlength="8" oninput="phProf('status',this.value)"></div>`;
+      h += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="form-group"><label class="form-label">샘플 기관명</label><input class="form-control" value="${esc(p.org)}" oninput="phProf('org',this.value)"></div><div class="form-group"><label class="form-label">샘플 이름</label><input class="form-control" value="${esc(p.name)}" oninput="phProf('name',this.value)"></div><div class="form-group"><label class="form-label">샘플 반/직책</label><input class="form-control" value="${esc(p.cls)}" oninput="phProf('cls',this.value)"></div></div>`;
+    } else if (k === 'story') {
+      h += hint('목록의 항목 하나는 대표 이미지 하나로 보이고, 눌러 보면 등록한 사진이 배경음악과 함께 슬라이드쇼로 재생됩니다. 사진·음악·순서를 자유롭게 교체·추가·삭제할 수 있습니다.');
+      h += `<div class="form-group"><label class="form-label">영역 제목</label><input class="form-control" value="${esc(c.story.title)}" maxlength="30" oninput="phStoryTitle(this.value)"></div>`;
+      h += c.story.slides.map((s, i) => rowHtml('story', i, s, s.color, s.cap, `사진 ${s.photos.length}장 · ♪ ${musicLabel(s)} · ${s.sec}초`, false, `<button class="btn btn-secondary btn-sm" onclick="phOpenStory('${s.id}')">▶ 보기</button>`)).join('') || '<div class="ph-empty">등록된 우리반 이야기가 없습니다.</div>';
+      h += c.story.slides.length < LIMIT.story ? addBtn('story', '우리반 이야기 추가') : `<div class="form-hint">최대 ${LIMIT.story}개까지 등록할 수 있습니다.</div>`;
+    } else if (k === 'menus') {
+      if (PH.sub && menuOf(PH.sub)) {
+        const m = menuOf(PH.sub); hd = `서비스 바로가기 › ${m.label} 소개 슬라이드`;
+        h += `<button class="ph-back" onclick="phSub(null)">‹ 서비스 메뉴 목록</button>` + hint('이 메뉴를 눌렀을 때 슬라이드 형식으로 먼저 보여줄 소개 화면입니다. 슬라이드를 모두 지우면 메뉴가 연결 링크로 바로 이동합니다.');
+        h += m.slides.map((s, i) => rowHtml('mslides', i, s, s.color, s.title, s.desc, false)).join('') || '<div class="ph-empty">등록된 소개 슬라이드가 없습니다.</div>';
+        h += (m.slides.length < LIMIT.mslides ? addBtn('mslides', '소개 슬라이드 추가') : `<div class="form-hint">최대 ${LIMIT.mslides}장</div>`) + `<div style="margin-top:12px"><button class="btn btn-secondary" onclick="phOpenMenu('${m.id}')">▶ 슬라이드 미리보기</button></div>`;
+      } else {
+        h += hint('주요 기능 바로가기입니다. 메뉴를 클릭하면 앱에서 소개 슬라이드가 먼저 열립니다. 아래 "슬라이드 관리"에서 메뉴별 소개 화면을 편집하세요.');
+        h += c.menus.items.map((m, i) => rowHtml('menus', i, m, m.color, m.label, `슬라이드 ${m.slides.length}장 · ${m.link || '링크 없음'}`, true, `<button class="btn btn-secondary btn-sm" onclick="phOpenMenu('${m.id}')">▶ 보기</button><button class="btn btn-secondary btn-sm" onclick="phSub('${m.id}')">슬라이드 관리</button>`)).join('') || '<div class="ph-empty">등록된 서비스 메뉴가 없습니다.</div>';
+        h += c.menus.items.length < LIMIT.menus ? addBtn('menus', '서비스 메뉴 추가') : `<div class="form-hint">서비스 메뉴는 최대 ${LIMIT.menus}개까지 등록할 수 있습니다.</div>`;
+      }
+    } else if (k === 'promos') {
+      h += hint('e-아울렛몰, 서비스 이용가이드 등 부가 서비스로 연결되는 배너입니다.');
+      h += c.promos.items.map((p, i) => rowHtml('promos', i, p, p.bg, p.title, p.sub, true)).join('') || '<div class="ph-empty">등록된 배너가 없습니다.</div>';
+      h += c.promos.items.length < LIMIT.promos ? addBtn('promos', '부가 서비스 배너 추가') : `<div class="form-hint">최대 ${LIMIT.promos}개</div>`;
+    } else if (k === 'inquiry') {
+      h += hint('화면 하단의 문의 링크입니다.');
+      h += `<div class="form-group"><label class="form-label">문구</label><input class="form-control" value="${esc(c.inquiry.label)}" maxlength="20" oninput="phInq('label',this.value)"></div><div class="form-group"><label class="form-label">연결 링크</label><input class="form-control" value="${esc(c.inquiry.link)}" placeholder="/inquiry 또는 https://..." oninput="phInq('link',this.value)"><div class="form-hint">/ 로 시작하는 앱 내 경로 또는 http(s):// 주소</div></div>`;
+    }
+    $('phEditHd').textContent = hd; $('phEdit').innerHTML = h;
+  }
+
+  /* ── 공개 액션 ── */
+  Object.assign(window, {
+    phRole(r) { PH.role = r; PH.sub = null; PH.bn = 0; render(); },
+    phSel(k) { PH.sel = k; if (k !== 'menus') PH.sub = null; render(); },
+    phSub(id) { PH.sub = id; PH.sel = 'menus'; render(); },
+    phBn(i) { PH.bn = i; preview(); },
+    phSecTgl(k) { if (k === 'profile') return; C().on[k] = !C().on[k]; dirty(); render(); },
+    phMove(key, i, d) { const L = listOf(key), j = i + d; if (j < 0 || j >= L.length) return; [L[i], L[j]] = [L[j], L[i]]; dirty(); render(); },
+    phTgl(key, i) { const o = listOf(key)[i]; o.on = !o.on; dirty(); render(); },
+    phDel(key, i) { const o = listOf(key)[i]; if (!confirm(`"${o.title || o.label || o.cap}" 항목을 삭제할까요?`)) return; listOf(key).splice(i, 1); dirty(); render(); toast('삭제했습니다.', '🗑️'); },
+    phProf(path, v) { const p = C().profile; if (path.startsWith('show.')) p.show[path.slice(5)] = v; else p[path] = v; dirty(); preview(); },
+    phStoryTitle(v) { C().story.title = v; dirty(); preview(); },
+    phInq(f, v) { C().inquiry[f] = v; dirty(); preview(); secList(); },
+    phSave() { dirty(false); toast(`${roleName(PH.role)} 승인대기 홈 구성이 저장되었습니다. (프로토타입: 서버 저장 없음)`, '✅'); },
+    phReset() { if (!confirm('모든 역할의 승인대기 홈 구성을 샘플 상태로 되돌릴까요? 저장하지 않은 변경은 사라집니다.')) return; PH.cfg = build(); PH.sub = null; PH.bn = 0; dirty(false); render(); toast('샘플 구성으로 초기화했습니다.', '↩️'); },
+    phCopyRole() {
+      const opts = ROLES.filter(r => r[0] !== PH.role).map(r => `<option value="${r[0]}">${r[1]}</option>`).join('');
+      openModal(`다른 역할 구성 복사`, `<div class="form-hint" style="margin-bottom:10px">선택한 역할의 구성을 <b>${roleName(PH.role)}</b> 승인대기 홈에 덮어씁니다. 배너 문구도 함께 복사되니 복사 후 역할에 맞게 수정하세요.</div><div class="form-group"><label class="form-label">복사할 역할</label><div class="f-select-wrap"><select class="f-select" id="phCopySrc" style="width:100%">${opts}</select></div></div>`, () => {
+        const src = $('phCopySrc').value, copy = JSON.parse(JSON.stringify(PH.cfg[src]));
+        const reid = o => { if (o && typeof o === 'object') { if ('id' in o) o.id = nid(); Object.values(o).forEach(reid); } };
+        reid(copy); PH.cfg[PH.role] = copy; PH.sub = null; dirty(); render(); toast(`${roleName(src)} 구성을 복사했습니다. 저장 전까지 반영되지 않습니다.`, '📋'); return true;
+      }, '복사');
+    }
+  });
+
+  /* ── 항목 추가/수정 모달 ── */
+  const COLOR = (id, label, val) => `<div class="form-group"><label class="form-label">${label}</label><div class="ph-swatch" data-color="${id}">${SWATCH.map(s => `<button type="button" style="background:${s}" class="${s.toLowerCase() === (val || '').toLowerCase() ? 'on' : ''}" onclick="phPick('${id}','${s}')"></button>`).join('')}<input type="color" value="${/^#[0-9a-f]{6}$/i.test(val) ? val : '#ffffff'}" onchange="phPick('${id}',this.value)"><input type="hidden" id="f_${id}" value="${esc(val)}"></div></div>`;
+  const TXT = (id, label, val, o = {}) => `<div class="form-group"><label class="form-label">${label}${o.req ? ' <span class="form-required">*</span>' : ''}</label>${o.area ? `<textarea class="form-textarea" id="f_${id}" style="min-height:70px" maxlength="${o.max || 120}">${esc(val)}</textarea>` : `<input class="form-control" id="f_${id}" value="${esc(val)}" maxlength="${o.max || 40}" placeholder="${esc(o.ph || '')}">`}<div class="ph-err" id="e_${id}"></div>${o.hint ? `<div class="form-hint">${o.hint}</div>` : ''}</div>`;
+  const IMG = (label, o) => `<div class="form-group"><label class="form-label">${label}</label><div class="ph-up"><div class="pv" id="f_pv" style="background:${esc(o.color || o.bg || '#fff')}">${media(o)}</div><div style="flex:1"><input type="file" id="f_file" accept="image/png,image/jpeg,image/webp,image/gif" style="font-size:12px;max-width:100%" onchange="phFile(this)"><div class="form-hint">JPG·PNG·WEBP·GIF, 최대 5MB. 이미지가 없으면 기본 이모지가 표시됩니다.</div></div><button type="button" class="btn btn-ghost btn-sm" onclick="phImgClear()">이미지 삭제</button></div><div class="ph-err" id="e_img"></div></div>`;
+  const CHK = (id, label, val) => `<label class="ph-chk"><input type="checkbox" class="chk" id="f_${id}" ${val ? 'checked' : ''}> ${label}</label>`;
+  const FORMS = {
+    banners: { name: '배너', init: () => ({ title: '', sub: '', bg: '#FFF4CC', emoji: '🦊', img: '', link: '', on: true }), html: o => TXT('title', '굵은 문구(제목)', o.title, { req: 1, max: 30, ph: '예) 승인 대기 중입니다.' }) + TXT('sub', '보조 문구', o.sub, { max: 40, ph: '예) 서비스 이용은 곧 가능해요!' }) + COLOR('bg', '배경색', o.bg) + IMG('캐릭터/일러스트 이미지', o) + TXT('emoji', '기본 이모지(이미지가 없을 때)', o.emoji, { max: 4 }) + TXT('link', '클릭 시 이동 링크', o.link, { max: 200, ph: '비워두면 클릭해도 이동하지 않습니다' }) + CHK('on', '노출', o.on), req: ['title'] },
+    menus: { name: '서비스 메뉴', init: () => ({ label: '', emoji: '⭐', color: '#DCE7FF', link: '', on: true, slides: [] }), html: o => TXT('label', '메뉴명', o.label, { req: 1, max: 14, ph: '예) 알림장' }) + TXT('emoji', '아이콘 이모지', o.emoji, { max: 4 }) + COLOR('color', '아이콘 배경색', o.color) + TXT('link', '연결 링크', o.link, { max: 200, ph: '/notebook 또는 https://...', hint: '소개 슬라이드가 없을 때 또는 슬라이드의 체험 버튼으로 이동합니다.' }) + CHK('on', '노출', o.on), req: ['label'] },
+    mslides: { name: '소개 슬라이드', init: () => ({ title: '', desc: '', emoji: '✨', color: '#DCE7FF', img: '', cta: '체험해보기' }), html: o => TXT('title', '제목', o.title, { req: 1, max: 30 }) + TXT('desc', '설명', o.desc, { area: 1, max: 100 }) + IMG('화면 이미지', o) + TXT('emoji', '기본 이모지(이미지가 없을 때)', o.emoji, { max: 4 }) + COLOR('color', '배경색', o.color) + TXT('cta', '버튼 문구', o.cta, { max: 12 }), req: ['title'] },
+    promos: { name: '부가 서비스 배너', init: () => ({ title: '', sub: '', bg: '#CFF7F2', emoji: '🎁', img: '', link: '', on: true }), html: o => TXT('title', '제목', o.title, { req: 1, max: 20 }) + TXT('sub', '보조 문구', o.sub, { max: 40 }) + COLOR('bg', '배경색', o.bg) + IMG('아이콘 이미지', o) + TXT('emoji', '기본 이모지(이미지가 없을 때)', o.emoji, { max: 4 }) + TXT('link', '클릭 시 이동 링크', o.link, { max: 200, ph: '/outlet 또는 https://...' }) + CHK('on', '노출', o.on), req: ['title'] }
+  };
+  let M = null; // 현재 모달 상태
+  function openModal(title, body, onSave, okLabel) { $('phMdTitle').textContent = title; $('phMdBody').innerHTML = body; $('phMdOk').textContent = okLabel || '저장'; M = { onSave }; $('phModalOv').classList.add('show'); const f = $('phMdBody').querySelector('input[type=text],input:not([type]),textarea'); if (f) setTimeout(() => f.focus(), 30); }
+  Object.assign(window, {
+    phModalClose() { $('phModalOv').classList.remove('show'); M = null; musicStop(); },
+    phModalSave() { if (M && M.onSave() !== false) phModalClose(); },
+    phPick(id, v) { $('f_' + id).value = v; const w = document.querySelector(`[data-color="${id}"]`); w.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.style.background.replace(/\s/g, '') === hex2rgb(v))); w.querySelector('input[type=color]').value = /^#[0-9a-f]{6}$/i.test(v) ? v : '#ffffff'; const pv = $('f_pv'); if (pv) pv.style.background = v; },
+    phFile(inp) {
+      const f = inp.files[0], er = $('e_img'); er.textContent = ''; if (!f) return;
+      if (!/^image\//.test(f.type)) { er.textContent = '이미지 파일만 업로드할 수 있습니다.'; inp.value = ''; return; }
+      if (f.size > 5 * 1024 * 1024) { er.textContent = '파일 크기는 5MB 이하여야 합니다.'; inp.value = ''; return; }
+      const r = new FileReader(); r.onload = () => { M.img = r.result; $('f_pv').innerHTML = `<img src="${r.result}" alt="">`; }; r.readAsDataURL(f);
+    },
+    phImgClear() { if (!M) return; M.img = ''; const fi = $('f_file'); if (fi) fi.value = ''; const e = $('f_emoji'); $('f_pv').innerHTML = esc((e && e.value) || '🖼️'); },
+    phEdit(key, i) {
+      if (key === 'story') return phStoryEdit(i);
+      const F = FORMS[key], L = listOf(key), isNew = i < 0;
+      if (isNew && L.length >= LIMIT[key]) { toast(`${F.name}는 최대 ${LIMIT[key]}개까지 등록할 수 있습니다.`, '⚠️'); return; }
+      const o = isNew ? F.init() : L[i];
+      openModal(`${F.name} ${isNew ? '추가' : '수정'}`, F.html(o), () => {
+        let ok = true; document.querySelectorAll('#phMdBody .ph-err').forEach(e => { if (e.id !== 'e_img') e.textContent = ''; });
+        const v = {}; for (const el of document.querySelectorAll('#phMdBody [id^=f_]')) { const id = el.id.slice(2); if (['pv', 'file'].includes(id)) continue; v[id] = el.type === 'checkbox' ? el.checked : el.value.trim(); }
+        F.req.forEach(f => { if (!v[f]) { $('e_' + f).textContent = '필수 입력 항목입니다.'; ok = false; } });
+        if ('link' in v && v.link && !LINK_RE.test(v.link)) { $('e_link').textContent = '/ 로 시작하는 경로 또는 http(s):// 주소를 입력해 주세요.'; ok = false; }
+        if (!ok) return false;
+        v.img = M.img; if (isNew) { L.push({ id: nid(), ...F.init(), ...v }); } else { Object.assign(L[i], v); }
+        dirty(); render(); toast(`${F.name}${isNew ? '를 추가' : ' 수정 내용을 반영'}했습니다. (저장 전)`, '📝'); return true;
+      }, isNew ? '추가' : '확인');
+      M.img = o.img || '';
+    }
+  });
+  const hex2rgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(h); if (!m) return ''; const n = parseInt(m[1], 16); return `rgb(${n >> 16},${(n >> 8) & 255},${n & 255})`; };
+
+  /* ── 우리반 이야기: 슬라이드쇼 편집 ── */
+  let ST = null;
+  const PHOTO_SAMPLES = [['🌈', '#DDEFFF'], ['🎈', '#FFD9E0'], ['🍎', '#FFD9D0'], ['🌼', '#FFF1B8'], ['🐥', '#FFF4CC'], ['🎨', '#EBDDFF'], ['🚌', '#FFE3BF'], ['⛄', '#E3F1FF']];
+  function stPhotosRender() {
+    $('stPhotos').innerHTML = ST.photos.map((p, i) => `<div class="ph-ph"><div class="ph-ph-img" style="background:${esc(p.color)}">${media(p)}<b>${i + 1}</b></div><div class="ph-ph-act"><button type="button" ${i === 0 ? 'disabled' : ''} onclick="phStPhoto('l',${i})">◀</button><button type="button" ${i === ST.photos.length - 1 ? 'disabled' : ''} onclick="phStPhoto('r',${i})">▶</button><button type="button" onclick="phStPhoto('x',${i})">✕</button></div></div>`).join('') || '<div class="ph-empty" style="grid-column:1/-1">등록된 사진이 없습니다</div>';
+    $('stCnt').textContent = `${ST.photos.length}/${LIMIT.photos}`;
+  }
+  function phStoryEdit(i) {
+    const L = listOf('story'), isNew = i < 0;
+    if (isNew && L.length >= LIMIT.story) { toast(`우리반 이야기는 최대 ${LIMIT.story}개까지 등록할 수 있습니다.`, '⚠️'); return; }
+    const o = isNew ? { cap: '', music: 'm1', musicName: '', musicSrc: '', sec: 3, photos: [] } : L[i];
+    ST = { photos: o.photos.map(p => ({ ...p })), music: o.music, musicName: o.musicName, musicSrc: o.musicSrc, sec: o.sec };
+    const mopt = Object.entries(MUSIC).map(([k, m]) => `<option value="${k}" ${o.music === k ? 'selected' : ''}>${m.n}</option>`).join('') + `<option value="upload" ${o.music === 'upload' ? 'selected' : ''}>직접 업로드 (mp3 등)</option>`;
+    openModal(`우리반 이야기 ${isNew ? '추가' : '수정'}`,
+      TXT('cap', '제목(대표 이미지 아래 표시)', o.cap, { req: 1, max: 14, ph: '예) 여름소풍' }) +
+      `<div class="form-group"><label class="form-label">슬라이드쇼 사진 <span class="form-required">*</span> <span id="stCnt" style="font-weight:400;color:var(--text-muted)"></span></label><div class="ph-hint2">첫 번째 사진이 목록의 대표 이미지가 됩니다. ◀ ▶ 로 순서를 바꿉니다.</div><div class="ph-ph-grid" id="stPhotos"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap"><input type="file" id="stFiles" accept="image/png,image/jpeg,image/webp,image/gif" multiple style="font-size:12px;max-width:230px" onchange="phStFiles(this)"><button type="button" class="btn btn-secondary btn-sm" onclick="phStSample()">샘플 사진 추가</button></div><div class="ph-err" id="e_img"></div></div>
+        <div class="form-group"><label class="form-label">배경 음악</label><div style="display:flex;gap:8px"><div class="f-select-wrap" style="flex:1"><select class="f-select" id="stMusic" style="width:100%" onchange="phStMusic()">${mopt}</select></div><button type="button" class="btn btn-secondary" id="stPlay" onclick="phStPlay()">▶ 미리듣기</button></div>
+        <div id="stUp" style="margin-top:8px;display:${o.music === 'upload' ? 'block' : 'none'}"><input type="file" id="stAudio" accept="audio/*" style="font-size:12px" onchange="phStAudio(this)"><div class="form-hint" id="stAudioName">${o.music === 'upload' && o.musicName ? '현재: ' + esc(o.musicName) : 'MP3·M4A·WAV, 최대 10MB'}</div></div><div class="ph-err" id="e_music"></div></div>
+        <div class="form-group"><label class="form-label">사진 넘김 간격</label><div class="f-select-wrap"><select class="f-select" id="stSec" style="width:100%">${[2, 3, 5].map(n => `<option value="${n}" ${o.sec === n ? 'selected' : ''}>${n}초</option>`).join('')}</select></div></div>`,
+      () => {
+        const cap = $('f_cap').value.trim(); let ok = true; $('e_cap').textContent = ''; $('e_img').textContent = ''; $('e_music').textContent = '';
+        if (!cap) { $('e_cap').textContent = '필수 입력 항목입니다.'; ok = false; }
+        if (!ST.photos.length) { $('e_img').textContent = '사진을 1장 이상 등록해 주세요.'; ok = false; }
+        ST.music = $('stMusic').value; ST.sec = +$('stSec').value;
+        if (ST.music === 'upload' && !ST.musicSrc) { $('e_music').textContent = '업로드할 음악 파일을 선택해 주세요.'; ok = false; }
+        if (!ok) return false;
+        musicStop();
+        const v = { cap, photos: ST.photos, music: ST.music, musicName: ST.music === 'upload' ? ST.musicName : '', musicSrc: ST.music === 'upload' ? ST.musicSrc : '', sec: ST.sec };
+        if (isNew) { const n = { id: nid(), ...v }; syncCover(n); L.push(n); } else { Object.assign(L[i], v); syncCover(L[i]); }
+        dirty(); render(); toast(`우리반 이야기를 ${isNew ? '추가' : '수정'}했습니다. (저장 전)`, '📝'); return true;
+      }, isNew ? '추가' : '확인');
+    stPhotosRender();
+  }
+  Object.assign(window, {
+    phStoryEdit,
+    phStPhoto(a, i) { const P = ST.photos; if (a === 'x') P.splice(i, 1); else { const j = a === 'l' ? i - 1 : i + 1;[P[i], P[j]] = [P[j], P[i]]; } stPhotosRender(); },
+    phStSample() { if (ST.photos.length >= LIMIT.photos) { $('e_img').textContent = `사진은 최대 ${LIMIT.photos}장까지 등록할 수 있습니다.`; return; } const s = PHOTO_SAMPLES[ST.photos.length % PHOTO_SAMPLES.length]; ST.photos.push(photo(...s)); stPhotosRender(); },
+    phStFiles(inp) {
+      const er = $('e_img'); er.textContent = ''; const fs = [...inp.files]; let skipped = 0, over = 0;
+      const ok = fs.filter(f => { if (!/^image\//.test(f.type) || f.size > 5 * 1024 * 1024) { skipped++; return false; } return true; });
+      const room = LIMIT.photos - ST.photos.length, use = ok.slice(0, Math.max(room, 0)); over = ok.length - use.length;
+      Promise.all(use.map(f => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); }))).then(urls => {
+        urls.forEach(u => ST.photos.push({ id: nid(), img: u, emoji: '', color: '#EEF1FD' })); stPhotosRender(); inp.value = '';
+        const msg = []; if (skipped) msg.push(`이미지가 아니거나 5MB를 넘는 파일 ${skipped}개 제외`); if (over) msg.push(`최대 ${LIMIT.photos}장 초과 ${over}개 제외`); er.textContent = msg.join(' · ');
+      });
+    },
+    phStMusic() { musicStop(); $('stPlay').textContent = '▶ 미리듣기'; const u = $('stMusic').value === 'upload'; $('stUp').style.display = u ? 'block' : 'none'; },
+    phStAudio(inp) {
+      const f = inp.files[0], er = $('e_music'); er.textContent = ''; if (!f) return;
+      if (!/^audio\//.test(f.type)) { er.textContent = '오디오 파일만 업로드할 수 있습니다.'; inp.value = ''; return; }
+      if (f.size > 10 * 1024 * 1024) { er.textContent = '파일 크기는 10MB 이하여야 합니다.'; inp.value = ''; return; }
+      const r = new FileReader(); r.onload = () => { ST.musicSrc = r.result; ST.musicName = f.name; $('stAudioName').textContent = '선택됨: ' + f.name; }; r.readAsDataURL(f);
+    },
+    phStPlay() { const b = $('stPlay'); if (b.textContent.includes('정지')) { musicStop(); b.textContent = '▶ 미리듣기'; return; } const k = $('stMusic').value; if (k === 'none') { toast('음악 없음이 선택되어 있습니다.', '🔇'); return; } if (k === 'upload' && !ST.musicSrc) { toast('먼저 음악 파일을 선택해 주세요.', '⚠️'); return; } musicPlay({ music: k, musicSrc: ST.musicSrc }); b.textContent = '■ 정지'; }
+  });
+
+  /* ── 배경음악 재생(샘플 곡은 웹 오디오로 생성, 업로드 곡은 그대로 재생) ── */
+  let AC = null, mTimer = null, mAudio = null;
+  function musicStop() { clearInterval(mTimer); mTimer = null; if (mAudio) { mAudio.pause(); mAudio = null; } }
+  function musicPlay(s) {
+    musicStop();
+    if (s.music === 'upload') { if (s.musicSrc) { mAudio = new Audio(s.musicSrc); mAudio.loop = true; mAudio.play().catch(() => {}); } return; }
+    const m = MUSIC[s.music]; if (!m || !m.notes) return;
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+      let n = 0; const step = 60 / m.bpm;
+      const tick = () => { const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime; o.type = m.w; o.frequency.value = 261.63 * Math.pow(2, m.notes[n++ % m.notes.length] / 12); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.1, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + step * 0.95); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + step); };
+      tick(); mTimer = setInterval(tick, step * 1000);
+    } catch (e) { /* 오디오 사용 불가 환경: 무음으로 진행 */ }
+  }
+
+  /* ── 우리반 이야기 슬라이드쇼 뷰어 ── */
+  const SS = { s: null, i: 0, paused: false, muted: false, t: null };
+  function ssClear() { clearTimeout(SS.t); SS.t = null; }
+  function ssTick() { ssClear(); if (SS.paused || !SS.s) return; SS.t = setTimeout(() => { SS.i = (SS.i + 1) % SS.s.photos.length; ssRender(); }, SS.s.sec * 1000); }
+  function ssRender() {
+    const s = SS.s, p = s.photos[SS.i], n = s.photos.length;
+    $('phVwName').textContent = s.cap;
+    $('phVwBody').innerHTML = `<div class="ph-ss-bars">${s.photos.map((_, j) => `<i class="${j < SS.i ? 'done' : j === SS.i ? 'cur' : ''}"><u style="${j === SS.i && !SS.paused ? 'animation-duration:' + s.sec + 's' : ''}"></u></i>`).join('')}</div>
+      <div class="ph-vw-media" style="background:${esc(p.color)}" onclick="phSsGo(${SS.i + 1})">${media(p)}</div>
+      <div class="ph-vw-ds" style="padding-top:12px;min-height:0">${s.music !== 'none' ? '♪ ' + esc(musicLabel(s)) + (SS.muted ? ' (음소거)' : '') : '배경 음악 없음'}</div>
+      <div class="ph-vw-ft"><button class="nv" onclick="phSsGo(${SS.i - 1})">‹</button><button class="cta" onclick="phSsPause()">${SS.paused ? '▶ 재생' : '⏸ 일시정지'}</button><button class="nv" title="음소거" onclick="phSsMute()">${SS.muted ? '🔇' : '🔊'}</button><button class="nv" onclick="phSsGo(${SS.i + 1})">›</button></div>
+      <div class="ph-vw-hint">${SS.i + 1} / ${n} · ${s.sec}초 간격 자동 재생 · 사진을 누르면 다음 장</div>`;
+    ssTick();
+  }
+  Object.assign(window, {
+    phOpenStory(id) {
+      const s = listOf('story').find(x => x.id === id); if (!s) return; PH.sel = 'story'; secList(); preview(); editor();
+      V.mode = 'story'; SS.s = s; SS.i = 0; SS.paused = false; SS.muted = false; $('phViewer').classList.add('show'); ssRender();
+      if (s.music !== 'none') musicPlay(s);
+    },
+    phSsGo(j) { const n = SS.s.photos.length; SS.i = (j + n) % n; ssRender(); },
+    phSsPause() { SS.paused = !SS.paused; if (SS.paused) { musicStop(); } else if (!SS.muted && SS.s.music !== 'none') musicPlay(SS.s); ssRender(); },
+    phSsMute() { SS.muted = !SS.muted; if (SS.muted) musicStop(); else if (!SS.paused && SS.s.music !== 'none') musicPlay(SS.s); ssRender(); }
+  });
+
+  /* ── 서비스 소개 슬라이드 뷰어 ── */
+  const V = { menu: null, i: 0, mode: 'menu' };
+  function viewRender() {
+    const m = V.menu, s = m.slides[V.i], n = m.slides.length;
+    $('phVwName').textContent = m.label;
+    $('phVwBody').innerHTML = `<div class="ph-vw-media" style="background:${esc(s.color)}" onclick="phVwNext()">${media(s)}</div>
+      <div class="ph-vw-tt">${esc(s.title)}</div><div class="ph-vw-ds">${esc(s.desc)}</div>
+      <div class="ph-dots" style="margin:4px 0 0">${m.slides.map((_, j) => `<i class="${j === V.i ? 'on' : ''}" onclick="phVwGo(${j})"></i>`).join('')}</div>
+      <div class="ph-vw-ft"><button class="nv" ${V.i === 0 ? 'disabled' : ''} onclick="phVwGo(${V.i - 1})">‹</button><button class="cta" onclick="phVwCta()">${esc(s.cta || '체험해보기')}</button><button class="nv" ${V.i === n - 1 ? 'disabled' : ''} onclick="phVwGo(${V.i + 1})">›</button></div>
+      <div class="ph-vw-hint">${V.i + 1} / ${n} · 이미지를 누르면 다음 장으로 넘어갑니다</div>`;
+  }
+  Object.assign(window, {
+    phOpenMenu(id) {
+      const m = menuOf(id); if (!m) return; PH.sel = 'menus'; secList(); preview(); editor();
+      if (!m.slides.length) { toast(`"${m.label}" 메뉴는 소개 슬라이드가 없어 ${m.link ? m.link : '연결 링크'}로 바로 이동합니다. (프로토타입)`, '➡️'); return; }
+      V.mode = 'menu'; V.menu = m; V.i = 0; $('phViewer').classList.add('show'); viewRender();
+    },
+    phViewClose() { $('phViewer').classList.remove('show'); ssClear(); musicStop(); },
+    phVwGo(j) { if (j < 0 || j >= V.menu.slides.length) return; V.i = j; viewRender(); },
+    phVwNext() { V.i = (V.i + 1) % V.menu.slides.length; viewRender(); },
+    phVwCta() { const m = V.menu; toast(`"${m.label}" 체험 화면으로 이동합니다${m.link ? ' → ' + m.link : ''} (프로토타입: 실제 이동 없음)`, '👆'); phViewClose(); }
+  });
+  document.addEventListener('keydown', e => {
+    if ($('phViewer').classList.contains('show')) { const st = V.mode === 'story'; if (e.key === 'Escape') phViewClose(); else if (e.key === 'ArrowRight') st ? phSsGo(SS.i + 1) : phVwGo(V.i + 1); else if (e.key === 'ArrowLeft') st ? phSsGo(SS.i - 1) : phVwGo(V.i - 1); }
+    else if (e.key === 'Escape' && $('phModalOv').classList.contains('show')) phModalClose();
+  });
+  window.addEventListener('beforeunload', e => { if (PH.dirty) { e.preventDefault(); e.returnValue = ''; } });
+  render();
+})();
+</script>
+
+<script src="nav-links.js"></script>
 </body>
 </html>
