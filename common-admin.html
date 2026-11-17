@@ -1700,6 +1700,21 @@ const ADMIN_MENUS = [
   {key:'ops', name:'운영관리', children:[
     {key:'ops.inquiry', name:'1:1 문의 관리', acts:['view','edit']},
     {key:'ops.orgadmin', name:'기관운영관리', acts:['view']}]},
+  {key:'orgops', name:'기관운영관리 · 콘텐츠 관리', children:[
+    {key:'orgops.note', name:'알림장', acts:CRUD},
+    {key:'orgops.notice', name:'공지사항', acts:CRUD},
+    {key:'orgops.album', name:'앨범', acts:CRUD},
+    {key:'orgops.medicine', name:'투약의뢰서', acts:['view','edit','delete']},
+    {key:'orgops.attendance', name:'출석부', acts:['view','edit']},
+    {key:'orgops.meal', name:'식단표', acts:CRUD},
+    {key:'orgops.schedule', name:'스케줄', acts:CRUD},
+    {key:'orgops.together', name:'수업자료 함께보기', acts:CRUD}]},
+  {key:'orgset', name:'기관운영관리 · 기관 설정', children:[
+    {key:'orgset.info', name:'기관정보', acts:['view','edit']},
+    {key:'orgset.member', name:'멤버/승인', acts:['view','edit','delete','approve']},
+    {key:'orgset.class', name:'반 관리', acts:CRUD},
+    {key:'orgset.promote', name:'진급/졸업', acts:['view','edit']},
+    {key:'orgset.invite', name:'초대장 관리', acts:CRUD}]},
   {key:'tools', name:'운영도구', children:[
     {key:'tools.push', name:'푸시 발송 관리', acts:CRUD},
     {key:'tools.template', name:'푸시 템플릿 관리', acts:CRUD},
@@ -1737,10 +1752,9 @@ function permSeed(){
   return {
     admin:[
       {id:'super', name:'슈퍼관리자', desc:'모든 메뉴 전권 보유', used:true, count:2, fixed:true, perms:permAllAdmin()},
-      {id:'ops', name:'운영관리자', desc:'기본 운영 권한', used:true, count:5, fixed:false, perms:permAdminAllExcept({'common.perm':['view']})},
+      {id:'ops', name:'운영관리자', desc:'기관운영관리(콘텐츠 관리·기관 설정) 메뉴 권한', used:true, count:5, fixed:false, perms:(()=>{ const m={'ops.orgadmin':['view']}; ADMIN_LEAVES.forEach(l=>{ if(/^org(ops|set)\./.test(l.key)) m[l.key]=l.acts.slice(); }); return permAdminOf(m); })()},
       {id:'cs', name:'CS관리자', desc:'회원 조회/처리', used:true, count:3, fixed:false, perms:permAdminOf({'member.list':['view'],'org.list':['view'],'ops.inquiry':['view','edit'],'tools.history':['view']})},
-      {id:'approver', name:'승인 담당자', desc:'가입 승인 전담', used:true, count:2, fixed:false, perms:permAdminOf({'member.list':['view'],'member.approval':['view','approve'],'org.list':['view'],'org.approval':['view','approve']})},
-      {id:'readonly', name:'읽기 전용', desc:'조회만 가능', used:true, count:1, fixed:false, perms:readOnly}
+      {id:'readonly', name:'심사 담당자', desc:'조회만 가능', used:true, count:1, fixed:false, perms:readOnly}
     ],
     org:[
       {id:'director', name:'원장', desc:'기관 전체 관리 · 모든 서비스 읽기/쓰기', used:true, fixed:true, scope:'기관 전체', perms:permOrgAll()},
@@ -1756,7 +1770,7 @@ function permSeed(){
     ]
   };
 }
-const PERM_STORE_KEY = 'kidkids.perm.proto.v1';
+const PERM_STORE_KEY = 'kidkids.perm.proto.v4';
 let PERM = permSeed();
 try { const raw = localStorage.getItem(PERM_STORE_KEY); if(raw){ const o=JSON.parse(raw); if(o && o.admin && o.org) PERM=o; } } catch(e){}
 function permPersist(){ try{ localStorage.setItem(PERM_STORE_KEY, JSON.stringify(PERM)); }catch(e){} }
